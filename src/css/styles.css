@@ -1636,3 +1636,11 @@ form .btn-danger {
   border-radius: 3px;
   padding: 3px;
 }
+
+.icon-fix{
+  width: 65px; 
+  height: 60px; 
+  display: flex; 
+  justify-content: center; 
+  align-items: center;
+}

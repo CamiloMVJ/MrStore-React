@@ -1,14 +1,22 @@
 import { useState } from 'react'
-import viteLogo from '/vite.svg'
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Header from './components/Header'
+import Home from './components/Pages/Home'
 import './css/styles.css'
 
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <>
-      <div className='top-nav hei'></div>
+      <Router>
+        <Routes>
+          <Route path='/inicio' element={<Home />} />
+          <Route path='/tienda' />
+          <Route path='/pedidos' />
+          <Route path='/inventario' />
+        </Routes>
+      </Router>
     </>
   )
 }

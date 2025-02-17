@@ -1,9 +1,11 @@
-const Header = () => {
+import Sections from "./Sections"
+
+const Header = ({navSection}) => {
     return (
         <div className="navigation">
             <div className="nav-center container d-flex">
-                <a href="" className="logo"></a>
-                <ul className="nav-list d-flex"></ul>
+                <a href="" className="logo"><h1>Mr. Store</h1></a>
+                <Sections list={navSection} />
             </div>
         </div>
     )
