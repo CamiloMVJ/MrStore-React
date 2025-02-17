@@ -213,6 +213,13 @@ Navigation
 Hero Area
 =================
 */
+.glide{
+  width: 100%;
+  height: 928.75px; 
+  overflow: hidden; 
+  background: rgb(233, 215, 211);
+  
+}
 
 .hero,
 .hero .glide__slides {
@@ -232,12 +239,28 @@ Hero Area
   padding-top: 3rem;
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .hero .left {
   position: absolute;
-  top: 0%;
+  /* top: 0%; */
   left: 25rem;
-  opacity: 0;
-  transition: all 1000ms ease-in-out;
+  opacity: 1;
+  /* animation: fadeIn 1000ms ease-in-out forwards; */
+}
+
+.glide__slide.active {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .hero .left h1 {
@@ -269,20 +292,20 @@ Hero Area
 .hero .right img {
   position: absolute;
   width: 55rem;
-  opacity: 0;
+  opacity: 1;
   transition: all 1000ms ease-in-out;
 }
 
 .center .right img.img1 {
   width: 85%;
   right: -25%;
-  bottom: -50%;
+  /* bottom: -15%; */
 }
 
 .center .right img.img2 {
   width: 90%;
   right: -40%;
-  bottom: -40%;
+  bottom: -5%;
 }
 
 .glide__slide--active .center .right img {
