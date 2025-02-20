@@ -13,7 +13,7 @@ const Footer = () => {
                     <div className="col">
                         <form action="">
                             <div>
-                                <input type="email" placeholder="Email Address"/>
+                                <input type="email" placeholder="Email Address" name="email"/>
                                     <a href="">enviar</a>
                             </div>
                         </form>

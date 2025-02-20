@@ -1,15 +1,15 @@
 import Header from "../Header"
 import Glider from "../Glider"
 import { useState, useEffect } from "react";
-import { getProducts } from "../../js/supabase"
+import { getTable } from "../../js/supabase"
 import Products from "../Products";
 import Footer from "../Footer";
 
 const Home = () => {
-    const [navSections, setNavSections] = useState([{ title: "Inicio" }, { title: "Tienda" }, { title: "Pedidos" }, { title: "Inventario" }])
+    const [navSections, setNavSections] = useState([{ title: "Inicio" }, { title: "Tienda" }])
     const [products, setProducts] = useState([])
     useEffect(() =>{
-        getProducts('productos', 12).then(data =>{
+        getTable('productos', 12).then(data =>{
             setProducts(data)
         })
     }, [])
