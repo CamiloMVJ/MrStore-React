@@ -6,11 +6,17 @@ const Header = () => {
     const [navSections, setNavSections] = useState([{ title: "Inicio" }, { title: "Tienda" }])
     useEffect(() => {
         const fetchNavs = async () => {
-            const session = JSON.parse(sessionStorage.getItem('session'))
-            const nav = await supabase.from('usuarios').select(' *,id_usuario, administradores!inner(id_usuario)').eq('username', session.username).eq('contraseña', session.password).limit(1)
-            if (nav.data.length) {
-                setNavSections([{ title: "Inicio" }, { title: "Tienda" }, { title: "Pedidos" }, { title: "Inventario" }])
+            if (sessionStorage.getItem('session')) {
+                const session = JSON.parse(sessionStorage.getItem('session'))
+                const nav = await supabase.from('administradores').select().eq('id_usuario', session.id_usuario).limit(1)
+                if (nav.data.length) {
+                    setNavSections([{ title: "Inicio" }, { title: "Tienda" }, { title: "Pedidos" }, { title: "Inventario" }])
+                }
+                else {
+                    setNavSections([{ title: "Inicio" }, { title: "Tienda" }, { title: "Pedidos" }])
+                }
             }
+
         }
         fetchNavs()
     }, [])

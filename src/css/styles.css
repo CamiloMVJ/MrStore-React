@@ -1413,6 +1413,7 @@ th:last-child {
   border-radius: 0.5rem;
 }
 
+
 .login-form form input::placeholder {
   font-size: 1.6rem;
   color: #222;
@@ -1666,4 +1667,26 @@ form .btn-danger {
   display: flex; 
   justify-content: center; 
   align-items: center;
+}
+
+.pass{
+  width: 70%;
+}
+
+.show-pass{
+  width: auto;
+  position: relative;
+  height:  2.5em;  
+  
+}
+
+.pass-container{
+  display: flex;
+  display: relative;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.signOut{
+  background: var(--red) !important;
 }

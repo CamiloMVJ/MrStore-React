@@ -15,10 +15,26 @@ export const getTable = async (table, rowsQnt = '', columns = '') => {
   }
 }
 
+export const updateTable = async (table, id, data) => {
+  try {
+    const { error } = await supabase.from(table).update(data).eq('id_usuario', id)
+    if (error) throw error
+  } catch (e) {
+    console.error("Error al actualizar datos:", e.message)
+    throw e
+  }
+}
+
 export const LoginValider = async (user, pass) => {
   try {
     const { data, error } = await supabase.from('usuarios').select().eq('username', user).eq('contraseña', pass)
-    if(data.length) return true
+    if (data.length){
+      await supabase.from('usuarios').update({ultima_conexion: new Date().toISOString()}).eq('id_usuario', data[0].id_usuario)
+      const {cedula, email,fecha_registro, nombre_completo, ultimo_acceso, ...nuevoObjeto} = data[0]
+      console.log(nuevoObjeto)
+      sessionStorage.setItem('session', JSON.stringify(nuevoObjeto))
+      return true
+    }
   } catch (error) {
     console.error("No autenticado", error.message)
     return false
@@ -31,7 +47,7 @@ export const LoginValiderSupabase = async (email, pass) => {
       email: email,
       password: pass
     })
-    if(data.user.aud === 'authenticated') return true
+    if (data.user.aud === 'authenticated') return true
   } catch (error) {
     console.error("No autenticado", error.message)
     return false
