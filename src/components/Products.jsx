@@ -1,4 +1,4 @@
-const Products = ({ nav = true, productos }) => {
+const Products = ({ productos }) => {
     const DetalleProducto = (e) => {
         e.preventDefault()
     }

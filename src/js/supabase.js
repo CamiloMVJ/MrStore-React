@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js"
+import {timeStampz} from "./dateFormat"
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_KEY
@@ -29,9 +30,9 @@ export const LoginValider = async (user, pass) => {
   try {
     const { data, error } = await supabase.from('usuarios').select().eq('username', user).eq('contraseña', pass)
     if (data.length){
-      await supabase.from('usuarios').update({ultima_conexion: new Date().toISOString()}).eq('id_usuario', data[0].id_usuario)
+      const date = timeStampz()
+      await supabase.from('usuarios').update({ultimo_acceso: date.toString()}).eq('id_usuario', data[0].id_usuario)
       const {cedula, email,fecha_registro, nombre_completo, ultimo_acceso, ...nuevoObjeto} = data[0]
-      console.log(nuevoObjeto)
       sessionStorage.setItem('session', JSON.stringify(nuevoObjeto))
       return true
     }

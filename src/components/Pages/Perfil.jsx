@@ -29,7 +29,7 @@ const Perfil = () => {
     const signOut = (e) => {
         e.preventDefault()
         sessionStorage.removeItem('session')
-        window.location.href = '/login'
+        window.location.href = '/'
     }
 
     if (perfil) {
@@ -39,10 +39,9 @@ const Perfil = () => {
                 <div className="container">
                     <div className="login-form">
                         <form onSubmit={updatePerfil} method="POST">
-                            <div className="container">
+                          
                                 <h1 className="title">Perfil</h1>
-                                <button onClick={signOut} className="signOut">Cerrar Sesion</button>
-                            </div>
+                        
                             <label htmlFor="nombre_completo">Nombre Completo</label>
                             <input type="text" placeholder="Ingrese su Nombre" id='nombre_completo' name="nombre_completo" defaultValue={perfil.nombre_completo} required />
                             <input type="hidden" name="id_usuario" defaultValue={perfil.id_usuario} required />
@@ -70,6 +69,8 @@ const Perfil = () => {
                             </div>
 
                             <button type="submit">Actualizar perfil</button>
+                            <br />
+                            <button onClick={signOut} className="signOut">Cerrar Sesion</button>
                         </form>
                     </div>
                 </div>

@@ -1,7 +1,8 @@
 import Header from "../Header"
-import Footer from "../Footer";
-import { useState } from "react";
-import { LoginValider } from "../../js/supabase";
+import Footer from "../Footer"
+import { useState } from "react"
+import { LoginValider } from "../../js/supabase"
+
 const Login = () => {
     if (sessionStorage.getItem('session')) {
         window.location.href = '/perfil'

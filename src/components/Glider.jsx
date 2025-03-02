@@ -30,7 +30,7 @@ const Glider = () => {
                                     <span>Inspiracion 2024</span>
                                     <h1>NUEVAS PRENDAS!!</h1>
                                     <p>Articulos para todo publico</p>
-                                    <a className="hero-btn" draggable="true" data-href="#" href="#">COMPRA AHORA!!</a>
+                                    <a className="hero-btn" draggable="true" data-href="#" href="/tienda">COMPRA AHORA!!</a>
                                 </div>
                                 <div className="right">
                                     <img className="img1" src="https://ieozatljukwgdhkwfyyz.supabase.co/storage/v1/object/public/Images//hero-1.png" alt="" />
@@ -43,7 +43,7 @@ const Glider = () => {
                                     <span>Inspiracion 2024</span>
                                     <h1>EL OUTFIT PERFECTO!!</h1>
                                     <p>Encuentra tu outfit con nosotros</p>
-                                    <a className="hero-btn" draggable="true" data-href="#" href="#">COMPRA AHORA!!</a>
+                                    <a className="hero-btn" draggable="true" data-href="#" href="/tienda">COMPRA AHORA!!</a>
                                 </div>
                                 <div className="right">
                                     <img className="img2" src="https://ieozatljukwgdhkwfyyz.supabase.co/storage/v1/object/public/Images//hero-2.png" alt="" />

@@ -487,6 +487,7 @@ Hero Media Query
   max-width: 120rem;
   margin: 0 auto;
   padding: 0 2rem;
+  min-height: 980px;
 }
 
 .product-item {
@@ -1504,6 +1505,12 @@ th:last-child {
 }
 
 .pagina:hover {
+  border: 1px solid var(--purple);
+  background-color: var(--purple);
+  color: #fff;
+}
+
+.activePage {
   border: 1px solid var(--purple);
   background-color: var(--purple);
   color: #fff;
