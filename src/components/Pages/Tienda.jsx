@@ -23,14 +23,14 @@ const Tienda = () => {
         if (filtro.length === 0) {
             getTable('productos').then(data => {
                 setProducts(data)
-                setTotalPages(Math.ceil(data.length / 8))
+                setTotalPages(Math.ceil(data.length / 10))
             })
         }
         else {
             supabase.from('productos').select().in('id_categoria', filtro).then(response => {
                 setProducts(response.data)
                 console.log(response.data)
-                setTotalPages(Math.ceil(response.data.length / 8))
+                setTotalPages(Math.ceil(response.data.length / 10))
             })
         }
     }, [filtro])
@@ -52,24 +52,28 @@ const Tienda = () => {
         <>
             <Header />
             <section className='section all-products' id='products'>
-                <div className="top container">
-                    <h1>Todos los productos</h1>
-                    <form>
-                        <select id="filtro">
-                            <option value="1">Por defecto</option>
-                            <option value="2">Por precio</option>
-                            <option value="3">Por oferta</option>
-                        </select>
-                        <span><i className="bx bx-chevron-down"></i></span>
-                    </form>
-                </div>
                 <div className='flex-container'>
+                    <div className='leftside'>
+                        <h1 className='center'>Categorias</h1>
+                    </div>
+                    <div className="top container fullwidth">
+                        <h1>Todos los productos</h1>
+                        <form>
+                            <select id="filtro">
+                                <option value="1">Por defecto</option>
+                                <option value="2">Por precio</option>
+                                <option value="3">Por oferta</option>
+                            </select>
+                            <span><i className="bx bx-chevron-down"></i></span>
+                        </form>
+                    </div>
+                </div>
 
+                <div className='flex-container'>
                     <div className='categories'>
-                        <h1 className='title'>Categoria</h1>
                         <div>
                             <table>
-                                <thead>
+                                <thead className='sticky'>
                                     <tr>
                                         <th></th>
                                         <th></th>
@@ -78,7 +82,7 @@ const Tienda = () => {
                                 <tbody>
                                     {categories.map((cat, id) => {
                                         return (
-                                            <tr key={id}>
+                                            <tr key={id} className='categories'>
                                                 <td>{cat.nombre_categoria}</td>
                                                 <td><input type='checkbox' onChange={CategoryChange} value={cat.id_categoria} /></td>
                                             </tr>
@@ -89,10 +93,10 @@ const Tienda = () => {
                         </div>
                     </div>
 
-                    <div className="product-center">
-                        <Products productos={products.slice((page - 1) * 8, page * 8)} />
 
-                    </div>
+                    <Products productos={products.slice((page - 1) * 10, page * 10)} />
+
+
                 </div>
             </section>
             <section className='pagination'>
