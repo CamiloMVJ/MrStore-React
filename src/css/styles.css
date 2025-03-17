@@ -380,9 +380,10 @@ Hero Media Query
   display: flex;
   align-items: center;
   justify-content: center;
-  max-width: 114rem;
+  max-width: 65%;
   margin: auto;
   padding: 0 3rem;
+  justify-content: space-between;
 }
 
 .cat-center .cat {
@@ -481,10 +482,11 @@ Hero Media Query
 
 .product-center {
   display: flex;
-  align-items: center;
+  /* align-items: center; */
   justify-content: center;
   flex-wrap: wrap;
   max-width: 120rem;
+  min-width: 120rem;
   margin: 0 auto;
   padding: 0 2rem;
   min-height: 980px;
@@ -1696,4 +1698,24 @@ form .btn-danger {
 
 .signOut{
   background: var(--red) !important;
+}
+
+.category-btn{
+  all: unset;
+
+}
+
+.flex-container{
+  display: flex;
+  box-sizing: border-box;
+}
+
+.categories{
+  /* display: flex;
+  flex-wrap: wrap;
+  justify-content: center; */
+  margin-left: 20px;
+  max-width: 17%;
+  min-width: 17%;
+  /* display: none; */
 }
