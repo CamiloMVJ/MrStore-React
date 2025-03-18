@@ -3,6 +3,7 @@ import Footer from '../Footer'
 import Products from '../Products'
 import { useEffect, useState } from 'react'
 import { getTable, supabase } from '../../js/supabase'
+import { useParams } from 'react-router-dom'
 
 const Tienda = () => {
     const [products, setProducts] = useState([])
@@ -10,11 +11,22 @@ const Tienda = () => {
     const [totalPages, setTotalPages] = useState(0)
     const [categories, setCategories] = useState([])
     const [filtro, setFiltro] = useState([])
+    const [presetCat, setPresetCats] = useState(useParams().categoria)
+    const capitalizar = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 
     useEffect(() => {
         const fetchCategories = async () => {
             const { data } = await supabase.from('categorias').select('nombre_categoria, id_categoria')
             setCategories(data)
+        }
+        const initialCategory = async () => {
+            const { data } = await supabase.from('categorias').select('id_categoria').eq('nombre_categoria', capitalizar(presetCat))
+            setFiltro([...filtro, data.map(d => d.id_categoria)])
+
+            document.getElementById(data[0].id_categoria).checked = true
+        }
+        if (presetCat) {
+            initialCategory()
         }
         fetchCategories()
     }, [])
@@ -29,7 +41,7 @@ const Tienda = () => {
         else {
             supabase.from('productos').select().in('id_categoria', filtro).then(response => {
                 setProducts(response.data)
-                console.log(response.data)
+                // console.log(response.data)
                 setTotalPages(Math.ceil(response.data.length / 10))
             })
         }
@@ -84,7 +96,7 @@ const Tienda = () => {
                                         return (
                                             <tr key={id} className='categories'>
                                                 <td>{cat.nombre_categoria}</td>
-                                                <td><input type='checkbox' onChange={CategoryChange} value={cat.id_categoria} /></td>
+                                                <td><input type='checkbox' onChange={CategoryChange} value={cat.id_categoria} id={cat.id_categoria} /></td>
                                             </tr>
                                         )
                                     })}
