@@ -16,6 +16,17 @@ export const getTable = async (table, rowsQnt = '', columns = '') => {
   }
 }
 
+export const getProductById = async (id) => {
+  try {
+    const { data, error } = await supabase.from('productos').select().eq('id_producto', id)
+    if (error) throw error
+    return data[0]
+  } catch (error) {
+    console.error("Error al obtener producto:", error.message)
+    throw error
+  }
+}
+
 export const updateTable = async (table, id, data) => {
   try {
     const { error } = await supabase.from(table).update(data).eq('id_usuario', id)

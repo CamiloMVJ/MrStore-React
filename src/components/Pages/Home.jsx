@@ -9,7 +9,7 @@ const Home = () => {
     const [navSections, setNavSections] = useState([{ title: "Inicio" }, { title: "Tienda" }])
     const [products, setProducts] = useState([])
     useEffect(() => {
-        getTable('productos', 12).then(data => {
+        getTable('productos', 10).then(data => {
             setProducts(data)
         })
     }, [])

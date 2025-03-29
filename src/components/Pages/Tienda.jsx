@@ -50,8 +50,10 @@ const Tienda = () => {
     const CategoryChange = (e) => {
         if (e.target.checked) {
             setFiltro([...filtro, e.target.value])
+            setpage(1)
         } else {
             setFiltro(filtro.filter(f => f !== e.target.value))
+            setpage(1)
         }
     }
 

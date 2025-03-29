@@ -1747,3 +1747,6 @@ display: none;
 }
 
 
+.product-info a{
+  cursor: pointer;
+}
