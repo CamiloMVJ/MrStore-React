@@ -377,6 +377,7 @@ Hero Media Query
 .section {
   padding: 10rem 0 5rem 0;
   overflow: hidden;
+  /* margin-bottom: 100px; */
 }
 
 .cat-center {
@@ -1339,7 +1340,7 @@ th:last-child {
 .product-detail .form input {
   padding: 0.8rem;
   text-align: center;
-  width: 3.5rem;
+  width: 10rem;
   margin-right: 2rem;
 }
 
@@ -1348,6 +1349,7 @@ th:last-child {
   padding: 0.8rem 4rem;
   color: #fff;
   border-radius: 3rem;
+  border: none;
 }
 
 .product-detail h3 {
@@ -1749,4 +1751,8 @@ display: none;
 
 .product-info a{
   cursor: pointer;
+}
+
+.btmSpace{
+  margin-bottom: 100px;
 }

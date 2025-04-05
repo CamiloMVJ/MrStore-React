@@ -8,12 +8,16 @@ const DetalleProd = () => {
     const [productId, setProductId] = useState(useParams().id_prod)
     const [product, setProduct] = useState()
 
+    const Addcart = (e) =>{
+        e.preventDefault()
+    }
+
     useEffect(() => {
         const fetchProduct = async () => {
             await getProductById(productId).then(data => {
-                data = {...data, descripcion: data.descripcion.replace('.','')}
+                data = { ...data, descripcion: data.descripcion.replace('.', '') }
                 setProduct(data)
-                console.log(data)
+                // console.log(data)
             })
         }
         fetchProduct()
@@ -25,11 +29,11 @@ const DetalleProd = () => {
         return (
             <>
                 <Header />
-                <section className="section product-detail">
+                <section className="section product-detail btmSpace">
                     <div className="details container">
                         <div className="left image-container">
                             <div className="main">
-                                <img src={product.imagen} id="zoom" alt="" style={{ visibility: "visible" }} />
+                                <img src={product.imagen} className="my-foto" alt="" style={{ visibility: "visible" }} />
                             </div>
                         </div>
                         <div className="right">
@@ -49,9 +53,9 @@ const DetalleProd = () => {
                                     <span><i className="bx bx-chevron-down"></i></span>
                                 </div>
                             </form>
-                            <form className="form">
-                                <input type="text" placeholder="1" />
-                                <a href="cart.php" className="addCart">Añadir al carrito</a>
+                            <form className="form" onSubmit={Addcart}>
+                                <input type="number" placeholder="" />
+                                <button className="addCart" type="submit">Añadir al carrito</button>
                             </form>
                         </div>
                     </div>
