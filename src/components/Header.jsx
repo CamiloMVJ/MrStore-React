@@ -1,4 +1,5 @@
 import Sections from "./Sections"
+import { Link } from "react-router-dom"
 import { useEffect, useState } from 'react'
 import { supabase } from '../js/supabase'
 
@@ -25,7 +26,7 @@ const Header = () => {
             <div className='top-nav hei'></div>
             <div className="navigation">
                 <div className="nav-center container d-flex">
-                    <a href="/" className="logo"><h1>Mr. Store</h1></a>
+                    <Link to={'/'}><h1>Mr. Store</h1></Link>
                     <Sections list={navSections} />
                 </div>
             </div>

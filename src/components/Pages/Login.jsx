@@ -2,6 +2,7 @@ import Header from "../Header"
 import Footer from "../Footer"
 import { useState } from "react"
 import { LoginValider } from "../../js/supabase"
+import { Link } from "react-router-dom"
 
 const Login = () => {
     if (sessionStorage.getItem('session')) {
@@ -25,12 +26,6 @@ const Login = () => {
             e.preventDefault()
             const data = await LoginValider(e.target.usuario.value, e.target.password.value)
             if (data) {
-                // const session = {
-                //     username: e.target.usuario.value,
-                //     password: e.target.password.value
-                // }
-                // setUser(user)
-                // sessionStorage.setItem('session', JSON.stringify(session))
                 window.location.href = '/'
             }
             else {
@@ -49,7 +44,7 @@ const Login = () => {
                             <h1>Iniciar Sesion</h1>
                             <p>
                                 Ya tienes una cuenta o
-                                <a href="signup.php"> Registrarse</a>
+                                <Link to="/signup"> Registrarse</Link>
                             </p>
 
                             <label htmlFor="usuario" >Usuario</label>
@@ -65,7 +60,7 @@ const Login = () => {
 
                             <p>
                                 Creando una cuenta indica que estas de acuerdo con nuestros
-                                <a href="#">Terminos y condiciones</a>.
+                                <Link to="/terms">Terminos y condiciones</Link>.
                             </p>
 
                             <div className="buttons">
