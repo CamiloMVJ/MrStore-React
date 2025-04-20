@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-const Sections = ({ list }) => {
+const Sections = ({ list, Icons }) => {
     return (
         <>
             <ul className="nav-list d-flex">
@@ -15,12 +15,13 @@ const Sections = ({ list }) => {
                 })}
             </ul>
             <div className="icons d-flex">
-                <Link to="/login" className="icon icon-fix">
-                    <i className="bx bx-user"></i>
-                </Link>
-                <Link to="#" className="icon icon-fix">
-                    <i className="bx bx-search"></i>
-                </Link>
+                {Icons.map((icon, index) =>{
+                    return(
+                        <Link to={icon.link} className="icon icon-fix">
+                            <i className={`bx ${icon.class}`}></i>
+                        </Link>
+                    )
+                })}
             </div>
         </>
     );

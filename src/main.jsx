@@ -12,7 +12,7 @@ import './css/styles.css'
 
 const router = createBrowserRouter([
   { path: '/', element: <Home />, errorElement: <ErrorBoundary /> },
-  { path: '/tienda', element: <Tienda /> },
+  { path: '/tienda', element: <Tienda />, errorElement: <ErrorBoundary /> },
   { path: '/tienda/:categoria', element: <Tienda /> },
   { path: '/DetProd/:id_prod', element: <DetalleProd /> },
   { path: '/login', element: <Login /> },

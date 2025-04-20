@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js"
-import {timeStampz} from "./dateFormat"
+import { timeStampz } from "./dateFormat"
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_KEY
@@ -12,6 +12,18 @@ export const getTable = async (table, rowsQnt = '', columns = '') => {
     return data
   } catch (error) {
     console.error("Error al obtener datos:", error.message)
+    throw error
+  }
+}
+
+export const addProductToCart = async (idUsuario, idProducto, cantidad) => {
+  try {
+    const {data} = await supabase.from('clientes').select('id_cliente, carritos_compras(id_carrito)').eq('id_usuario',idUsuario)
+    const idCarrito = data[0].carritos_compras.id_carrito
+    const {error} = await supabase.from('detcarritos_compras').insert({id_carrito: idCarrito, cantidad: cantidad, id_producto: idProducto})
+    console.log(error)
+  } catch (error) {
+    console.error("Error al agregar producto al carrito:", error.message)
     throw error
   }
 }
@@ -40,10 +52,10 @@ export const updateTable = async (table, id, data) => {
 export const LoginValider = async (user, pass) => {
   try {
     const { data, error } = await supabase.from('usuarios').select().eq('username', user).eq('contraseña', pass)
-    if (data.length){
+    if (data.length) {
       const date = timeStampz()
-      await supabase.from('usuarios').update({ultimo_acceso: date.toString()}).eq('id_usuario', data[0].id_usuario)
-      const {cedula, email,fecha_registro, nombre_completo, ultimo_acceso, ...nuevoObjeto} = data[0]
+      await supabase.from('usuarios').update({ ultimo_acceso: date.toString() }).eq('id_usuario', data[0].id_usuario)
+      const { cedula, email, fecha_registro, nombre_completo, ultimo_acceso, contraseña, username, ...nuevoObjeto } = data[0]
       sessionStorage.setItem('session', JSON.stringify(nuevoObjeto))
       return true
     }

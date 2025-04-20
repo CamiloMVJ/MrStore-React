@@ -1,3 +1,4 @@
+import { addProductToCart } from "../js/supabase"
 const Products = ({ productos }) => {
     const DetalleProducto = (e) => {
         e.preventDefault()
@@ -5,6 +6,7 @@ const Products = ({ productos }) => {
     }
     const AddCart = (e) => {
         e.preventDefault()
+        addProductToCart('4',4,1)
     }
     return (
         <div className="product-center">
