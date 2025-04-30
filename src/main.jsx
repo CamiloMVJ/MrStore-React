@@ -8,6 +8,7 @@ import Perfil from "./components/Pages/Perfil.jsx";
 import Tienda from "./components/Pages/Tienda.jsx";
 import DetalleProd from "./components/Pages/DetalleProd.jsx";
 import ErrorBoundary from './components/ErrorBoundry.jsx';
+import SignUpMeth from './components/Pages/SignUp.jsx';
 import './css/styles.css'
 
 const router = createBrowserRouter([
@@ -17,6 +18,7 @@ const router = createBrowserRouter([
   { path: '/DetProd/:id_prod', element: <DetalleProd /> },
   { path: '/login', element: <Login /> },
   { path: '/perfil', element: <Perfil /> },
+  {path: '/signup', element: <SignUpMeth />},
 ])
 
 createRoot(document.getElementById('root')).render(

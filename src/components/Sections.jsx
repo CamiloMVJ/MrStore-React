@@ -17,7 +17,7 @@ const Sections = ({ list, Icons }) => {
             <div className="icons d-flex">
                 {Icons.map((icon, index) =>{
                     return(
-                        <Link to={icon.link} className="icon icon-fix">
+                        <Link to={icon.link} className="icon icon-fix" key={index}>
                             <i className={`bx ${icon.class}`}></i>
                         </Link>
                     )

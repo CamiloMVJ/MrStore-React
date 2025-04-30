@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js"
 import { timeStampz } from "./dateFormat"
+import { timeStamp } from "./dateFormat"
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_KEY
@@ -65,27 +66,103 @@ export const LoginValider = async (user, pass) => {
   }
 }
 
-export const LoginValiderSupabase = async (email, pass) => {
+const EmailVerifier = async (email) => {
   try {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: pass
-    })
-    if (data.user.aud === 'authenticated') return true
+    if(email === '') return false
+    if(email === null) return false
+    if(email === undefined) return false
+    const { data, error } = await supabase.from('usuarios').select().eq('email', email)
+    if (error) throw error
+    return data.length === 0
   } catch (error) {
-    console.error("No autenticado", error.message)
-    return false
+    console.error("Error al verificar email:", error.message)
+    throw error
   }
 }
 
-export const SingInSupabase = async (email, pass) => {
+const UserVerifier = async (user) => {
   try {
-    const { data, error } = await supabase.auth.signUp({
+    if(user === '') return false
+    if(user === null) return false
+    if(user === undefined) return false
+    const { data, error } = await supabase.from('usuarios').select().eq('username', user)
+    if (error) throw error
+    return data.length === 0
+  } catch (error) {
+    console.error("Error al verificar usuario:", error.message)
+    throw error
+  }
+}
+
+export const SignUpMeth = async (name, dni, email, username, pass, address) => {
+  try {
+    var emailVal = await EmailVerifier(email)
+    var userVal = await UserVerifier(username)
+    if (!userVal) {
+      console.error("El usuario ya existe")
+      return {
+        message: "El usuario ya existe",
+        type: "error"
+      }
+    }
+    if (!emailVal) {
+      console.error("El email ya existe")
+      return {
+        message: "El email ya existe",
+        type: "error"
+      }
+    }
+    
+    const { data, error } = await supabase.from('usuarios').insert({
+      nombre_completo: name,
+      cedula: dni,
       email: email,
-      password: pass
+      username: username,
+      contraseña: pass,
+      fecha_registro: timeStamp(),
+      ultimo_acceso: timeStampz()
+    }).select()
+
+    const idCliente = CreateClient(data[0].id_usuario, address).then((idCliente) => {
+      CreateCart(idCliente)
     })
+    
+    if (error) throw error
+    return {
+      message: "Usuario registrado correctamente",
+      type: "success"
+    }
   } catch (error) {
     console.error("Error al registrar", error.message)
+    throw error
+  }
+}
+
+const CreateClient = async (idUsuario, address) => {
+  try {
+    const { data, error } = await supabase.from('clientes').insert({
+      id_usuario: idUsuario,
+      direccion: address
+    }).select()
+    if (error) throw error
+    return data[0].id_cliente
+  } catch (error) {
+    console.error("Error al crear cliente:", error.message)
+    throw error
+  }
+}
+
+const CreateCart = async (idCliente) => {
+  try {
+    const { data, error } = await supabase.from('carritos_compras').insert({
+      id_cliente: idCliente,
+      fecha_modificacion: timeStamp(),
+      total: 0
+    }).select()
+    if (error) throw error
+    return data
+  } catch (error) {
+    console.error("Error al crear carrito:", error.message)
     throw error
   }
 }

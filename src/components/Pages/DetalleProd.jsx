@@ -54,7 +54,7 @@ const DetalleProd = () => {
                                 </div>
                             </form>
                             <form className="form" onSubmit={Addcart}>
-                                <input type="number" placeholder="" />
+                                <input type="number" placeholder="" defaultValue={1}/>
                                 <button className="addCart" type="submit">Añadir al carrito</button>
                             </form>
                         </div>

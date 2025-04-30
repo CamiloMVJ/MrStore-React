@@ -6,10 +6,10 @@
   --purple: #c496f9;
   --white: #fff;
   --black: #222;
-  --green: #77dd77;
   --grey1: #f0f0f0;
   --grey2: #e9d7d3;
   --red: #e16554;
+  --green: #54e165;
 }
 
 /* Basic Reset */
@@ -1350,6 +1350,7 @@ th:last-child {
   color: #fff;
   border-radius: 3rem;
   border: none;
+  cursor: pointer;
 }
 
 .product-detail h3 {
@@ -1755,4 +1756,23 @@ display: none;
 
 .btmSpace{
   margin-bottom: 100px;
+}
+
+.notification{
+  position: absolute;
+  border-radius: 3px;
+  padding: 5px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  position: inherit;
+  text-align: center;
+  color: white;
+}
+
+.error {
+  background: var(--red) !important;
+}
+
+.success {
+  background: var(--green) !important;
 }

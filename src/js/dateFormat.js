@@ -1,10 +1,12 @@
-export const  timeStampz = () => {
+export const timeStampz = () => {
   const date = new Date()
   const offset = -date.getTimezoneOffset() // En minutos
   const sign = offset >= 0 ? '+' : '-'
   const hours = String(Math.floor(Math.abs(offset) / 60)).padStart(2, '0')
   const minutes = String(Math.abs(offset) % 60).padStart(2, '0')
+  return `${date.toISOString()}${sign}${hours}:${minutes}`
+}
 
-  return `${date.toISOString().replace('Z', '')} ${sign}${hours}:${minutes}`
-  }  
-  
+export const timeStamp = () => {
+  return new Date().toISOString().replace('Z', '')
+}

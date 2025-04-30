@@ -6,7 +6,7 @@ const Products = ({ productos }) => {
     }
     const AddCart = (e) => {
         e.preventDefault()
-        addProductToCart('4',4,1)
+        addProductToCart(JSON.parse(sessionStorage.getItem('session')).id_usuario,e.target.id.value,e.target.cantidad.value)
     }
     return (
         <div className="product-center">
