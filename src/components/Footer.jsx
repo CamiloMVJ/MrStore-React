@@ -5,7 +5,7 @@ const Footer = () => {
                 <div className="row">
                     <div className="col">
                         <h2>SOPORTE DE CLIENTE</h2>
-                        <p>Amamos atender a nuestros clientes con el mejor servicio por eso si
+                        <p>Amamos atender a nuestros clientes con el mejor servicio por eso si 
                             tienes alguna duda no dudes en contactarnos
                         </p>
                         <a href="" className="btn btn-1">Contacto</a>
