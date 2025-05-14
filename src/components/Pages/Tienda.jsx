@@ -14,6 +14,7 @@ const Tienda = () => {
     const [presetCat, setPresetCats] = useState(useParams().categoria)
     const capitalizar = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 
+    
     useEffect(() => {
         const fetchCategories = async () => {
             const { data } = await supabase.from('categorias').select('nombre_categoria, id_categoria')
