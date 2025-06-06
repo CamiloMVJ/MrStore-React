@@ -1,12 +1,96 @@
 import { createClient } from "@supabase/supabase-js"
-import { timeStampz } from "./dateFormat"
-import { timeStamp } from "./dateFormat"
+import { timeStampz } from "./dateFormat.js"
+import { timeStamp } from "./dateFormat.js"
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_KEY
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-export const getTable = async (table, rowsQnt = '', columns = '') => {
+export const signInWithEmail = async (email, pass) => {
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: pass,
+    })
+    if (error) {
+      console.error("Error al iniciar sesión:", error.message)
+      console.log(error)
+      return false
+    } else {
+      console.log("Sesión iniciada correctamente:", data)
+
+      const user = await supabase.schema('mrstore2').from('usuarios').select('id_usuario').eq('uuid', data.user.id)
+      sessionStorage.setItem('session', JSON.stringify(user.data[0]))
+      sessionStorage.setItem('NavIcons', JSON.stringify([{ link: '/login', class: 'bx-user' }, { link: '#', class: 'bx-search' }, { link: '/carrito', class: 'bx-cart' }]))
+
+      const operador = await supabase.schema('mrstore2').from('operadores').select().eq('id_usuario', user.data[0].id_usuario).limit(1)
+      if (operador.data.length) {
+        sessionStorage.setItem('NavSections', JSON.stringify([{ title: "Inicio" }, { title: "Tienda" }, { title: "Pedidos" }, { title: "Inventario" }]))
+      }
+      else {
+        sessionStorage.setItem('NavSections', JSON.stringify([{ title: "Inicio" }, { title: "Tienda" }, { title: "Pedidos" }]))
+      }
+      return true
+    }
+  }
+  catch (error) {
+    console.error(error)
+    return false
+  }
+
+}
+
+export const signUpNewUser = async (email, pass, name, dni, username) => {
+  const { data, error } = await supabase.auth.signUp({
+    email: email,
+    password: pass,
+    options: {
+      emailRedirectTo: 'http://localhost:5173/login',
+    },
+  })
+  if (error) {
+    console.error("Error al registrar usuario:", error.message)
+    return {
+      message: "Error al registrar usuario",
+      type: "error"
+    }
+  }
+  else {
+    console.log("Usuario registrado correctamente:", data)
+    SignUpProc(name, dni, email, username, pass, data.user.id)
+    return {
+      message: "Usuario registrado correctamente",
+      type: "success"
+    }
+  }
+}
+
+
+export const SignUpProc = async (name, dni, email, username, pass, uuid) => {
+  try {
+    const { data, error } = await supabase.rpc('insertarusuario', {
+      p_cedula: dni,
+      p_contraseña: pass,
+      p_email: email,
+      p_fecha_registro: timeStamp(),
+      p_nombre_completo: name,
+      p_ultimo_acceso: timeStampz(),
+      p_username: username,
+      p_useruuid: uuid
+    })
+    if (error) throw error
+    return {
+      message: "Usuario registrado correctamente",
+      type: "success"
+    }
+  }
+  catch (error) {
+    console.error("Error al registrar:", error.message)
+    throw error
+  }
+}
+
+export const getTable = async (table, rowsQnt = 'all', columns = '') => {
   try {
     const { data, error } = await supabase.from(table).select(columns).limit(rowsQnt)
     if (error) throw error
@@ -19,9 +103,9 @@ export const getTable = async (table, rowsQnt = '', columns = '') => {
 
 export const addProductToCart = async (idUsuario, idProducto, cantidad) => {
   try {
-    const {data} = await supabase.from('clientes').select('id_cliente, carritos_compras(id_carrito)').eq('id_usuario',idUsuario)
+    const { data } = await supabase.from('clientes').select('id_cliente, carritos_compras(id_carrito)').eq('id_usuario', idUsuario)
     const idCarrito = data[0].carritos_compras.id_carrito
-    const {error} = await supabase.from('detcarritos_compras').insert({id_carrito: idCarrito, cantidad: cantidad, id_producto: idProducto})
+    const { error } = await supabase.from('detcarritos_compras').insert({ id_carrito: idCarrito, cantidad: cantidad, id_producto: idProducto })
     console.log(error)
   } catch (error) {
     console.error("Error al agregar producto al carrito:", error.message)
@@ -68,9 +152,9 @@ export const LoginValider = async (user, pass) => {
 
 const EmailVerifier = async (email) => {
   try {
-    if(email === '') return false
-    if(email === null) return false
-    if(email === undefined) return false
+    if (email === '') return false
+    if (email === null) return false
+    if (email === undefined) return false
     const { data, error } = await supabase.from('usuarios').select().eq('email', email)
     if (error) throw error
     return data.length === 0
@@ -82,9 +166,9 @@ const EmailVerifier = async (email) => {
 
 const UserVerifier = async (user) => {
   try {
-    if(user === '') return false
-    if(user === null) return false
-    if(user === undefined) return false
+    if (user === '') return false
+    if (user === null) return false
+    if (user === undefined) return false
     const { data, error } = await supabase.from('usuarios').select().eq('username', user)
     if (error) throw error
     return data.length === 0
@@ -112,7 +196,7 @@ export const SignUpMeth = async (name, dni, email, username, pass, address) => {
         type: "error"
       }
     }
-    
+
     const { data, error } = await supabase.from('usuarios').insert({
       nombre_completo: name,
       cedula: dni,
@@ -126,7 +210,7 @@ export const SignUpMeth = async (name, dni, email, username, pass, address) => {
     const idCliente = CreateClient(data[0].id_usuario, address).then((idCliente) => {
       CreateCart(idCliente)
     })
-    
+
     if (error) throw error
     return {
       message: "Usuario registrado correctamente",
@@ -166,3 +250,4 @@ const CreateCart = async (idCliente) => {
     throw error
   }
 }
+

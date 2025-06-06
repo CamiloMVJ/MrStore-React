@@ -1,7 +1,7 @@
 import Header from "../Header"
 import Footer from "../Footer"
 import { useState } from "react"
-import { LoginValider } from "../../js/supabase"
+import { signInWithEmail } from "../../js/supabase"
 import { Link } from "react-router-dom"
 
 const Login = () => {
@@ -24,15 +24,14 @@ const Login = () => {
 
         const LoginIn = async (e) => {
             e.preventDefault()
-            const data = await LoginValider(e.target.usuario.value, e.target.password.value)
-            if (data) {
+            const res = await signInWithEmail(e.target.correo.value, e.target.password.value)
+            console.log(res)
+            if (res) {
                 window.location.href = '/'
             }
             else {
-                alert("Usuario o contraseña incorrectos")
-                window.focus()
+                alert("Error al iniciar sesión")
             }
-
         }
 
         return (
@@ -47,11 +46,11 @@ const Login = () => {
                                 <Link to="/signup"> Registrarse</Link>
                             </p>
 
-                            <label htmlFor="usuario" >Usuario</label>
-                            <input type="text" placeholder="Ingrese usuario" name="usuario" id="usuario" required />
+                            <label htmlFor="usuario" >Correo electronico</label>
+                            <input type="text" placeholder="Ingrese usuario" name="correo" id="correo" required />
 
                             <label htmlFor="password">Contraseña</label>
-                            <input type="password" placeholder="Ingrese contraseña" name="psw" id="password" required />
+                            <input type="password" placeholder="Ingrese contraseña" name="password" id="password" required />
 
                             <label>
                                 <input type="checkbox" defaultChecked name="remember" id="rememberme" style={{ marginBottom: "15px", marginRight: "5px" }} />
