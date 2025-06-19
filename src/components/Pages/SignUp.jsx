@@ -20,13 +20,18 @@ const SignUp = () => {
 
     const SignUpMet = async (e) => {
         e.preventDefault()
-        signUpNewUser(e.target.correo.value, e.target.psw.value, e.target.nombre.value, e.target.cedula.value, e.target.usuario.value, e.target.direccion.value).then(res =>{
-            setError(res.message)
-            setType(res.type)
-            if(res.type === 'success'){
-                window.location.href = '/'
-            }
-        })
+        const {message, type} = await signUpNewUser(e.target.correo.value, e.target.psw.value, e.target.nombre.value, e.target.cedula.value, e.target.usuario.value, e.target.direccion.value)
+        setError(message)
+        setType(type)
+        if (type === 'success') window.location.href = '/'
+        
+        // await signUpNewUser(e.target.correo.value, e.target.psw.value, e.target.nombre.value, e.target.cedula.value, e.target.usuario.value, e.target.direccion.value).then(res =>{
+        //     setError(res.message)
+        //     setType(res.type)
+        //     if(res.type === 'success'){
+        //         window.location.href = '/'
+        //     }
+        // })
     }
     return (
         <>

@@ -17,13 +17,12 @@ const Tienda = () => {
 
     useEffect(() => {
         const fetchCategories = async () => {
-            const { data } = await supabase.from('categorias').select('nombre_categoria, id_categoria')
+            const data  = await getTable('categorias')
             setCategories(data)
         }
         const initialCategory = async () => {
-            const { data } = await supabase.from('categorias').select('id_categoria').eq('nombre_categoria', capitalizar(presetCat))
-            setFiltro([...filtro, data.map(d => d.id_categoria)])
-
+            const { data } = await supabase.schema('mrstore2').from('categorias').select('id_categoria').eq('nombre_categoria', capitalizar(presetCat))
+            setFiltro([...filtro, data[0].id_categoria.toString()])
             document.getElementById(data[0].id_categoria).checked = true
         }
         if (presetCat) {
@@ -40,9 +39,8 @@ const Tienda = () => {
             })
         }
         else {
-            supabase.from('productos').select().in('id_categoria', filtro).then(response => {
+            supabase.schema('mrstore2').from('productos').select().in('id_categoria', filtro).then(response => {
                 setProducts(response.data)
-                // console.log(response.data)
                 setTotalPages(Math.ceil(response.data.length / 10))
             })
         }
@@ -107,7 +105,6 @@ const Tienda = () => {
                             </table>
                         </div>
                     </div>
-
 
                     <Products productos={products.slice((page - 1) * 10, page * 10)} />
 

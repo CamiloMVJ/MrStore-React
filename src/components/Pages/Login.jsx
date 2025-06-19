@@ -47,7 +47,7 @@ const Login = () => {
                             </p>
 
                             <label htmlFor="usuario" >Correo electronico</label>
-                            <input type="text" placeholder="Ingrese usuario" name="correo" id="correo" required />
+                            <input type="text" placeholder="Ingrese correo" name="correo" id="correo" required />
 
                             <label htmlFor="password">Contraseña</label>
                             <input type="password" placeholder="Ingrese contraseña" name="password" id="password" required />

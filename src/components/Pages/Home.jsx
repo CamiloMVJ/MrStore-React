@@ -11,7 +11,6 @@ const Home = () => {
     useEffect(() => {
         getTable('productos', 10).then(data => {
             setProducts(data)
-            console.log(JSON.parse(sessionStorage.getItem('session')))
         })
     }, [])
 

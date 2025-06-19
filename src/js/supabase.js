@@ -12,14 +12,15 @@ export const signInWithEmail = async (email, pass) => {
       email: email,
       password: pass,
     })
+    console.log(error)
     if (error) {
       console.error("Error al iniciar sesión:", error.message)
       console.log(error)
       return false
-    } else {
+    } else { 
       console.log("Sesión iniciada correctamente:", data)
-
       const user = await supabase.schema('mrstore2').from('usuarios').select('id_usuario').eq('uuid', data.user.id)
+      console.log(user)
       sessionStorage.setItem('session', JSON.stringify(user.data[0]))
       sessionStorage.setItem('NavIcons', JSON.stringify([{ link: '/login', class: 'bx-user' }, { link: '#', class: 'bx-search' }, { link: '/carrito', class: 'bx-cart' }]))
 
@@ -48,6 +49,8 @@ export const signUpNewUser = async (email, pass, name, dni, username) => {
       emailRedirectTo: 'http://localhost:5173/login',
     },
   })
+  console.log(data)
+  console.log(error)
   if (error) {
     console.error("Error al registrar usuario:", error.message)
     return {
@@ -68,7 +71,7 @@ export const signUpNewUser = async (email, pass, name, dni, username) => {
 
 export const SignUpProc = async (name, dni, email, username, pass, uuid) => {
   try {
-    const { data, error } = await supabase.rpc('insertarusuario', {
+    const { data, error } = await supabase.schema('mrstore2').rpc('insertarusuario', {
       p_cedula: dni,
       p_contraseña: pass,
       p_email: email,
@@ -90,9 +93,9 @@ export const SignUpProc = async (name, dni, email, username, pass, uuid) => {
   }
 }
 
-export const getTable = async (table, rowsQnt = 'all', columns = '') => {
+export const getTable = async (table, rowsQnt = '', columns = '') => {
   try {
-    const { data, error } = await supabase.from(table).select(columns).limit(rowsQnt)
+    const { data, error } = await supabase.schema('mrstore2').from(table).select(columns).limit(rowsQnt)
     if (error) throw error
     return data
   } catch (error) {
@@ -103,9 +106,9 @@ export const getTable = async (table, rowsQnt = 'all', columns = '') => {
 
 export const addProductToCart = async (idUsuario, idProducto, cantidad) => {
   try {
-    const { data } = await supabase.from('clientes').select('id_cliente, carritos_compras(id_carrito)').eq('id_usuario', idUsuario)
+    const { data } = await supabase.schema('mrstore2').from('clientes').select('id_cliente, carritos_compras(id_carrito)').eq('id_usuario', idUsuario)
     const idCarrito = data[0].carritos_compras.id_carrito
-    const { error } = await supabase.from('detcarritos_compras').insert({ id_carrito: idCarrito, cantidad: cantidad, id_producto: idProducto })
+    const { error } = await supabase.schema('mrstore2').from('detcarritos_compras').insert({ id_carrito: idCarrito, cantidad: cantidad, id_producto: idProducto })
     console.log(error)
   } catch (error) {
     console.error("Error al agregar producto al carrito:", error.message)
@@ -114,19 +117,30 @@ export const addProductToCart = async (idUsuario, idProducto, cantidad) => {
 }
 
 export const getProductById = async (id) => {
-  try {
-    const { data, error } = await supabase.from('productos').select().eq('id_producto', id)
-    if (error) throw error
-    return data[0]
-  } catch (error) {
+  try{
+    const { data, error } = await supabase.schema('mrstore2').rpc('detproducto',{
+      ID : id
+    })
+    console.log(error)
+    console.log(data)
+  }
+  catch (error) {
     console.error("Error al obtener producto:", error.message)
     throw error
   }
+  // try {
+  //   const { data, error } = await supabase.schema('mrstore2').from('productos').select().eq('id_producto', id)
+  //   if (error) throw error
+  //   return data[0]
+  // } catch (error) {
+  //   console.error("Error al obtener producto:", error.message)
+  //   throw error
+  // }
 }
 
 export const updateTable = async (table, id, data) => {
   try {
-    const { error } = await supabase.from(table).update(data).eq('id_usuario', id)
+    const { error } = await supabase.schema('mrstore2').from(table).update(data).eq('id_usuario', id)
     if (error) throw error
   } catch (e) {
     console.error("Error al actualizar datos:", e.message)
@@ -136,10 +150,10 @@ export const updateTable = async (table, id, data) => {
 
 export const LoginValider = async (user, pass) => {
   try {
-    const { data, error } = await supabase.from('usuarios').select().eq('username', user).eq('contraseña', pass)
+    const { data, error } = await supabase.schema('mrstore2').from('usuarios').select().eq('username', user).eq('contraseña', pass)
     if (data.length) {
       const date = timeStampz()
-      await supabase.from('usuarios').update({ ultimo_acceso: date.toString() }).eq('id_usuario', data[0].id_usuario)
+      await supabase.schema('mrstore2').from('usuarios').update({ ultimo_acceso: date.toString() }).eq('id_usuario', data[0].id_usuario)
       const { cedula, email, fecha_registro, nombre_completo, ultimo_acceso, contraseña, username, ...nuevoObjeto } = data[0]
       sessionStorage.setItem('session', JSON.stringify(nuevoObjeto))
       return true
@@ -155,7 +169,7 @@ const EmailVerifier = async (email) => {
     if (email === '') return false
     if (email === null) return false
     if (email === undefined) return false
-    const { data, error } = await supabase.from('usuarios').select().eq('email', email)
+    const { data, error } = await supabase.schema('mrstore2').from('usuarios').select().eq('email', email)
     if (error) throw error
     return data.length === 0
   } catch (error) {
@@ -169,7 +183,7 @@ const UserVerifier = async (user) => {
     if (user === '') return false
     if (user === null) return false
     if (user === undefined) return false
-    const { data, error } = await supabase.from('usuarios').select().eq('username', user)
+    const { data, error } = await supabase.schema('mrstore2').from('usuarios').select().eq('username', user)
     if (error) throw error
     return data.length === 0
   } catch (error) {
@@ -197,7 +211,7 @@ export const SignUpMeth = async (name, dni, email, username, pass, address) => {
       }
     }
 
-    const { data, error } = await supabase.from('usuarios').insert({
+    const { data, error } = await supabase.schema('mrstore2').from('usuarios').insert({
       nombre_completo: name,
       cedula: dni,
       email: email,
@@ -224,7 +238,7 @@ export const SignUpMeth = async (name, dni, email, username, pass, address) => {
 
 const CreateClient = async (idUsuario, address) => {
   try {
-    const { data, error } = await supabase.from('clientes').insert({
+    const { data, error } = await supabase.schema('mrstore2').from('clientes').insert({
       id_usuario: idUsuario,
       direccion: address
     }).select()
@@ -238,7 +252,7 @@ const CreateClient = async (idUsuario, address) => {
 
 const CreateCart = async (idCliente) => {
   try {
-    const { data, error } = await supabase.from('carritos_compras').insert({
+    const { data, error } = await supabase.schema('mrstore2').from('carritos_compras').insert({
       id_cliente: idCliente,
       fecha_modificacion: timeStamp(),
       total: 0
@@ -250,4 +264,3 @@ const CreateCart = async (idCliente) => {
     throw error
   }
 }
-

@@ -29,7 +29,11 @@ const Perfil = () => {
 
     const signOut = (e) => {
         e.preventDefault()
+        localStorage.clear()
+        sessionStorage.removeItem('NavIcons')
+        sessionStorage.removeItem('NavSections')
         sessionStorage.removeItem('session')
+        supabase.auth.signOut()
         window.location.href = '/'
     }
 
