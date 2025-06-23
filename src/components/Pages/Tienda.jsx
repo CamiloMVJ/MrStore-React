@@ -1,6 +1,6 @@
 import Header from '../Header'
 import Footer from '../Footer'
-import Products from '../Products'
+import ProductsCatalog from '../ProductsCatalog'
 import { useEffect, useState } from 'react'
 import { getTable, supabase } from '../../js/supabase'
 import { useParams } from 'react-router-dom'
@@ -106,7 +106,7 @@ const Tienda = () => {
                         </div>
                     </div>
 
-                    <Products productos={products.slice((page - 1) * 10, page * 10)} />
+                    <ProductsCatalog productos={products.slice((page - 1) * 10, page * 10)} />
 
 
                 </div>

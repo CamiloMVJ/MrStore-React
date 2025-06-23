@@ -1,5 +1,5 @@
 import { addProductToCart } from "../js/supabase"
-const Products = ({ productos }) => {
+const ProductsCatalog = ({ productos }) => {
     const DetalleProducto = (e) => {
         e.preventDefault()
         window.location.href = '/DetProd/' + e.target.id.value
@@ -46,4 +46,4 @@ const Products = ({ productos }) => {
     )
 }
 
-export default Products
+export default ProductsCatalog

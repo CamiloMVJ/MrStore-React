@@ -27,7 +27,7 @@ const Login = () => {
             const res = await signInWithEmail(e.target.correo.value, e.target.password.value)
             console.log(res)
             if (res) {
-                window.location.href = '/'
+                // window.location.href = '/'
             }
             else {
                 alert("Error al iniciar sesión")

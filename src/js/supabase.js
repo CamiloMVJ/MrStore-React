@@ -19,10 +19,14 @@ export const signInWithEmail = async (email, pass) => {
       return false
     } else { 
       console.log("Sesión iniciada correctamente:", data)
-      const user = await supabase.schema('mrstore2').from('usuarios').select('id_usuario').eq('uuid', data.user.id)
-      console.log(user)
-      sessionStorage.setItem('session', JSON.stringify(user.data[0]))
-      sessionStorage.setItem('NavIcons', JSON.stringify([{ link: '/login', class: 'bx-user' }, { link: '#', class: 'bx-search' }, { link: '/carrito', class: 'bx-cart' }]))
+      const user = await supabase.schema('mrstore2').from('usuarios').select(`id_usuario, clientes(id_cliente)`).eq('uuid', data.user.id)
+      const carrito = await supabase.schema('mrstore2').from('carritocompras').select('id_carritocompras').eq('id_cliente', user.data[0].clientes[0].id_cliente)
+      console.log(user.data[0].clientes[0].id_cliente)
+      console.log(carrito)
+      let userdata = {id_usuario: user.data[0].id_usuario, id_cliente: user.data[0].clientes[0].id_cliente, id_carrito: carrito.data[0].id_carritocompras}
+      console.log(userdata)
+      sessionStorage.setItem('session', JSON.stringify(userdata))
+      sessionStorage.setItem('NavIcons', JSON.stringify([{ link: '/login', class: 'bx-user' }, { link: '#', class: 'bx-search' }, { link: '/cart', class: 'bx-cart' }]))
 
       const operador = await supabase.schema('mrstore2').from('operadores').select().eq('id_usuario', user.data[0].id_usuario).limit(1)
       if (operador.data.length) {
