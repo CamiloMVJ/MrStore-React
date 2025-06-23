@@ -12,7 +12,8 @@ const Perfil = () => {
     })
     useEffect(() => {
         const fetchPerfil = async () => {
-            await supabase.from('usuarios').select().eq('id_usuario', session.id_usuario).then(data => {
+            supabase.schema('mrstore2').from('usuarios').select().eq('id_usuario', session.id_usuario).then(data => {
+                console.log(session.id_usuario)
                 setPerfil(data.data[0])
             })
         }
@@ -28,7 +29,11 @@ const Perfil = () => {
 
     const signOut = (e) => {
         e.preventDefault()
+        localStorage.clear()
+        sessionStorage.removeItem('NavIcons')
+        sessionStorage.removeItem('NavSections')
         sessionStorage.removeItem('session')
+        supabase.auth.signOut()
         window.location.href = '/'
     }
 
@@ -55,7 +60,7 @@ const Perfil = () => {
                             <label htmlFor="username">Usuario</label>
                             <input type="text" placeholder="Ingrese su Usuario" name="username" id='username' defaultValue={perfil.username} required />
 
-                            <label htmlFor="psw">Contraseña</label>
+                            {/* <label htmlFor="psw">Contraseña</label>
                             <div className="pass-container">
                                 <input type={visible ? "text" : "password"} placeholder="Ingrese la contraseña" name="contraseña" id='psw' className="pass" defaultValue={perfil.contraseña} required />
                                 <button
@@ -66,7 +71,7 @@ const Perfil = () => {
                                         setVisible(!visible)
                                     }}
                                 >Mostrar</button>
-                            </div>
+                            </div> */}
 
                             <button type="submit">Actualizar perfil</button>
                             <br />
