@@ -8,19 +8,10 @@ const Header = () => {
     const [navIcons, setNavIcons] = useState([{link: '/login', class: 'bx-user'}, {link: '#', class: 'bx-search'}])
     useEffect(() => {
         const fetchNavs = async () => {
-            if (sessionStorage.getItem('session')) {
-                const session = JSON.parse(sessionStorage.getItem('session'))
-                const nav = await supabase.from('administradores').select().eq('id_usuario', session.id_usuario).limit(1)
-                if (nav.data.length) {
-                    setNavSections([{ title: "Inicio" }, { title: "Tienda" }, { title: "Pedidos" }, { title: "Inventario" }])
-                    setNavIcons([{link: '/login', class: 'bx-user'}, {link: '#', class: 'bx-search'}, {link: '/carrito', class: 'bx-cart'}])
-                }
-                else {
-                    setNavSections([{ title: "Inicio" }, { title: "Tienda" }, { title: "Pedidos" }])
-                    setNavIcons([{link: '/login', class: 'bx-user'}, {link: '#', class: 'bx-search'}, {link: '/carrito', class: 'bx-cart'}])
-                }
+            if (sessionStorage.getItem('NavIcons') && sessionStorage.getItem('NavSections')){
+                setNavIcons(JSON.parse(sessionStorage.getItem('NavIcons')))
+                setNavSections(JSON.parse(sessionStorage.getItem('NavSections')))
             }
-
         }
         fetchNavs()
     }, [])

@@ -1191,8 +1191,8 @@ table {
 }
 
 .cart-info {
+  width: 100%;
   display: flex;
-  flex-wrap: wrap;
 }
 
 th {
@@ -1775,4 +1775,40 @@ display: none;
 
 .success {
   background: var(--green) !important;
+}
+
+.cart-table{
+  width: 80%;
+}
+
+.cart-total{
+  width: 20%;
+  vertical-align: top;
+  /* display: flex; */
+  /* justify-content: center; */
+}
+
+.cart-img{
+  width: 150px;
+  height: auto;
+  object-fit: cover;  
+}
+
+.cart-text{
+  width: 300px;
+  display: grid;
+}
+
+.txt-center{
+  text-align: center;
+}
+
+.form-select{
+  border: var(--black) 2px solid;
+  border-radius: 3px;
+  padding: 1px;
+  margin-left: 5px;
+  background: var(--purple);
+  color: white;
+  width: 100px;
 }

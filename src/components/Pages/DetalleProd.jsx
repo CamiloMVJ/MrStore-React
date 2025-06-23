@@ -14,9 +14,9 @@ const DetalleProd = () => {
 
     useEffect(() => {
         const fetchProduct = async () => {
-            await getProductById(productId).then(data => {
-                data = { ...data, descripcion: data.descripcion.replace('.', '') }
-                setProduct(data)
+            getProductById(productId).then(data => {
+                // data = { ...data, descripcion: data.descripcion.replace('.', '') }
+                // setProduct(data)
                 // console.log(data)
             })
         }
