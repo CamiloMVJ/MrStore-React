@@ -1,7 +1,7 @@
 import Header from "../Header"
 import Footer from "../Footer"
 import { Link } from "react-router-dom"
-import { SignUpMeth } from "../../js/supabase"
+import { SignUpProc, signUpNewUser } from "../../js/supabase"
 import { useState, useEffect } from "react"
 import Notification from "../Notification"
 
@@ -20,13 +20,19 @@ const SignUp = () => {
 
     const SignUpMet = async (e) => {
         e.preventDefault()
-        SignUpMeth(e.target.nombre.value, e.target.cedula.value, e.target.correo.value, e.target.usuario.value, e.target.psw.value, e.target.direccion.value).then(res =>{
-            setError(res.message)
-            setType(res.type)
-        })
-
+        const {message, type} = await signUpNewUser(e.target.correo.value, e.target.psw.value, e.target.nombre.value, e.target.cedula.value, e.target.usuario.value, e.target.direccion.value)
+        setError(message)
+        setType(type)
+        if (type === 'success') window.location.href = '/'
+        
+        // await signUpNewUser(e.target.correo.value, e.target.psw.value, e.target.nombre.value, e.target.cedula.value, e.target.usuario.value, e.target.direccion.value).then(res =>{
+        //     setError(res.message)
+        //     setType(res.type)
+        //     if(res.type === 'success'){
+        //         window.location.href = '/'
+        //     }
+        // })
     }
-
     return (
         <>
 

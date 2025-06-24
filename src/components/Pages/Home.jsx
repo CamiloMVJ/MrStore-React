@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { getTable } from "../../js/supabase"
 import Products from "../Products";
 import Footer from "../Footer"; 
+import ProductsCatalog from "../ProductsCatalog";
+import Footer from "../Footer";
 
 const Home = () => {
     const [navSections, setNavSections] = useState([{ title: "Inicio" }, { title: "Tienda" }])
@@ -68,7 +70,7 @@ const Home = () => {
                     <h1>NUESTROS PRODUCTOS</h1>
                     <p>Calidad a tus manos</p>
                 </div>
-                <Products productos={products} />
+                <ProductsCatalog productos={products} />
             </section>
             <Footer />
         </>
