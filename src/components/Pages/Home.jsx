@@ -9,6 +9,10 @@ const Home = () => {
     const [navSections, setNavSections] = useState([{ title: "Inicio" }, { title: "Tienda" }])
     const [products, setProducts] = useState([])
     useEffect(() => {
+        if(!sessionStorage.getItem('session')) {
+            localStorage.clear()
+        }
+
         getTable('productos', 10).then(data => {
             setProducts(data)
         })

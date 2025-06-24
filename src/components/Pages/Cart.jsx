@@ -12,12 +12,19 @@ const Cart = () => {
         const fetchCarrito = async () => {
             supabase.schema('mrstore2').from('detcarritocompras').select(`id_carritocompras, cantidad, subtotal, 
                 detproductos(
+                            precio_producto,
                             proveedores(id_proveedor, nombre_proveedor),
                             colores(id_color, color),
                             tallas(id_talla, talla), 
-                            productos(id_producto, nombre_producto, descripcion, precio_producto, imagen_url))`).then(data => {
+                            productos(id_producto, nombre_producto, descripcion, imagen_url))`).then(data => {
                 setCartItems(data.data)
                 setLoading(false)
+
+            })
+            supabase.schema('mrstore2').from('carritocompras').select(`total`).then(data => {
+                if (data.data.length > 0) {
+                    setTotalPrice(data.data[0].total)
+                }
             })
         }
         fetchCarrito()
@@ -40,7 +47,6 @@ const Cart = () => {
             <Header />
             <br />
             <h1 className='title'>Carrito de compras</h1>
-            {cartItems.length > 0 ? null : (<p className='title'>El carrito esta vacio</p>)}
             <div className='flex-container' style={{ alignItems: 'self-start' }}>
                 <table className='cart-table'>
                     <thead>
@@ -53,14 +59,22 @@ const Cart = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        <Product producto={cartItems[0]}></Product>
+                        {cartItems.map((item) =>{
+                            return (
+                                <Product key={item.detproductos.productos.id_producto + item.detproductos.colores.id_color } producto={item} />
+                            )
+                        })}
+                        {/* <Product producto={cartItems[0]}></Product> */}
                         {/* <Product producto={cartItems[0]}></Product> */}
                     </tbody>
                 </table>
-                <div className='cart-total'>
+                {cartItems.length > 0 ? (<div className='cart-total'>
                     <h2 className='title'>Resumen de carrito</h2>
-                </div>
+                    <p>Total a pagar: <strong>{totalPrice}$</strong></p>
+                </div>) : null }
+                
             </div>
+            {cartItems.length > 0 ? null : (<p className='title'>El carrito esta vacio</p>)}
 
             <Footer />
         </>

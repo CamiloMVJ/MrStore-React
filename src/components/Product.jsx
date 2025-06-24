@@ -16,14 +16,19 @@ const Product = ({ producto }) => {
         const fetchColores = async () => {
             const { data, error } = await supabase.schema('mrstore2').from('detproductos').select('colores(id_color, color)').eq('id_producto', producto.detproductos.productos.id_producto)
             setColores([...new Map(data.map(color => [color.colores.id_color, color.colores])).values()])
-            console.log([...new Map(data.map(color => [color.colores.id_color, color.colores])).values()])
         }
         fetchColores()
     }, [])
 
-    const handleChange = (e) => {
-        document.getElementById("miFormulario").submit(); // Envío automático
-    };
+    const handleColorChange = (e) => {
+        document.getElementById('ColorForm').dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }))
+        console.log(document.getElementById('ColorSelect').value = 3)
+        console.log(e.target.value)
+    }
+
+    const handleTallaChange = (e) => {
+        
+    }
 
     const ActualizarCantidad = (e) => {
         e.preventDefault()
@@ -35,10 +40,12 @@ const Product = ({ producto }) => {
 
     const ActualizarTalla = (e) => {
         e.preventDefault()
+        console.log("Talla actualizada")
     }
 
     const ActualizarColor = (e) => {
         e.preventDefault()
+        console.log("Color actualizado")
     }
 
     return (
@@ -75,9 +82,9 @@ const Product = ({ producto }) => {
                                         <input type="hidden" name="id_talla" defaultValue={producto.detproductos.tallas.id_talla} />
                                         <input type="hidden" name="id_proveedor" defaultValue={producto.detproductos.proveedores.id_proveedor} />
                                         <div style={{ display: 'flex' }}>
-                                            <select name="Talla" className='form-select'>
+                                            <select name="Talla" className='form-select' id='TallaSelect' value={producto.detproductos.tallas.id_talla} onChange={handleTallaChange}>
                                                 {Array.isArray(tallas) && tallas.map(talla => (
-                                                    <option key={Math.random() * 15} defaultValue={talla.id_talla}>
+                                                    <option key={Math.random() * 15} value={talla.id_talla}>
                                                         {talla.talla}
                                                     </option>
                                                 ))}
@@ -96,9 +103,9 @@ const Product = ({ producto }) => {
                                         <input type="hidden" name="id_talla" defaultValue={producto.detproductos.tallas.id_talla} />
                                         <input type="hidden" name="id_proveedor" defaultValue={producto.detproductos.proveedores.id_proveedor} />
                                         <div style={{ display: 'flex' }}>
-                                            <select name="Color" className='form-select' >
+                                            <select name="Color" className='form-select' id="ColorSelect" value={producto.detproductos.colores.id_color} onChange={handleColorChange}>
                                                 {Array.isArray(colores) && colores.map(color => (
-                                                    <option key={Math.random() * 15} defaultValue={color.id_color}>
+                                                    <option key={Math.random() * 15} value={color.id_color}>
                                                         {color.color}
                                                     </option>
                                                 ))}
@@ -117,15 +124,14 @@ const Product = ({ producto }) => {
                         <input type="hidden" name="id_color" defaultValue={producto.detproductos.colores.id_color} />
                         <input type="hidden" name="id_talla" defaultValue={producto.detproductos.tallas.id_talla} />
                         <input type="hidden" name="id_proveedor" defaultValue={producto.detproductos.proveedores.id_proveedor} />
-                        <input type="number" name="cantidad" defaultValue={1} />
-                        <button type="submit" style={{ display: 'none' }}>Actualizar</button>
+                        <input type="number" name="cantidad" defaultValue={producto.cantidad} />
                     </form>
                 </td>
                 <td className="txt-center">
-                    <p>{producto.detproductos.productos.precio_producto}$</p>
+                    <p>{producto.detproductos.precio_producto}$</p>
                 </td>
                 <td className="txt-center">
-
+                    <p>{producto.subtotal}$</p>
                 </td>
             </tr >
 
