@@ -2,7 +2,7 @@ import Header from "../Header"
 import Glider from "../Glider"
 import { useState, useEffect } from "react";
 import { getTable } from "../../js/supabase"
-import ProductsCatalog from "../ProductsCatalog";
+import Products from "../Products";
 import Footer from "../Footer";
 
 const Home = () => {
@@ -68,7 +68,7 @@ const Home = () => {
                     <h1>NUESTROS PRODUCTOS</h1>
                     <p>Calidad a tus manos</p>
                 </div>
-                <ProductsCatalog productos={products} />
+                <Products productos={products} />
             </section>
             <Footer />
         </>
