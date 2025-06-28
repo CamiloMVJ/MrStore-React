@@ -20,10 +20,10 @@ const SignUp = () => {
 
     const SignUpMet = async (e) => {
         e.preventDefault()
-        const {message, type} = await signUpNewUser(e.target.correo.value, e.target.psw.value, e.target.nombre.value, e.target.cedula.value, e.target.usuario.value, e.target.direccion.value)
+        const {message, type} = await signUpNewUser(e.target.correo.value, e.target.psw.value, e.target.nombre.value, e.target.cedula.value, e.target.usuario.value)
         setError(message)
         setType(type)
-        if (type === 'success') window.location.href = '/'
+        // if (type === 'success') window.location.href = '/login'
         
         // await signUpNewUser(e.target.correo.value, e.target.psw.value, e.target.nombre.value, e.target.cedula.value, e.target.usuario.value, e.target.direccion.value).then(res =>{
         //     setError(res.message)
@@ -58,8 +58,8 @@ const SignUp = () => {
                         <input type="text" placeholder="Ingrese su Usuario" name="usuario" required></input>
                         <label htmlFor="psw">Contraseña</label>
                         <input type="password" placeholder="Ingrese la contraseña" name="psw" required></input>
-                        <label htmlFor="direccion">Direccion</label>
-                        <input type="text" placeholder="Ingrese su direccion" name="direccion" required></input>
+                        {/* <label htmlFor="direccion">Direccion</label>
+                        <input type="text" placeholder="Ingrese su direccion" name="direccion" required></input> */}
                         <label>
                             <input type="checkbox" name="remember" style={{ marginBottom: "15px", marginRight: "10px" }}></input>
                             Remember me

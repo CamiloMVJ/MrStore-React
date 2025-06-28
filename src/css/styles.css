@@ -9,7 +9,7 @@
   --grey1: #f0f0f0;
   --grey2: #e9d7d3;
   --red: #e16554;
-  --green: #54e165;
+  --green: #5ebe27;
 }
 
 /* Basic Reset */
@@ -120,6 +120,10 @@ Navigation
 }
 
 .nav-center .nav-link:hover {
+  color: var(--purple);
+}
+
+.nav-center .nav-link:hover::after {
   color: var(--purple);
 }
 
@@ -1392,7 +1396,8 @@ th:last-child {
 /* Login Form */
 .login-form {
   padding: 5rem 0;
-  max-width: 50rem;
+  max-width: 40rem;
+  min-width: 40rem;
   margin: 5rem auto;
 }
 
@@ -1413,6 +1418,16 @@ th:last-child {
 }
 
 .login-form form input {
+  border: 1px solid #ccc;
+  outline: none;
+  padding: 1.5rem 0;
+  text-indent: 1rem;
+  font-size: 1.6rem;
+  margin-bottom: 2rem;
+  border-radius: 0.5rem;
+}
+
+.login-form form select {
   border: 1px solid #ccc;
   outline: none;
   padding: 1.5rem 0;
@@ -1480,7 +1495,11 @@ th:last-child {
 }
 .selector {
   width: 100%;
-  cursor: text;
+  border: 1px solid gray;
+  border-radius: 5px;
+  padding: 0.5rem;
+  font-size: 1.6rem;
+  margin: 1rem auto;
 }
 .text {
   padding: 8px;
@@ -1546,6 +1565,7 @@ th:last-child {
 
 form .btn-danger {
   background: var(--red);
+  color: white;
   padding: 0.7rem;
   border: 1px solid var(--purple);
   cursor: pointer;
@@ -1566,6 +1586,15 @@ form .btn-danger {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.center-y{
+  display: grid;
+  align-items: center;
+}
+
+.allheight {
+  height: 100vh;
 }
 
 .btrPadding {
@@ -1779,10 +1808,11 @@ display: none;
 
 .cart-table{
   width: 80%;
+  /* border-collapse: separate;  */
 }
 
 .cart-total{
-  width: 20%;
+  width: 40%;
   vertical-align: top;
   /* display: flex; */
   /* justify-content: center; */
@@ -1810,5 +1840,99 @@ display: none;
   margin-left: 5px;
   background: var(--purple);
   color: white;
-  width: 100px;
+  width: fit-content;
+}
+
+.roundBorder{
+  border-radius: 10px;
+  border: 1px solid red;
+  padding: 5px;
+}
+
+.borderbottom{
+  border-bottom: 1px solid gray;
+}
+
+.bgshadow{
+  width: 90%;
+  background: rgb(255, 255, 255);
+  /* border: 1px solid black; */
+  border-radius: 10px;
+  box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.1);
+}
+
+.flex{
+  display: flex;
+  gap: 8rem;
+}
+
+.margin{
+  margin: 10rem auto;
+}
+
+/* HTML: <div class="loader"></div> */
+.loader {
+  margin: 15px;
+  width: 50px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  padding: 3px;
+  background: 
+    radial-gradient(farthest-side, var(--purple) 95%,#0000) 50% 0/12px 12px no-repeat,
+    radial-gradient(farthest-side,#0000 calc(100% - 5px),var(--purple) calc(100% - 4px)) content-box;
+  animation: l6 2s infinite ;
+}
+@keyframes l6 {to{transform: rotate(1turn)}}
+
+/* Form popup */
+.form-popup {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* position: fixed; */
+  bottom: 250px;
+  /* right: 15px; */
+  border: 3px solid #f1f1f1;
+  z-index: 9;
+}
+
+.form-container {
+  max-width: 300px;
+  padding: 10px;
+  background-color: white;
+}
+
+.form-container input[type=text], .form-container input[type=password] {
+  width: 100%;
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  border: none;
+  background: #f1f1f1;
+}
+
+/* When the inputs get focus, do something */
+.form-container input[type=text]:focus, .form-container input[type=password]:focus {
+  background-color: #ddd;
+  outline: none;
+}
+
+/* Set a style for the submit/login button */
+.form-container .btn {
+  background-color: var(--purple);
+  color: white;
+  padding: 16px 20px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  margin-bottom:10px;
+}
+
+/* Add a red background color to the cancel button */
+.form-container .cancel {
+  background-color: var(--red);
+}
+
+/* Add some hover effects to buttons */
+.form-container .btn:hover, .open-button:hover {
+  opacity: 1;
 }

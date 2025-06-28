@@ -17,14 +17,16 @@ export const signInWithEmail = async (email, pass) => {
       console.error("Error al iniciar sesión:", error.message)
       console.log(error)
       return false
-    } else { 
+    } else {
       console.log("Sesión iniciada correctamente:", data)
+
       const user = await supabase.schema('mrstore2').from('usuarios').select(`id_usuario, clientes(id_cliente)`).eq('uuid', data.user.id)
       const carrito = await supabase.schema('mrstore2').from('carritocompras').select('id_carritocompras').eq('id_cliente', user.data[0].clientes[0].id_cliente)
-      console.log(user.data[0].clientes[0].id_cliente)
-      console.log(carrito)
-      let userdata = {id_usuario: user.data[0].id_usuario, id_cliente: user.data[0].clientes[0].id_cliente, id_carrito: carrito.data[0].id_carritocompras}
-      console.log(userdata)
+      const updateDate = await supabase.schema('mrstore2').from('usuarios').update({ ultimo_acceso: timeStampz() }).eq('uuid', data.user.id).select()
+
+      // console.log(carrito)
+      let userdata = { id_usuario: user.data[0].id_usuario, id_cliente: user.data[0].clientes[0].id_cliente, id_carrito: carrito.data[0].id_carritocompras }
+      // console.log(userdata)
       sessionStorage.setItem('session', JSON.stringify(userdata))
       sessionStorage.setItem('NavIcons', JSON.stringify([{ link: '/login', class: 'bx-user' }, { link: '#', class: 'bx-search' }, { link: '/cart', class: 'bx-cart' }]))
 
@@ -71,8 +73,6 @@ export const signUpNewUser = async (email, pass, name, dni, username) => {
     }
   }
 }
-
-
 export const SignUpProc = async (name, dni, email, username, pass, uuid) => {
   try {
     const { data, error } = await supabase.schema('mrstore2').rpc('insertarusuario', {
@@ -83,7 +83,7 @@ export const SignUpProc = async (name, dni, email, username, pass, uuid) => {
       p_nombre_completo: name,
       p_ultimo_acceso: timeStampz(),
       p_username: username,
-      p_useruuid: uuid
+      p_uuid: uuid
     })
     if (error) throw error
     return {
@@ -108,12 +108,19 @@ export const getTable = async (table, rowsQnt = '', columns = '') => {
   }
 }
 
-export const addProductToCart = async (idUsuario, idProducto, cantidad) => {
+export const addProductToCart = async (id_carrito, idProducto, id_color, id_talla, id_proveedor, cantidad) => {
   try {
-    const { data } = await supabase.schema('mrstore2').from('clientes').select('id_cliente, carritos_compras(id_carrito)').eq('id_usuario', idUsuario)
-    const idCarrito = data[0].carritos_compras.id_carrito
-    const { error } = await supabase.schema('mrstore2').from('detcarritos_compras').insert({ id_carrito: idCarrito, cantidad: cantidad, id_producto: idProducto })
-    console.log(error)
+    const { data, error } = await supabase.schema('mrstore2').from('detcarritocompras').insert({
+      id_carritocompras: id_carrito,
+      id_producto: idProducto,
+      color: id_color,
+      talla: id_talla,
+      id_proveedor: id_proveedor,
+      cantidad: cantidad
+    })
+    console.log(data, error)
+    if (error) throw error
+    return data
   } catch (error) {
     console.error("Error al agregar producto al carrito:", error.message)
     throw error
@@ -121,10 +128,11 @@ export const addProductToCart = async (idUsuario, idProducto, cantidad) => {
 }
 
 export const getProductById = async (id) => {
-  try{
-    const { data, error } = await supabase.schema('mrstore2').rpc('detproducto',{
-      ID : id
+  try {
+    const { data, error } = await supabase.schema('mrstore2').rpc('detproducto', {
+      id: id
     })
+    return data
     console.log(error)
     console.log(data)
   }
@@ -142,10 +150,11 @@ export const getProductById = async (id) => {
   // }
 }
 
-export const updateTable = async (table, id, data) => {
+export const updateTable = async (table, id, idName, updatedData) => {
   try {
-    const { error } = await supabase.schema('mrstore2').from(table).update(data).eq('id_usuario', id)
-    if (error) throw error
+    const { data, error } = await supabase.schema('mrstore2').from(table).update(updatedData).eq(idName, id)
+    if (error) return false
+    return true
   } catch (e) {
     console.error("Error al actualizar datos:", e.message)
     throw e

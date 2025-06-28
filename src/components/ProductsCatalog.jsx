@@ -6,7 +6,12 @@ const ProductsCatalog = ({ productos }) => {
     }
     const AddCart = (e) => {
         e.preventDefault()
-        addProductToCart(JSON.parse(sessionStorage.getItem('session')).id_usuario, e.target.id.value, e.target.cantidad.value)
+        if(!sessionStorage.getItem('session')) {
+            alert('Debes iniciar sesión para agregar productos al carrito')
+            window.location.href = '/login'
+            return
+        }
+        addProductToCart(sessionStorage.getItem('session').id_carrito)
     }
     return (
         <div className="product-center">
@@ -16,12 +21,12 @@ const ProductsCatalog = ({ productos }) => {
                         <div className="ovarlay">
                             <form onSubmit={DetalleProducto} method="POST">
                                 <input type="hidden" name="id" value={producto.id_producto} />
-                                {/* <input type="hidden" name="nombre" value={producto.nombre_producto} />
+                                <input type="hidden" name="nombre" value={producto.nombre_producto} />
                                     <input type="hidden" name="precio" value={producto.precio_producto} />
                                     <input type="hidden" name="descripcion" value={producto.descripcion} />
                                     <input type="hidden" name="tallas" value={producto.tallas} />
                                     <input type="hidden" name="color" value={producto.color} />
-                                    <input type="hidden" name="imagen" value={producto.imagen_url} /> */}
+                                    <input type="hidden" name="imagen" value={producto.imagen_url} />
                                 <button type="submit" name="MostrarDetalle" value="detalle" className="product-thumb" style={{ border: 'none', background: 'none', padding: 0 }}>
                                     <img src={producto.imagen_url} alt="" />
                                 </button>
