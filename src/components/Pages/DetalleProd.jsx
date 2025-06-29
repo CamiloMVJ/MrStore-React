@@ -3,6 +3,7 @@ import Header from "../Header"
 import { useState, useEffect, use } from "react"
 import { useParams } from "react-router-dom"
 import { getProductById, supabase, addProductToCart } from "../../js/supabase"
+import Notification from "../Notification"
 
 const DetalleProd = () => {
     const [productId, setProductId] = useState(useParams().id_prod)
@@ -11,17 +12,37 @@ const DetalleProd = () => {
     const [colorYtalla, setColorYTalla] = useState([])
     const [indexColorYTalla, setIndexColorYTalla] = useState()
     const [cantidad, setCantidad] = useState(1)
+    const [messageError, setMessageError] = useState(null)
+    const [typeError, setTypeError] = useState(null)
+
+    useEffect(() => {
+        if (message === null) return
+        const timer = setTimeout(() => {
+            setMessageError(null)
+            setTypeError(null)
+        }, 5000)
+    }, [messageError])
 
     const Addcart = (e) => {
         e.preventDefault()
         let session = sessionStorage.getItem('session') ? JSON.parse(sessionStorage.getItem('session')) : undefined
         if (session && indexColorYTalla) {
-            addProductToCart(session.id_carrito, product.id_producto, colorYtalla[indexColorYTalla].colores.id_color, colorYtalla[indexColorYTalla].tallas.id_talla, product.id_proveedor, cantidad)
+            addProductToCart(session.id_carrito, product.id_producto, colorYtalla[indexColorYTalla].colores.id_color,
+                colorYtalla[indexColorYTalla].tallas.id_talla, product.id_proveedor, cantidad).then(data => {
+                    if(data){
+                        setMessageError("Producto añadido al carrito")
+                        setTypeError("success")
+                    }
+                    else {
+                        setMessageError("Error al añadir el producto al carrito")
+                        setTypeError("error")
+                    }
+                })
         }
     }
 
     const handleColoryTalla = (e) => {
-        if (e.target.value !== "Select Size") 
+        if (e.target.value !== "Select Size")
             setIndexColorYTalla(e.target.value)
     }
 
@@ -48,7 +69,7 @@ const DetalleProd = () => {
                     console.error("No se encontró el producto con ID:", productId);
                 }
                 setProduct({ ...data[0], descripcion: data[0].descripcion.replace('.', '') })
-                console.log(data)
+                // console.log(data)
             })
         }
         fetchProduct()
@@ -96,6 +117,7 @@ const DetalleProd = () => {
                                 <input type="number" placeholder="" defaultValue={cantidad} onChange={(e) => { setCantidad(e.target.value) }} />
                                 <button className="addCart" type="submit">Añadir al carrito</button>
                             </form>
+                            <Notification message={messageError} type={typeError}></Notification>
                         </div>
                     </div>
                 </section>

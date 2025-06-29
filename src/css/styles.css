@@ -1807,13 +1807,21 @@ display: none;
 }
 
 .cart-table{
-  width: 80%;
-  /* border-collapse: separate;  */
+  /* width: 80%; */
+  margin-left: 15px;
+  margin-top: 15px;
+
+  border-collapse: separate;
+  border-spacing: 0;        
+  /* border: 1px solid #ccc;    */
+  border-radius: 5px;      
+  overflow: hidden;         
 }
 
 .cart-total{
   width: 40%;
   vertical-align: top;
+  margin-top: 15px;
   /* display: flex; */
   /* justify-content: center; */
 }

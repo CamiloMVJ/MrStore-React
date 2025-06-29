@@ -43,7 +43,7 @@ const Cart = () => {
                     setLoading(false)
                     return
                 }
-                console.log(data.data)
+                // console.log(data.data)
                 setCartItems(data.data)
                 setLoading(false)
             })
@@ -76,7 +76,7 @@ const Cart = () => {
             <div className='center'>
                 <div className='flex-container center bgshadow' style={{ alignItems: 'self-start' }}>
                     {cartItems.length > 0 ? (
-                        <table className='cart-table '>
+                        <table className='cart-table'>
                             <thead>
                                 <tr>
                                     <th style={{ width: '20%' }}>Descripcion</th>

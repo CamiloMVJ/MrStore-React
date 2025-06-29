@@ -117,13 +117,17 @@ export const addProductToCart = async (id_carrito, idProducto, id_color, id_tall
       talla: id_talla,
       id_proveedor: id_proveedor,
       cantidad: cantidad
-    })
-    console.log(data, error)
-    if (error) throw error
-    return data
+    }).select()
+    // console.log(data, error)
+    if (error) {
+      console.error("Error al agregar producto al carrito:", error)
+      return false
+    }
+    console.log("Producto agregado al carrito:", data)
+    return true
   } catch (error) {
-    console.error("Error al agregar producto al carrito:", error.message)
-    throw error
+    console.error("Error al agregar producto al carrito:", errorñ)
+    return false
   }
 }
 
