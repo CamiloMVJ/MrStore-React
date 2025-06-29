@@ -8,6 +8,7 @@ import Tienda from "./components/Pages/Tienda.jsx";
 import DetalleProd from "./components/Pages/DetalleProd.jsx";
 import ErrorBoundary from './components/ErrorBoundry.jsx';
 import SignUpMeth from './components/Pages/SignUp.jsx';
+import Inventario from './components/Pages/Inventario.jsx';
 import Cart from './components/Pages/Cart.jsx';
 import './css/styles.css'
 
@@ -20,7 +21,9 @@ const router = createBrowserRouter([
   { path: '/perfil', element: <Perfil /> },
   {path: '/signup', element: <SignUpMeth />},
   {path: '/cart', element: <Cart/>},
+  {path: '/Inventario', element: <Inventario/>},
 ])
+
 
 createRoot(document.getElementById('root')).render(
   // <StrictMode>
