@@ -4,35 +4,61 @@ import Footer from '../Footer';
 import { supabase } from '../../js/supabase';
 
 const OrderHistory = () => {
+    const [id_pedido, setId_Pedido] = useState(null)
+    const [detpedidos, setdetpedidos] = useState([])
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const { data, error } = await supabase
+                const { data, error } = await supabase.schema('mrstore2')
                     .from('pedidos')
                     .select(`
-                        id_Pedido,
-                        Total,
-                        Fecha_Pedido,
-                        productos_pedidos:productos_pedidos(
-                            cantidad,
-                            producto:productos(nombre_producto, precio, imagen_principal)
+                        id_pedido,
+                        total,
+                        estadopedido,
+                        fecha_pedido
                     `)
                     .order('fecha_pedido', { ascending: false });
 
                 if (error) throw error;
-                setOrders(data);
-                setLoading(false);
+                console.log(data)
+                setOrders(data)
+                setLoading(false)
             } catch (error) {
                 console.error('Error fetching orders:', error);
                 setLoading(false);
             }
         };
+        
+        const fetchDetOrders = async () => {
+            try {
+                 const { data, error } = await supabase.schema('mrstore2')
+                 .from('detpedidos')
+                 .select(`id_producto,color,talla,id_proveedor,id_pedido,cantidad,subtotal,precioventa, detproductos(
+                            productos(id_producto, nombre_producto, descripcion, imagen_url, precio_producto))`).limit(2)
+                 .order('subtotal', {ascending: false});
+                if (error) throw error;
+                setdetpedidos(data)
+                console.log(data)
+                 
+            }
+            catch (error) {
+                console.error('Error fetching orders:', error);
+                
 
+            }
+        }
+        fetchDetOrders()
         fetchOrders();
     }, []);
+
+    // useEffect(() => {
+    //     fetchDetOrders(id_pedido)
+
+    // },[id_pedido])
+    
 
     const formatDate = (dateString) => {
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -144,7 +170,9 @@ const OrderHistory = () => {
                             flexDirection: 'column',
                             gap: '1.5rem'
                         }}>
-                            {orders.map((order) => (
+                            {orders.map((order) => {
+                                return(
+                                    (
                                 <div key={order.id_pedido} style={{
                                     background: 'white',
                                     borderRadius: '10px',
@@ -163,23 +191,26 @@ const OrderHistory = () => {
                                             <h3 style={{
                                                 color: '#333',
                                                 margin: '0',
-                                                fontSize: '1.1rem'
+                                                fontSize: '1.9rem'
                                             }}>Pedido #{order.id_pedido}</h3>
                                             <p style={{
                                                 color: '#888',
-                                                fontSize: '0.9rem',
+                                                fontSize: '1.2rem',
                                                 marginTop: '0.3rem'
                                             }}>{formatDate(order.fecha_pedido)}</p>
                                         </div>
-                                        <div style={getStatusStyle(order.estado)}>
-                                            {order.estado}
+                                        <div style={getStatusStyle(order.estadopedido)}>
+                                            {order.estadopedido}
                                         </div>
                                     </div>
                                     
                                     <div style={{
                                         padding: '1rem 1.5rem'
-                                    }}>
-                                        {order.productos_pedidos.map((item, index) => (
+                                    }}> 
+                                        { detpedidos.filter(item => item.id_pedido == order.id_pedido).map((item, index) => {
+                                            console.log(item)
+                                            return(
+                                                (
                                             <div key={index} style={{
                                                 display: 'flex',
                                                 alignItems: 'center',
@@ -188,8 +219,7 @@ const OrderHistory = () => {
                                                 borderBottom: '1px solid #f5f5f5'
                                             }}>
                                                 <img 
-                                                    src={item.producto.imagen_principal} 
-                                                    alt={item.producto.nombre_producto} 
+                                                    src={item.detproductos.productos.imagen_url} 
                                                     style={{
                                                         width: '60px',
                                                         height: '60px',
@@ -200,17 +230,19 @@ const OrderHistory = () => {
                                                 <div>
                                                     <h4 style={{
                                                         margin: '0',
-                                                        fontSize: '0.95rem',
+                                                        fontSize: '1.5rem',
                                                         color: '#444'
-                                                    }}>{item.producto.nombre_producto}</h4>
+                                                    }}>{item.detproductos.productos.nombre_producto}</h4>
                                                     <p style={{
                                                         margin: '0.3rem 0 0',
-                                                        fontSize: '0.9rem',
+                                                        fontSize: '1.3rem',
                                                         color: '#666'
-                                                    }}>{item.cantidad} x ${item.producto.precio.toFixed(2)}</p>
+                                                    }}>{item.cantidad} x ${item.detproductos.productos.precio_producto.toFixed(2)}</p>
                                                 </div>
                                             </div>
-                                        ))}
+                                        )
+                                            )
+                                        })}
                                     </div>
                                     
                                     <div style={{
@@ -230,7 +262,7 @@ const OrderHistory = () => {
                                             <span>Total:</span>
                                             <span style={{ color: '#c496f9' }}>${order.total.toFixed(2)}</span>
                                         </div>
-                                        <button style={{
+                                        <button onClick= {() => {window.location.href= `/DetPedidos/${order.id_pedido}`}} style={{
                                             backgroundColor: 'transparent',
                                             color: '#c496f9',
                                             border: '1px solid #c496f9',
@@ -244,7 +276,9 @@ const OrderHistory = () => {
                                         </button>
                                     </div>
                                 </div>
-                            ))}
+                            )
+                                )
+                            })}
                         </div>
                     )}
                 </div>
