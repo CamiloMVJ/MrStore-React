@@ -10,6 +10,9 @@ const Cart = () => {
     const [totalPrice, setTotalPrice] = useState(0)
     const [loading, setLoading] = useState(true)
     const [ActTotal, setActTotal] = useState(false)
+    const [direcciones, setDirecciones] = useState([])
+    const [DirActiva, setDirActiva] = useState(null)
+    const [session, setSession] = useState(JSON.parse(sessionStorage.getItem('session')))
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -21,11 +24,64 @@ const Cart = () => {
         }, 100)
     }, [ActTotal])
 
+    useEffect(() => {
+        fetchCarrito()
+        fetchDirecciones()
+    }, [])
+
+    const fetchDirecciones = async () => {
+        supabase.schema('mrstore2').from('direcciones').select()
+            .eq('id_cliente', session.id_cliente)
+            .eq('estado', true)
+            .then(data => {
+                if (data.data.length > 0) {
+                    let id = data.data.filter(dir => dir.es_principal === true)
+                    setDirecciones(data.data)
+                    if (id.length == 1) {
+                        setDirActiva(id[0].id_direccion)
+                        return
+                    }
+                    return
+                }
+                setDirActiva('')
+            })
+    }
+
     const updateTotal = () => {
         setActTotal(!ActTotal)
     }
     const actualizarProductos = () => {
 
+    }
+
+    const handleDirChange = (e) => {
+        e.preventDefault()
+        const selectedId = Number(e.target.value)
+        // Validar que haya direcciones y que el id exista
+        if (!direcciones || direcciones.length === 0) {
+            console.error("No hay direcciones disponibles.")
+            return
+        }
+        const selectedDir = direcciones.find(dir => dir.id_direccion === selectedId)
+        if (!selectedDir) {
+            console.error("Dirección seleccionada no válida.")
+            return
+        }
+        setDirActiva(selectedId)
+        // Validar que session y session.id_cliente existan
+        if (!session || !session.id_cliente) {
+            console.error("Sesión inválida. Por favor inicie sesión nuevamente.")
+            return
+        }
+        updateTable('direcciones', session.id_cliente, 'id_cliente', { es_principal: false }).then((data) => {
+            if (data) {
+                updateTable('direcciones', selectedId, 'id_direccion', { es_principal: true }).then(data => {
+                    if (!data) {
+                        console.error("Error al actualizar la direccion principal")
+                    }
+                })
+            }
+        })
     }
 
     const fetchCarrito = async () => {
@@ -53,9 +109,6 @@ const Cart = () => {
             }
         })
     }
-    useEffect(() => {
-        fetchCarrito()
-    }, [])
 
     if (loading) {
         return (
@@ -96,6 +149,20 @@ const Cart = () => {
                         </table>) : null}
                     {cartItems.length > 0 ? (<div className='cart-total'>
                         <h2 className='title'>Resumen de carrito</h2>
+                        <div className='flex' style={{justifyContent: "center" , alignItems: "baseline"}}>
+                            <label htmlFor=""> Diccion de envio</label>
+                            <select className="selector" style={{ width: "100px", textAlign: "center", height: "25px", marginBottom: "20px" }} name="direccion" value={DirActiva} onChange={handleDirChange}>
+                                {DirActiva === '' ? (<option value="" disabled>Seleccione una direccion</option>) : null}
+                                {direcciones.map((dir, index) => {
+                                    return (
+                                        <option key={index} value={dir.id_direccion} >
+                                            {dir.nombre_dir}
+                                        </option>
+                                    )
+                                })}
+                            </select>
+                        </div>
+
                         <p className='center'>Total a pagar: <strong>{totalPrice}$</strong></p>
                         <div className='center'>
                             <Link to='/checkout' className='btn btn-primary'>Pagar</Link>
@@ -104,7 +171,8 @@ const Cart = () => {
 
                 </div>
             </div>
-            {cartItems.length > 0 ? null : (<p className='title margin'>El carrito esta vacio</p>)}
+            {(cartItems.length <= 0 && session == null) ? null : (<p className='title margin'>El carrito esta vacio</p>)}
+            {session ? null : (<p className='title margin'>Para realizar una compra, por favor <Link className="colorPurple" to='/login'>Login</Link></p>)}
 
 
             <Footer />
