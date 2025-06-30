@@ -13,6 +13,8 @@ const Perfil = () => {
     const [DirActiva, setDirActiva] = useState(null)
     const [direccion, setDireccion] = useState()
     const [linkMaps, setLinkMaps] = useState()
+    const [departamento, setDepartamento] = useState()
+    const [departamentos, setDepartamentos] = useState([])
     useEffect(() => {
         const fetchPerfil = async () => {
             supabase.schema('mrstore2').from('usuarios').select().eq('id_usuario', session.id_usuario).then(data => {
@@ -31,6 +33,14 @@ const Perfil = () => {
                     }
                 })
         }
+        const fetchDepartamentos = async () => {
+            const { data, error } = await supabase.schema('mrstore2').from('departamentos').select()
+
+            if (data.length > 0) {
+                setDepartamentos(data)
+            }
+        }
+        fetchDepartamentos()
         fetchDirecciones()
         fetchPerfil()
     }, [])
@@ -48,9 +58,12 @@ const Perfil = () => {
         e.preventDefault()
         updateTable('usuarios', e.target.id_usuario.value, 'id_usuario', { username: e.target.username.value })
         // await updateTable('usuarios', objData.id_usuario, objData)
-        // window.location.href = '/perfil'
+        window.location.href = '/perfil'
     }
 
+    const handleDepChange = (e) => {
+
+    }
     const handleDirChange = (e) => {
         e.preventDefault()
         let id = direcciones.filter(dir => dir.id_direccion === Number(e.target.value))[0].id_direccion
@@ -71,17 +84,23 @@ const Perfil = () => {
     }
     const DireccionEvent = async (e) => {
         e.preventDefault()
+        if (e.target.name.value === '' || e.target.direccion.value === '' || e.target.mapsLink.value === '' || e.target.departamento.value === 'default') {
+            alert('Por favor, complete todos los campos.')
+            return
+        }
+
         const objData = {
             id_cliente: session.id_cliente,
             nombre_dir: e.target.name.value,
             direccion: e.target.direccion.value,
             maps_link: e.target.mapsLink.value,
+            id_departamento: e.target.departamento.value,
             es_principal: true,
             estado: true
         }
 
         const { data, error } = await supabase.schema('mrstore2').from('direcciones').insert(objData)
-        if(!error){
+        if (!error) {
             console.log(data)
         }
     }
@@ -131,7 +150,7 @@ const Perfil = () => {
                                 <form method="POST" onSubmit={() => { }}>
                                     <div>
                                         <label htmlFor="direccion"><strong>Selecione la direccion principal</strong></label>
-                                        <select className="selector" name="direccion" value={DirActiva} onChange={handleDirChange}>
+                                        <select className="selector" name="direccion" value={DirActiva} onChange={handleDepChange}>
                                             {direcciones.map((dir, index) => {
                                                 return (
                                                     <option key={index} value={dir.id_direccion} >
@@ -143,8 +162,18 @@ const Perfil = () => {
                                     </div>
                                     <label htmlFor="direccion"><strong>Direccion</strong></label>
                                     <input type="text" placeholder="Ingrese su direccion" name="direccion" defaultValue={direccion} />
-                                    <label htmlFor="telefono"><strong>Link de google maps</strong></label>
+                                    <label htmlFor="linkmaps"><strong>Link de google maps</strong></label>
                                     <input type="text" placeholder="Ingrese su link de google maps" name="linkmaps" defaultValue={linkMaps} />
+                                    <label htmlFor="departamento"><strong>Departamento</strong></label>
+                                    <select className="selector" name="departamento" value={departamento}>
+                                        {departamentos.map(dep => {
+                                            return (
+                                                <option key={dep.id_departamento} value={dep.id_departamento}>
+                                                    {dep.nombre_dpto}
+                                                </option>
+                                            )
+                                        })}
+                                    </select>
                                 </form>
                             </>) :
                             (
@@ -163,6 +192,17 @@ const Perfil = () => {
                                             <label htmlFor="mapsLink"><b>Link de google maps</b></label>
                                             <input type="text" placeholder="Pegue el link" name="mapsLink" required />
 
+                                            <label htmlFor="departamento"><b>Seleccione el departamento</b></label>
+                                            <select name="departamento" required>
+                                                <option value="default">Seleccione el departamento</option>
+                                                {Array.isArray(departamentos) && departamentos.map((dep, index) => {
+                                                    return (
+                                                        <option key={dep.id_departamento} value={dep.id_departamento}>
+                                                            {dep.nombre_dpto}
+                                                        </option>
+                                                    )
+                                                })}
+                                            </select>
                                             <button type="submit" className="btn">Agregar direccion</button>
                                             <button type="button" className="btn cancel" onClick={openPopUp}>Cerrar</button>
 

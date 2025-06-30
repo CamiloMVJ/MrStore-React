@@ -135,7 +135,7 @@ const Product = ({ producto, ActualizarTotal, ActualizarProductos }) => {
                         <div className="cart-text">
                             <p><strong>{product.detproductos.productos.nombre_producto}</strong></p>
                             <span>{product.detproductos.productos.descripcion}</span> <br />
-                            <span>{ }</span>
+                            <span>{}</span>
                             <form onSubmit={EliminarDelCarrito} method="POST" style={{ display: 'inline' }}>
                                 <input type="hidden" name="id_carrito" defaultValue={product.id_carritocompras} />
                                 <input type="hidden" name="id_producto" defaultValue={product.detproductos.productos.id_producto} />

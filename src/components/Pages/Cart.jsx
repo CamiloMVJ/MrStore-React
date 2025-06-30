@@ -94,10 +94,12 @@ const Cart = () => {
                                 })}
                             </tbody>
                         </table>) : null}
-
                     {cartItems.length > 0 ? (<div className='cart-total'>
                         <h2 className='title'>Resumen de carrito</h2>
                         <p className='center'>Total a pagar: <strong>{totalPrice}$</strong></p>
+                        <div className='center'>
+                            <Link to='/checkout' className='btn btn-primary'>Pagar</Link>
+                        </div>
                     </div>) : null}
 
                 </div>
