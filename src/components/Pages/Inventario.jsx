@@ -22,13 +22,14 @@ const Inventario = () => {
 
   const [tallas, setTallas] = useState(false)
   const [colores, setColores] = useState(false)
+  const [proveedores, setproveedores] = useState(false)
   const [editar, setEditar] = useState(false)
   const [cargando, setCargando] = useState(true)
-  
-  
-  const ObtenerTallas = async()=>{
-    const {data, error}= await supabase
-    .schema('mrstore2').from('tallas').select()
+
+
+  const ObtenerTallas = async () => {
+    const { data, error } = await supabase
+      .schema('mrstore2').from('tallas').select()
 
     if (error) {
       alert('Error al cargar las tallas: ' + error.message)
@@ -37,9 +38,9 @@ const Inventario = () => {
     }
   }
 
-  const ObtenerColores = async()=>{
-    const {data, error}= await supabase
-    .schema('mrstore2').from('colores').select()
+  const ObtenerColores = async () => {
+    const { data, error } = await supabase
+      .schema('mrstore2').from('colores').select()
 
     if (error) {
       alert('Error al cargar las tallas: ' + error.message)
@@ -47,7 +48,18 @@ const Inventario = () => {
       setColores(data)
     }
   }
-  
+
+  const ObtenerProveedores = async () => {
+    const { data, error } = await supabase
+      .schema('mrstore2').from('proveedores').select()
+
+    if (error) {
+      alert('Error al cargar los proveedores: ' + error.message)
+    } else {
+      setproveedores(data)
+    }
+  }
+
   //Obtener producto
   const obtenerProductos = async () => {
     setCargando(true)
@@ -68,6 +80,7 @@ const Inventario = () => {
     obtenerProductos()
     ObtenerTallas()
     ObtenerColores()
+    ObtenerProveedores()  
   }, [])
 
   //actualiza el from
@@ -119,74 +132,91 @@ const Inventario = () => {
   //Actualizar
 
   const ActualizarDet = async () => {
-  
-    console.log(Array.isArray(tallas))
-    tallas.map((talla,index) =>{
-      if(talla.talla==form.talla){
-        setForm(...form,{id_talla:talla.id_talla})
+    let id_talla = null
+    let id_color = null
+    let id_proveedor = null
+    tallas.map((talla, index) => {
+      if (talla.talla == form.talla) {
+        // console.log(talla.talla, talla.id_talla)
+        // console.log('id de talla encontrado:', talla.id_talla)
+        id_talla = talla.id_talla
+        setForm({ ...form, id_talla: talla.id_talla })
       }
-    }) 
+    })
 
-    colores.map((colores,index) =>{
-      if(colores.colores==form.color){
-        setForm(...form,{id_color:colores.id_color})
+    colores.map((colores, index) => {
+      if (colores.color == form.color) {
+        // console.log(colores.color, colores.id_color)
+        // console.log('id de color encontrado:', colores.id_color)
+        id_color = colores.id_color
+        setForm({ ...form, id_color: colores.id_color })
+      }
+    })
+
+    proveedores.map((proveedor, index) => {
+      if(proveedor.nombre_proveedor == form.nombre_proveedor) {
+        // console.log(proveedor.nombre_proveedor, proveedor.id_proveedor)
+        // console.log('id de proveedor encontrado:', proveedor.id_proveedor)
+        id_proveedor = proveedor.id_proveedor
+        setForm({ ...form, id_proveedor: proveedor.id_proveedor })
       }
     })
 
     const { data, error } = await supabase.schema('mrstore2').from('detproductos').update({
       stock: parseInt(form.stock),
-      talla: form.id_talla,
-      color: form.id_color,
-      id_proveedor: form.id_proveedor,
-      
+      talla: id_talla,
+      color: id_color,
+      id_proveedor: id_proveedor,
     })
       .eq('id_producto', form.id_producto)
-      .eq('id_talla', form.id_talla)
-      .eq('id_color', form.id_color)
+      .eq('talla', form.id_talla)
+      .eq('color', form.id_color)
       .eq('id_proveedor', form.id_proveedor)
       .select()
 
-      console.log(data)
-      if (error) {
-      alert('Error al actualizar producto: ' + error.message)
-    } else {
-      alert('Producto actualizado correctamente')
-      setEditar(false)
-      setForm({
-        id_producto: null, id_talla: null, id_color: null, id_proveedor: null, nombre_producto: '',
-        precio_producto: '', stock: '', talla: '', color: '', descripcion: '', nombre_proveedor: '', imagen_url: ''
-      })
+    console.log(data)
+    console.log(error)
+    // if (error) {
+    //   alert('Error al actualizar producto: ' + error.message)
+    // } else {
+    //   alert('Producto actualizado correctamente')
+    //   setEditar(false)
+    //   setForm({
+    //     id_producto: null, id_talla: null, id_color: null, id_proveedor: null, nombre_producto: '',
+    //     precio_producto: '', stock: '', talla: '', color: '', descripcion: '', nombre_proveedor: '', imagen_url: ''
+    //   })
 
-      //console.log(error)
-    }
+    //   console.log(error)
+    // }
   }
 
-  const ActualizarProd = async () => {
+  const ActualizarProducto = async () => {
 
-    const { data, error } = await supabase.schema('mrstore2').from('producto').update({
+    const { data, error } = await supabase.schema('mrstore2').from('productos').update({
       descripcion: form.descripcion,
       nombre_producto: form.nombre_producto,
       precio_producto: parseFloat(form.precio_producto),
       imagen_url: form.imagen_url
-    }).eq('id_producto',form.id_producto).select()
+    }).eq('id_producto', form.id_producto).select()
 
     console.log(data)
-    if (error) {
-      alert('Error al actualizar producto: ' + error.message)
-    } else {
-      alert('Producto actualizado correctamente')
-      setEditar(false)
-      setForm({
-        id_producto: null, id_talla: null, id_color: null, id_proveedor: null, nombre_producto: '',
-        precio_producto: '', stock: '', talla: '', color: '', descripcion: '', nombre_proveedor: '', imagen_url: ''
-      })
-    }
+    console.log(error)
+    // if (error) {
+    //   alert('Error al actualizar producto: ' + error.message)
+    // } else {
+    //   alert('Producto actualizado correctamente')
+    //   setEditar(false)
+    //   setForm({
+    //     id_producto: null, id_talla: null, id_color: null, id_proveedor: null, nombre_producto: '',
+    //     precio_producto: '', stock: '', talla: '', color: '', descripcion: '', nombre_proveedor: '', imagen_url: ''
+    //   })
+    // }
   }
 
-  const actualizarProd = (e) => {
+  const actualizarProd = () => {
 
     try {
-      ActualizarProd()
+      ActualizarProducto()
       ActualizarDet()
       obtenerProductos()
     }
@@ -195,7 +225,7 @@ const Inventario = () => {
     }
   }
 
-  
+
 
   //Eliminar
   const eliminarProducto = async (id) => {
@@ -212,8 +242,8 @@ const Inventario = () => {
   //Editar
 
   const editarProducto = (producto) => {
-     setEditar(true)
-     setForm({
+    setEditar(true)
+    setForm({
       id_producto: producto.id_producto,
       id_talla: producto.id_talla,
       id_color: producto.id_color,
@@ -227,7 +257,7 @@ const Inventario = () => {
       nombre_proveedor: producto.nombre_proveedor || '',
       imagen_url: producto.imagen_url || ''
 
-    }) 
+    })
     console.log(producto)
   }
 
