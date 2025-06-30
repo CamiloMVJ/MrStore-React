@@ -7,43 +7,70 @@ const Inventario = () => {
   const [productos, setProductos] = useState([])
   const [form, setForm] = useState({
     id_producto: null,
+    id_talla: null,
+    id_color: null,
+    id_proveedor: null,
     nombre_producto: '',
     precio_producto: '',
     stock: '',
     talla: '',
-    colores:'',
+    color: '',
     descripcion: '',
-    proveedor: '',
+    nombre_proveedor: '',
     imagen_url: ''
   })
 
-
+  const [tallas, setTallas] = useState(false)
+  const [colores, setColores] = useState(false)
   const [editar, setEditar] = useState(false)
   const [cargando, setCargando] = useState(true)
+  
+  
+  const ObtenerTallas = async()=>{
+    const {data, error}= await supabase
+    .schema('mrstore2').from('tallas').select()
 
+    if (error) {
+      alert('Error al cargar las tallas: ' + error.message)
+    } else {
+      setTallas(data)
+    }
+  }
 
+  const ObtenerColores = async()=>{
+    const {data, error}= await supabase
+    .schema('mrstore2').from('colores').select()
+
+    if (error) {
+      alert('Error al cargar las tallas: ' + error.message)
+    } else {
+      setColores(data)
+    }
+  }
+  
   //Obtener producto
   const obtenerProductos = async () => {
     setCargando(true)
     const { data, error } = await supabase
-    .schema('mrstore2').rpc('detproductos') 
-    console.log(data)
+      .schema('mrstore2').rpc('detproductos')
+    //console.log(data)
 
     if (error) {
       alert('Error al cargar productos: ' + error.message)
     } else {
+      // console.log(data)
       setProductos(data)
     }
-   setCargando(false)
+    setCargando(false)
   }
 
   useEffect(() => {
     obtenerProductos()
+    ObtenerTallas()
+    ObtenerColores()
   }, [])
 
-
-  
- //actualiza el from
+  //actualiza el from
   const manejarCambio = e => {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
@@ -70,9 +97,9 @@ const Inventario = () => {
         precio_producto: parseFloat(form.precio_producto),
         stock: parseInt(form.stock),
         talla: form.talla,
-        colores: form.colores,
+        color: form.color,
         descripcion: form.descripcion,
-        proveedor: form.proveedor,
+        nombre_proveedor: form.nombre_proveedor,
         imagen_url: form.imagen_url
       }
     ])
@@ -81,41 +108,94 @@ const Inventario = () => {
       alert('Error al crear producto: ' + error.message)
     } else {
       alert('Producto creado correctamente')
-      setForm({ id_producto: null, nombre_producto: '', precio_producto: '', stock: '', talla: '',colores:'', descripcion: '', proveedor: '', imagen_url: '' })
+      setForm({
+        id_producto: null, id_talla: null, id_color: null, id_proveedor: null, nombre_producto: '', precio_producto: '',
+        stock: '', talla: '', color: '', descripcion: '', nombre_proveedor: '', imagen_url: ''
+      })
       obtenerProductos()
     }
   }
 
   //Actualizar
-  const actualizarProducto = async () => {
-    if (!validarURL(form.imagen_url)) {
-      alert('La URL de la imagen no es válida.')
-      return
-    }
 
-    const { error } = await supabase
-      .from('productos')
-      .update({
-        nombre_producto: form.nombre_producto,
-        precio_producto: parseFloat(form.precio_producto),
-        stock: parseInt(form.stock),
-        talla: form.talla,
-        colores: form.colores,
-        descripcion: form.descripcion,
-        proveedor: form.proveedor,
-        imagen_url: form.imagen_url
-      })
+  const ActualizarDet = async () => {
+  
+    console.log(Array.isArray(tallas))
+    tallas.map((talla,index) =>{
+      if(talla.talla==form.talla){
+        setForm(...form,{id_talla:talla.id_talla})
+      }
+    }) 
+
+    colores.map((colores,index) =>{
+      if(colores.colores==form.color){
+        setForm(...form,{id_color:colores.id_color})
+      }
+    })
+
+    const { data, error } = await supabase.schema('mrstore2').from('detproductos').update({
+      stock: parseInt(form.stock),
+      talla: form.id_talla,
+      color: form.id_color,
+      id_proveedor: form.id_proveedor,
+      
+    })
       .eq('id_producto', form.id_producto)
+      .eq('id_talla', form.id_talla)
+      .eq('id_color', form.id_color)
+      .eq('id_proveedor', form.id_proveedor)
+      .select()
 
+      console.log(data)
+      if (error) {
+      alert('Error al actualizar producto: ' + error.message)
+    } else {
+      alert('Producto actualizado correctamente')
+      setEditar(false)
+      setForm({
+        id_producto: null, id_talla: null, id_color: null, id_proveedor: null, nombre_producto: '',
+        precio_producto: '', stock: '', talla: '', color: '', descripcion: '', nombre_proveedor: '', imagen_url: ''
+      })
+
+      //console.log(error)
+    }
+  }
+
+  const ActualizarProd = async () => {
+
+    const { data, error } = await supabase.schema('mrstore2').from('producto').update({
+      descripcion: form.descripcion,
+      nombre_producto: form.nombre_producto,
+      precio_producto: parseFloat(form.precio_producto),
+      imagen_url: form.imagen_url
+    }).eq('id_producto',form.id_producto).select()
+
+    console.log(data)
     if (error) {
       alert('Error al actualizar producto: ' + error.message)
     } else {
       alert('Producto actualizado correctamente')
       setEditar(false)
-      setForm({ id_producto: null, nombre_producto: '', precio_producto: '', stock: '', talla: '',colores:'', descripcion: '', proveedor: '', imagen_url: '' })
-      obtenerProductos()
+      setForm({
+        id_producto: null, id_talla: null, id_color: null, id_proveedor: null, nombre_producto: '',
+        precio_producto: '', stock: '', talla: '', color: '', descripcion: '', nombre_proveedor: '', imagen_url: ''
+      })
     }
   }
+
+  const actualizarProd = (e) => {
+
+    try {
+      ActualizarProd()
+      ActualizarDet()
+      obtenerProductos()
+    }
+    catch (error) {
+      console.log(error)
+    }
+  }
+
+  
 
   //Eliminar
   const eliminarProducto = async (id) => {
@@ -132,24 +212,29 @@ const Inventario = () => {
   //Editar
 
   const editarProducto = (producto) => {
-    setEditar(true)
-    setForm({
+     setEditar(true)
+     setForm({
       id_producto: producto.id_producto,
+      id_talla: producto.id_talla,
+      id_color: producto.id_color,
+      id_proveedor: producto.id_proveedor,
       nombre_producto: producto.nombre_producto,
       precio_producto: producto.precio_producto,
       stock: producto.stock,
-      talla: producto.tallas,
-      colores: producto.colores,
+      talla: producto.talla,
+      color: producto.color,
       descripcion: producto.descripcion,
-      proveedor: producto.proveedor || '',
+      nombre_proveedor: producto.nombre_proveedor || '',
       imagen_url: producto.imagen_url || ''
-    })
+
+    }) 
+    console.log(producto)
   }
 
-  
+
   const manejarEnvio = e => {
     e.preventDefault()
-    if (editar) actualizarProducto()
+    if (editar) actualizarProd()
     else crearProducto()
   }
 
@@ -174,14 +259,14 @@ const Inventario = () => {
           <label>Talla:</label>
           <input type="text" name="talla" value={form.talla} onChange={manejarCambio} />
 
-          <label>Colores:</label>
-          <input type="text" name="colores" value={form.colores} onChange={manejarCambio} required />
+          <label>color:</label>
+          <input type="text" name="color" value={form.color} onChange={manejarCambio} required />
 
           <label>Descripción:</label>
           <input type="text" name="descripcion" value={form.descripcion} onChange={manejarCambio} />
 
           <label>Proveedor:</label>
-          <input type="text" name="proveedor" value={form.proveedor} onChange={manejarCambio} />
+          <input type="text" name="nombre_proveedor" value={form.nombre_proveedor} onChange={manejarCambio} />
 
           <label>URL de Imagen:</label>
           <input type="url" name="imagen_url" value={form.imagen_url} onChange={manejarCambio} />
@@ -193,7 +278,7 @@ const Inventario = () => {
               type="button"
               onClick={() => {
                 setEditar(false)
-                setForm({ id_producto: null, nombre_producto: '', precio_producto: '', stock: '', talla: '', color:'', descripcion: '', proveedor: '', imagen_url: '' })
+                setForm({ id_producto: null, nombre_producto: '', precio_producto: '', stock: '', talla: '', color: '', descripcion: '', nombre_proveedor: '', imagen_url: '' })
               }}
               style={{ marginLeft: '10px', background: '#d1a2f5', color: 'white', padding: '10px 20px', border: 'none' }}
             >CANCELAR</button>
@@ -206,12 +291,15 @@ const Inventario = () => {
           <table border="1.9" cellPadding="10" style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead style={{ background: '#d1a2f5' }}>
               <tr>
-                <th>ID</th>
+                <th>Id Prod</th>
+                <th>Id prov</th>
+                <th>Id Talla</th>
+                <th>Id Color</th>
                 <th>Nombre</th>
                 <th>Precio</th>
                 <th>Stock</th>
                 <th>Talla</th>
-                <th>Colores</th>
+                <th>color</th>
                 <th>Descripción</th>
                 <th>Proveedor</th>
                 <th>Imagen</th>
@@ -222,16 +310,19 @@ const Inventario = () => {
               {productos.length === 0 ? (
                 <tr><td colSpan="9" style={{ textAlign: 'center' }}>No hay productos</td></tr>
               ) : (
-                productos.map(producto => (
-                  <tr key={producto.id_producto}>
+                productos.map((producto, index) => (
+                  <tr key={index}>
                     <td>{producto.id_producto}</td>
+                    <td>{producto.id_proveedor}</td>
+                    <td>{producto.id_talla}</td>
+                    <td>{producto.id_color}</td>
                     <td>{producto.nombre_producto}</td>
                     <td>{producto.precio_producto}</td>
                     <td>{producto.stock}</td>
-                    <td>{producto.tallas}</td>
-                    <td>{producto.colores}</td>
+                    <td>{producto.talla}</td>
+                    <td>{producto.color}</td>
                     <td>{producto.descripcion}</td>
-                    <td>{producto.proveedores}</td>
+                    <td>{producto.nombre_proveedor}</td>
                     <td><img src={producto.imagen_url} alt="imagen" width="50" /></td>
                     <td>
                       <button onClick={() => editarProducto(producto)} style={{ marginRight: '5px', background: '#d1a2f5', color: 'white', border: 'none', padding: '5px 10px' }}>EDITAR</button>
