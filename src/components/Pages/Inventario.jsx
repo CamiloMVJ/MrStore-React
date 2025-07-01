@@ -6,11 +6,11 @@ import Header from '../Header'
 const Inventario = () => {
   const [productos, setProductos] = useState([])
   const [form, setForm] = useState({
-    id_producto: null,
-    id_talla: null,
-    id_color: null,
-    id_proveedor: null,
-    id_categoria: null,
+    id_producto: '',
+    id_talla: '',
+    id_color: '',
+    id_categoria: '',
+    id_proveedor: '',
     nombre_categoria: '',
     nombre_producto: '',
     precio_producto: '',
@@ -23,15 +23,15 @@ const Inventario = () => {
   })
 
   const [tallas, setTallas] = useState(false)
-  const [tallaSeleccionada, setTallaSeleccionada] = useState('')
+  const [tallaxEditar, setTallaxEditar] = useState('')
   const [colores, setColores] = useState(false)
-  const [colorSeleccionado, setColorSeleccionado] = useState('')
+  const [colorxEditar, setColorxEditar] = useState('')
   const [proveedores, setproveedores] = useState(false)
-  const [proveedorSeleccionado, setProveedorSeleccionado] = useState('')
+  const [proveedorxEditar, setProveedorxEditar] = useState('')
   const [editar, setEditar] = useState(false)
   const [cargando, setCargando] = useState(true)
   const [categorias, setCategorias] = useState([])
-  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(0)
+  const [categoriaxEditar, setCategoriaxEditar] = useState(0)
 
 
   const ObtenerTallas = async () => {
@@ -148,7 +148,7 @@ const Inventario = () => {
       if (error) {
         alert('Error al crear detalle del producto: ' + error.message)
       }
-      else{
+      else {
         alert('Producto creado correctamente')
         setForm({
           id_producto: null, id_talla: null, id_color: null, id_proveedor: null, nombre_producto: '', precio_producto: '',
@@ -174,13 +174,13 @@ const Inventario = () => {
 
 
     // if (!validarURL(form.imagen_url)) return alert('URL de imagen inválida')
-  
+
     // const talla = tallas.find(t => t.talla === form.talla)
     // const color = colores.find(c => c.color === form.color)
     // const proveedor = proveedores.find(p => p.nombre_proveedor === form.nombre_proveedor)
-  
+
     // if (!talla || !color || !proveedor) return alert('Talla, color o proveedor inválido')
-  
+
     // const { data, error } = await supabase
     //   .schema('mrstore2')
     //   .from('productos')
@@ -191,11 +191,11 @@ const Inventario = () => {
     //     imagen_url: form.imagen_url
     //   })
     //   .select('id_producto')
-  
+
     // if (error) return alert('Error al crear producto: ' + error.message)
-  
+
     // const id_producto = data[0].id_producto
-  
+
     // const { error: errP } = await supabase
     //   .schema('mrstore2')
     //   .from('detproductos')
@@ -206,9 +206,9 @@ const Inventario = () => {
     //     id_proveedor: proveedor.id_proveedor,
     //     stock: +form.stock
     //   })
-  
+
     // if (errP) return alert('Error al crear el producto ' + errP.message)
-  
+
     // alert('Producto creado correctamente')
     // setForm({
     //   id_producto: null, id_talla: null, id_color: null, id_proveedor: null,
@@ -220,44 +220,43 @@ const Inventario = () => {
 
   //Actualizar
   const ActualizarDet = async () => {
-    let id_talla = null
-    let id_color = null
-    let id_proveedor = null
-    tallas.map((talla, index) => {
-      if (talla.talla == form.talla) {
-        // console.log(talla.talla, talla.id_talla)
-        // console.log('id de talla encontrado:', talla.id_talla)
-        id_talla = talla.id_talla
-        setForm({ ...form, id_talla: talla.id_talla })
-      }
-    })
+    // let id_talla = null
+    // let id_color = null
+    // let id_proveedor = null
+    // tallas.map((talla, index) => {
+    //   if (talla.talla == form.talla) {
+    //     // console.log(talla.talla, talla.id_talla)
+    //     // console.log('id de talla encontrado:', talla.id_talla)
+    //     id_talla = talla.id_talla
+    //     setForm({ ...form, id_talla: talla.id_talla })
+    //   }
+    // })
 
-    colores.map((colores, index) => {
-      if (colores.color == form.color) {
-        id_color = colores.id_color
-        setForm({ ...form, id_color: colores.id_color })
-      }
-    })
+    // colores.map((colores, index) => {
+    //   if (colores.color == form.color) {
+    //     id_color = colores.id_color
+    //     setForm({ ...form, id_color: colores.id_color })
+    //   }
+    // })
 
-    proveedores.map((proveedor, index) => {
-      if (proveedor.nombre_proveedor == form.nombre_proveedor) {
-        // console.log(proveedor.nombre_proveedor, proveedor.id_proveedor)
-        // console.log('id de proveedor encontrado:', proveedor.id_proveedor)
-        id_proveedor = proveedor.id_proveedor
-        setForm({ ...form, id_proveedor: proveedor.id_proveedor })
-      }
-    })
+    // proveedores.map((proveedor, index) => {
+    //   if (proveedor.nombre_proveedor == form.nombre_proveedor) {
+    //     // console.log(proveedor.nombre_proveedor, proveedor.id_proveedor)
+    //     // console.log('id de proveedor encontrado:', proveedor.id_proveedor)
+    //     id_proveedor = proveedor.id_proveedor
+    //     setForm({ ...form, id_proveedor: proveedor.id_proveedor })
+    //   }
+    // })
 
     const { data, error } = await supabase.schema('mrstore2').from('detproductos').update({
       stock: parseInt(form.stock),
-      talla: id_talla,
-      color: id_color,
-      id_proveedor: id_proveedor,
-    })
-      .eq('id_producto', form.id_producto)
-      .eq('talla', form.id_talla)
-      .eq('color', form.id_color)
-      .eq('id_proveedor', form.id_proveedor)
+      talla: form.id_talla,
+      color: form.id_color,
+      id_proveedor: form.id_proveedor,
+    }).eq('id_producto', form.id_producto)
+      .eq('talla', tallaxEditar)
+      .eq('color', colorxEditar)
+      .eq('id_proveedor', proveedorxEditar)
       .select()
 
     console.log(data)
@@ -292,36 +291,28 @@ const Inventario = () => {
   }
 
   //Eliminar  
-  const eliminarProducto = async (producto) => {
+  const eliminarProducto = async (id_producto) => {
     if (!window.confirm('¿Seguro que quieres eliminar este producto?')) return
-  
+
     try {
-      const { error: errorDet } = await supabase
+      const { data, error } = await supabase
         .schema('mrstore2')
-        .from('detproductos') 
-        .delete()
-        //.eq('id_producto', producto.id_producto)
-        .eq('id_tallas', producto.id_talla)
-        .eq('id_colores', producto.id_colores)
-        .eq('id_proveedor', producto.id_proveedor)
-  
-      if (errorDet) {
-        alert('Error al eliminar detalle del producto: ' + errorDet.message)
-        return
-      }
-      const { error: errorProd } = await supabase
         .from('productos')
-        .delete()
-        .eq('id_producto', producto.id_producto)
-  
-      if (errorProd) {
-        alert('Error al eliminar producto: ' + errorProd.message)
+        .update({
+          estado: false
+        })
+        .eq('id_producto', id_producto)
+        .select()
+
+      console.log(data)
+      if (error) {
+        alert('Error al eliminar detalle del producto: ' + error.message)
         return
       }
-  
+
       alert('Producto eliminado correctamente')
       obtenerProductos()
-  
+
     } catch (err) {
       console.error('Error inesperado:', err)
       alert('Error inesperado al eliminar producto')
@@ -351,10 +342,10 @@ const Inventario = () => {
       imagen_url: producto.imagen_url || ''
 
     })
-    setCategoriaSeleccionada(producto.id_categoria)
-    setTallaSeleccionada(producto.talla || '')
-    setColorSeleccionado(producto.color || '')
-    setProveedorSeleccionado(producto.nombre_proveedor || '')
+    setCategoriaxEditar(producto.id_categoria)
+    setTallaxEditar(producto.id_talla || '')
+    setColorxEditar(producto.id_color || '')
+    setProveedorxEditar(producto.id_proveedor || '')
     // console.log(producto)
   }
 
@@ -367,25 +358,26 @@ const Inventario = () => {
   //actualiza el from
   const manejarCambio = e => {
     setForm({ ...form, [e.target.name]: e.target.value })
-    if(e.target.name === 'id_categoria') {
-      setCategoriaSeleccionada(e.target.value)
-      setForm({ ...form, id_categoria: Number(e.target.value) })
-      setForm({ ...form, nombre_categoria: categorias.find(c => c.id_categoria === Number(e.target.value)).nombre_categoria || null })
+
+    if (e.target.name === 'id_categoria') {
+      console.log("Categoria seleccionada:", e.target.value)
+      setForm({ ...form, id_categoria: Number(e.target.value), nombre_categoria: categorias.find(c => c.id_categoria === Number(e.target.value)).nombre_categoria || null })
     }
     if (e.target.name === 'talla') {
-      setTallaSeleccionada(e.target.value)
-      setForm({ ...form, id_talla: tallas.find(t => t.talla.toLowerCase() === e.target.value.toLowerCase()).id_talla || null })
-      setForm({ ...form, talla: e.target.value })
+      console.log("Talla seleccionada:", e.target.value)
+      let tallaSeleccionada = tallas.find(t => t.talla.toLowerCase() === e.target.value.toLowerCase())
+      setForm({ ...form, talla: e.target.value, id_talla: tallaSeleccionada ? tallaSeleccionada.id_talla : null })
     }
     if (e.target.name === 'color') {
-      setColorSeleccionado(e.target.value)
-      setForm({ ...form, id_color: colores.find(c => c.color.toLowerCase() === e.target.value.toLowerCase()).id_color || null })
-      setForm({ ...form, color: e.target.value })
+      console.log("Color seleccionado:", e.target.value)
+      let id_color = colores.find(c => c.color.toLowerCase() === e.target.value.toLowerCase())
+      console.log(id_color)
+      setForm({ ...form, color: e.target.value, id_color: id_color ? id_color.id_color : null })
     }
     if (e.target.name === 'nombre_proveedor') {
-      setProveedorSeleccionado(e.target.value)
-      setForm({ ...form, id_proveedor: proveedores.find(p => p.nombre_proveedor.toLowerCase() === e.target.value.toLowerCase()).id_proveedor || null })
-      setForm({ ...form, nombre_proveedor: e.target.value })
+      console.log("Proveedor seleccionado:", e.target.value)
+      let proveedorSeleccionado = proveedores.find(p => p.nombre_proveedor.toLowerCase() === e.target.value.toLowerCase())
+      setForm({ ...form, nombre_proveedor: e.target.value, id_proveedor: proveedorSeleccionado ? proveedorSeleccionado.id_proveedor : null })
     }
   }
 
@@ -402,7 +394,7 @@ const Inventario = () => {
           <input type="text" id="nombre_producto" name="nombre_producto" value={form.nombre_producto} onChange={manejarCambio} required />
 
           <label htmlFor="id_categoria"> Categoria </label>
-          <select name="id_categoria" value={categoriaSeleccionada} onChange={manejarCambio} required>
+          <select name="id_categoria" value={form.id_categoria} onChange={manejarCambio} required>
             <option value="">Seleccionar categoría</option>
             {Array.isArray(categorias) && categorias.map((categoria, index) => {
               return (
@@ -420,16 +412,16 @@ const Inventario = () => {
           <input type="number" id="stock" name="stock" value={form.stock} onChange={manejarCambio} required />
 
           <label htmlFor="talla"> Talla: </label>
-          <input type="text" id="talla" name="talla" value={tallaSeleccionada} onChange={manejarCambio} />
+          <input type="text" id="talla" name="talla" value={form.talla} onChange={manejarCambio} />
 
           <label htmlFor="color"> Color: </label>
-          <input type="text" id="color" name="color" value={colorSeleccionado} onChange={manejarCambio} required />
+          <input type="text" id="color" name="color" value={form.color} onChange={manejarCambio} required />
 
           <label htmlFor="descripcion"> Descripción: </label>
           <input type="text" id="descripcion" name="descripcion" value={form.descripcion} onChange={manejarCambio} />
 
           <label htmlFor="nombre_proveedor"> Proveedor: </label>
-          <input type="text" id="nombre_proveedor" name="nombre_proveedor" value={proveedorSeleccionado} onChange={manejarCambio} />
+          <input type="text" id="nombre_proveedor" name="nombre_proveedor" value={form.nombre_proveedor} onChange={manejarCambio} />
 
           <label htmlFor="imagen_url"> URL de Imagen: </label>
           <input type="url" id="imagen_url" name="imagen_url" value={form.imagen_url} onChange={manejarCambio} />
