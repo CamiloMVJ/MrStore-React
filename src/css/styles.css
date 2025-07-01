@@ -812,6 +812,16 @@ Hero Media Query
   width: 100px;
 }
 
+.btn-full {
+  background-color: var(--purple);
+  color: var(--white);
+  display: inline-block;
+  border-radius: 0.5rem;
+  padding: .4rem 1rem !important;
+  margin: 0 !important;
+  width: 100%;
+}
+
 .btn-1Trash {
   background-color: var(--purple);
   color: var(--white);
@@ -1611,7 +1621,7 @@ form .btn-danger {
   background: var(--purple) !important;
 }
 
-.bg-red{
+.bg-red {
   background: var(--red) !important;
 }
 
@@ -2025,5 +2035,9 @@ form .btn-danger {
 }
 
 .colorPurple {
-  color : var(--purple);
+  color: var(--purple);
+}
+
+.summaryTable {
+  width: 80%;
 }

@@ -4,7 +4,7 @@ import Notification from './Notification'
 
 const Product = ({ producto, ActualizarTotal, ActualizarProductos }) => {
     const [colorYtalla, setColorYTalla] = useState([])
-    const [indexColorYTalla, setIndexColorYTalla] = useState()
+    const [indexColorYTalla, setIndexColorYTalla] = useState(0)
     const [product, setProduct] = useState(producto)
     const [cantidad, setCantidad] = useState(product.cantidad)
     const [precio, setPrecio] = useState(product.detproductos.productos.precio_producto)

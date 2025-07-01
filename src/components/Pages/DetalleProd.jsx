@@ -10,7 +10,7 @@ const DetalleProd = () => {
     const [product, setProduct] = useState()
     const [message, setMessage] = useState("Cargando producto...")
     const [colorYtalla, setColorYTalla] = useState([])
-    const [indexColorYTalla, setIndexColorYTalla] = useState()
+    const [indexColorYTalla, setIndexColorYTalla] = useState(0)
     const [cantidad, setCantidad] = useState(1)
     const [messageError, setMessageError] = useState(null)
     const [typeError, setTypeError] = useState(null)
@@ -26,24 +26,32 @@ const DetalleProd = () => {
     const Addcart = (e) => {
         e.preventDefault()
         let session = sessionStorage.getItem('session') ? JSON.parse(sessionStorage.getItem('session')) : undefined
-        if (session && indexColorYTalla) {
+        if (!session) {
+            setMessageError("Debes iniciar sesión para agregar productos al carrito")
+            setTypeError("error")
+            return
+        }
+        if (!indexColorYTalla || indexColorYTalla === "Select Size") {
+            setMessageError("Debes seleccionar un color y talla")
+            setTypeError("error")
+            return
+        }
+        if (cantidad <= 0) {
+            setMessageError("La cantidad debe ser mayor a 0")
+            setTypeError("error")
+            return
+        }
+        if (indexColorYTalla) {
             addProductToCart(session.id_carrito, product.id_producto, colorYtalla[indexColorYTalla].colores.id_color,
-                colorYtalla[indexColorYTalla].tallas.id_talla, product.id_proveedor, cantidad).then(data => {
-                    if(data){
-                        setMessageError("Producto añadido al carrito")
-                        setTypeError("success")
-                    }
-                    else {
-                        setMessageError("Error al añadir el producto al carrito")
-                        setTypeError("error")
-                    }
+                colorYtalla[indexColorYTalla].tallas.id_talla, product.id_proveedor, cantidad).then(({ message, type }) => {
+                    setMessageError(message)
+                    setTypeError(type)
                 })
         }
     }
 
     const handleColoryTalla = (e) => {
-        if (e.target.value !== "Select Size")
-            setIndexColorYTalla(e.target.value)
+        setIndexColorYTalla(e.target.value)
     }
 
     useEffect(() => {
@@ -66,14 +74,14 @@ const DetalleProd = () => {
         const fetchProduct = async () => {
             getProductById(productId).then(data => {
                 if (data.length === 0) {
-                    console.error("No se encontró el producto con ID:", productId);
+                    console.error("No se encontró el producto con ID:", productId)
                 }
-                setProduct({ ...data[0], descripcion: data[0].descripcion.replace('.', '') })
+                setProduct({ ...data[indexColorYTalla], descripcion: data[indexColorYTalla].descripcion.replace('.', '') })
                 // console.log(data)
             })
         }
         fetchProduct()
-    }, [])
+    }, [indexColorYTalla])
     if (!product) {
         return (
             <div className="container center allheight">
@@ -100,7 +108,7 @@ const DetalleProd = () => {
                             <form>
                                 <div style={{ position: "relative" }}>
                                     <select onChange={handleColoryTalla}>
-                                        <option value="Select Size" disabled="">
+                                        <option value="Select Size">
                                             Selecciona la talla y color
                                         </option>
                                         {Array.isArray(colorYtalla) && colorYtalla.map((item, index) => (

@@ -118,18 +118,27 @@ export const addProductToCart = async (id_carrito, idProducto, id_color, id_tall
       id_proveedor: id_proveedor,
       cantidad: cantidad
     }).select()
-    // console.log(data, error)
+
+    console.log(data, error)
     if (error) {
-      console.error("Error al agregar producto al carrito:", error)
-      return false
+      // console.error("Error al agregar producto al carrito:", error)
+      if (error.code === '23505') {
+        console.error("El producto ya existe en el carrito")
+        return { message: "El producto ya existe en el carrito", type: "error" }
+      } else {
+        console.error("Error al agregar producto al carrito:", error)
+        return { message: "Error al agregar producto al carrito", type: "error" }
+      }
     }
     console.log("Producto agregado al carrito:", data)
-    return true
+    return { message: "Producto agregado al carrito", type: "success" }
   } catch (error) {
     console.error("Error al agregar producto al carrito:", errorñ)
     return false
   }
 }
+
+
 
 export const getProductById = async (id) => {
   try {

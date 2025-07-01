@@ -11,17 +11,23 @@ const Cart = () => {
     const [loading, setLoading] = useState(true)
     const [ActTotal, setActTotal] = useState(false)
     const [direcciones, setDirecciones] = useState([])
-    const [DirActiva, setDirActiva] = useState(null)
+    const [DirActiva, setDirActiva] = useState(0)
     const [session, setSession] = useState(JSON.parse(sessionStorage.getItem('session')))
+    const [Descuento, setDescuento] = useState(0)
+    const [Envio, setEnvio] = useState(0)
 
     useEffect(() => {
         const timer = setTimeout(() => {
             supabase.schema('mrstore2').from('carritocompras').select(`total`).then(data => {
                 if (data.data.length > 0) {
                     setTotalPrice(data.data[0].total)
+                    fetchCarrito()
                 }
             })
         }, 100)
+        if (cartItems.length > 0) {
+            setEnvio(cartItems.reduce((acc, item) => acc + (item.cantidad * 0.375), 0))
+        }
     }, [ActTotal])
 
     useEffect(() => {
@@ -49,9 +55,6 @@ const Cart = () => {
 
     const updateTotal = () => {
         setActTotal(!ActTotal)
-    }
-    const actualizarProductos = () => {
-
     }
 
     const handleDirChange = (e) => {
@@ -103,11 +106,7 @@ const Cart = () => {
                 setCartItems(data.data)
                 setLoading(false)
             })
-        supabase.schema('mrstore2').from('carritocompras').select(`total`).then(data => {
-            if (data.data.length > 0) {
-                setTotalPrice(data.data[0].total)
-            }
-        })
+        updateTotal()
     }
 
     if (loading) {
@@ -140,38 +139,55 @@ const Cart = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {cartItems.map((item) => {
+                                {cartItems.map((item, index) => {
                                     return (
-                                        <Product ActualizarTotal={updateTotal} ActualizarProductos={fetchCarrito} key={item.detproductos.productos.id_producto} producto={item} />
+                                        <Product ActualizarTotal={updateTotal} ActualizarProductos={fetchCarrito} key={(item.detproductos.productos.id_producto + item.detproductos.tallas.id_talla)} producto={item} />
                                     )
                                 })}
                             </tbody>
                         </table>) : null}
-                    {cartItems.length > 0 ? (<div className='cart-total'>
-                        <h2 className='title'>Resumen de carrito</h2>
-                        <div className='flex' style={{justifyContent: "center" , alignItems: "baseline"}}>
-                            <label htmlFor=""> Diccion de envio</label>
-                            <select className="selector" style={{ width: "100px", textAlign: "center", height: "25px", marginBottom: "20px" }} name="direccion" value={DirActiva} onChange={handleDirChange}>
-                                {DirActiva === '' ? (<option value="" disabled>Seleccione una direccion</option>) : null}
-                                {direcciones.map((dir, index) => {
-                                    return (
-                                        <option key={index} value={dir.id_direccion} >
-                                            {dir.nombre_dir}
-                                        </option>
-                                    )
-                                })}
-                            </select>
-                        </div>
-
-                        <p className='center'>Total a pagar: <strong>{totalPrice}$</strong></p>
-                        <div className='center'>
-                            <Link to='/checkout' className='btn btn-primary'>Pagar</Link>
-                        </div>
-                    </div>) : null}
+                    {cartItems.length > 0 ?
+                        (<div className='cart-total'>
+                            <h2 className='title'>Resumen de carrito</h2>
+                            <div className='flex' style={{ justifyContent: "center", alignItems: "baseline" }}>
+                                <label htmlFor=""> Diccion de envio</label>
+                                <select className="selector" style={{ width: "100px", textAlign: "center", height: "25px", marginBottom: "20px" }} name="direccion" value={DirActiva} onChange={handleDirChange}>
+                                    {DirActiva === '' ? (<option value="" disabled>Seleccione una direccion</option>) : null}
+                                    {direcciones.map((dir, index) => {
+                                        return (
+                                            <option key={index} value={dir.id_direccion}>
+                                                {dir.nombre_dir}
+                                            </option>
+                                        )
+                                    })}
+                                </select>
+                            </div>
+                            <div className='bgshadow flex' style={{ width: "80%", margin: "0 auto" }}>
+                                <table className='summaryTable'>
+                                    <tbody>
+                                        <tr>
+                                            <td>Subtotal por productos</td>
+                                            <td style={{ textAlign: "right" }}>{totalPrice}$</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Descuentos</td>
+                                            <td style={{ textAlign: "right" }}>{Descuento}$</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Costo del envio</td>
+                                            <td style={{ textAlign: "right" }}>{Envio}$</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div className='center' style={{ marginTop: "20px" }}>
+                                <Link to='/pago' className='btn-1' style={{ textAlign: "center" }}>Pagar</Link>
+                            </div>
+                        </div>) : null}
 
                 </div>
             </div>
-            {(cartItems.length <= 0 && session == null) ? null : (<p className='title margin'>El carrito esta vacio</p>)}
+            {(cartItems.length <= 0 && session != null) ? (<p className='title margin'>El carrito esta vacio</p>) : null}
             {session ? null : (<p className='title margin'>Para realizar una compra, por favor <Link className="colorPurple" to='/login'>Login</Link></p>)}
 
 
