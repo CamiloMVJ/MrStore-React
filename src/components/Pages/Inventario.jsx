@@ -10,6 +10,8 @@ const Inventario = () => {
     id_talla: null,
     id_color: null,
     id_proveedor: null,
+    id_categoria: null,
+    nombre_categoria: '',
     nombre_producto: '',
     precio_producto: '',
     stock: '',
@@ -21,10 +23,15 @@ const Inventario = () => {
   })
 
   const [tallas, setTallas] = useState(false)
+  const [tallaSeleccionada, setTallaSeleccionada] = useState('')
   const [colores, setColores] = useState(false)
+  const [colorSeleccionado, setColorSeleccionado] = useState('')
   const [proveedores, setproveedores] = useState(false)
+  const [proveedorSeleccionado, setProveedorSeleccionado] = useState('')
   const [editar, setEditar] = useState(false)
   const [cargando, setCargando] = useState(true)
+  const [categorias, setCategorias] = useState([])
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(0)
 
 
   const ObtenerTallas = async () => {
@@ -60,6 +67,16 @@ const Inventario = () => {
     }
   }
 
+  const obtenerCategorias = async () => {
+    const { data, error } = await supabase
+      .schema('mrstore2').from('categorias').select()
+    if (error) {
+      alert('Error al cargar las categorías: ' + error.message)
+    } else {
+      setCategorias(data)
+    }
+  }
+
   //Obtener producto
   const obtenerProductos = async () => {
     setCargando(true)
@@ -80,13 +97,9 @@ const Inventario = () => {
     obtenerProductos()
     ObtenerTallas()
     ObtenerColores()
-    ObtenerProveedores()  
+    obtenerCategorias()
+    ObtenerProveedores()
   }, [])
-
-  //actualiza el from
-  const manejarCambio = e => {
-    setForm({ ...form, [e.target.name]: e.target.value })
-  }
 
   const validarURL = (url) => {
     try {
@@ -104,29 +117,57 @@ const Inventario = () => {
       return
     }
 
-    const { error } = await supabase.from('productos').insert([
+    supabase.schema('mrstore2').from('productos').insert([
       {
         nombre_producto: form.nombre_producto,
         precio_producto: parseFloat(form.precio_producto),
-        stock: parseInt(form.stock),
-        talla: form.talla,
-        color: form.color,
         descripcion: form.descripcion,
-        nombre_proveedor: form.nombre_proveedor,
-        imagen_url: form.imagen_url
+        imagen_url: form.imagen_url,
+        id_categoria: form.id_categoria
       }
-    ])
-
-    if (error) {
-      alert('Error al crear producto: ' + error.message)
-    } else {
-      alert('Producto creado correctamente')
-      setForm({
-        id_producto: null, id_talla: null, id_color: null, id_proveedor: null, nombre_producto: '', precio_producto: '',
-        stock: '', talla: '', color: '', descripcion: '', nombre_proveedor: '', imagen_url: ''
+    ]).select()
+      .then(({ data, error }) => {
+        if (error) {
+          alert('Error al crear producto: ' + error.message)
+        } else {
+          console.log('Producto creado:', data)
+          setForm({ ...form, id_producto: data[0].id_producto })
+          crearDetProducto(data[0].id_producto)
+        }
       })
-      obtenerProductos()
+
+    const crearDetProducto = async (id_producto) => {
+      const { data, error } = await supabase.schema('mrstore2').from('detproductos').insert({
+        id_producto: id_producto,
+        stock: parseInt(form.stock),
+        talla: form.id_talla,
+        color: form.id_color,
+        id_proveedor: form.id_proveedor
+      })
+      console.log(data)
+      if (error) {
+        alert('Error al crear detalle del producto: ' + error.message)
+      }
+      else{
+        alert('Producto creado correctamente')
+        setForm({
+          id_producto: null, id_talla: null, id_color: null, id_proveedor: null, nombre_producto: '', precio_producto: '',
+          stock: '', talla: '', color: '', descripcion: '', nombre_proveedor: '', imagen_url: ''
+        })
+        obtenerProductos()
+      }
     }
+
+    // if (error) {
+    //   alert('Error al crear producto: ' + error.message)
+    // } else {
+    //   alert('Producto creado correctamente')
+    //   setForm({
+    //     id_producto: null, id_talla: null, id_color: null, id_proveedor: null, nombre_producto: '', precio_producto: '',
+    //     stock: '', talla: '', color: '', descripcion: '', nombre_proveedor: '', imagen_url: ''
+    //   })
+    //   obtenerProductos()
+    // }
   }
 
   //Actualizar
@@ -154,7 +195,7 @@ const Inventario = () => {
     })
 
     proveedores.map((proveedor, index) => {
-      if(proveedor.nombre_proveedor == form.nombre_proveedor) {
+      if (proveedor.nombre_proveedor == form.nombre_proveedor) {
         // console.log(proveedor.nombre_proveedor, proveedor.id_proveedor)
         // console.log('id de proveedor encontrado:', proveedor.id_proveedor)
         id_proveedor = proveedor.id_proveedor
@@ -196,7 +237,8 @@ const Inventario = () => {
       descripcion: form.descripcion,
       nombre_producto: form.nombre_producto,
       precio_producto: parseFloat(form.precio_producto),
-      imagen_url: form.imagen_url
+      imagen_url: form.imagen_url,
+      id_categoria: form.id_categoria
     }).eq('id_producto', form.id_producto).select()
 
     console.log(data)
@@ -248,6 +290,8 @@ const Inventario = () => {
       id_talla: producto.id_talla,
       id_color: producto.id_color,
       id_proveedor: producto.id_proveedor,
+      id_categoria: producto.id_categoria,
+      nombre_categoria: producto.nombre_categoria || '',
       nombre_producto: producto.nombre_producto,
       precio_producto: producto.precio_producto,
       stock: producto.stock,
@@ -258,7 +302,11 @@ const Inventario = () => {
       imagen_url: producto.imagen_url || ''
 
     })
-    console.log(producto)
+    setCategoriaSeleccionada(producto.id_categoria)
+    setTallaSeleccionada(producto.talla || '')
+    setColorSeleccionado(producto.color || '')
+    setProveedorSeleccionado(producto.nombre_proveedor || '')
+    // console.log(producto)
   }
 
 
@@ -266,6 +314,31 @@ const Inventario = () => {
     e.preventDefault()
     if (editar) actualizarProd()
     else crearProducto()
+  }
+
+  //actualiza el from
+  const manejarCambio = e => {
+    setForm({ ...form, [e.target.name]: e.target.value })
+    if(e.target.name === 'id_categoria') {
+      setCategoriaSeleccionada(e.target.value)
+      setForm({ ...form, id_categoria: Number(e.target.value) })
+      setForm({ ...form, nombre_categoria: categorias.find(c => c.id_categoria === Number(e.target.value)).nombre_categoria || null })
+    }
+    if (e.target.name === 'talla') {
+      setTallaSeleccionada(e.target.value)
+      setForm({ ...form, id_talla: tallas.find(t => t.talla.toLowerCase() === e.target.value.toLowerCase()).id_talla || null })
+      setForm({ ...form, talla: e.target.value })
+    }
+    if (e.target.name === 'color') {
+      setColorSeleccionado(e.target.value)
+      setForm({ ...form, id_color: colores.find(c => c.color.toLowerCase() === e.target.value.toLowerCase()).id_color || null })
+      setForm({ ...form, color: e.target.value })
+    }
+    if (e.target.name === 'nombre_proveedor') {
+      setProveedorSeleccionado(e.target.value)
+      setForm({ ...form, id_proveedor: proveedores.find(p => p.nombre_proveedor.toLowerCase() === e.target.value.toLowerCase()).id_proveedor || null })
+      setForm({ ...form, nombre_proveedor: e.target.value })
+    }
   }
 
   return (
@@ -277,29 +350,41 @@ const Inventario = () => {
         <form onSubmit={manejarEnvio} style={{ marginBottom: '80px', border: '2px solid #ccc', padding: '25px' }}>
           <h3>{editar ? 'Editar producto' : 'Agregar producto'}</h3>
 
-          <label>Nombre del Producto:</label>
-          <input type="text" name="nombre_producto" value={form.nombre_producto} onChange={manejarCambio} required />
+          <label htmlFor="nombre_producto"> Nombre del Producto: </label>
+          <input type="text" id="nombre_producto" name="nombre_producto" value={form.nombre_producto} onChange={manejarCambio} required />
 
-          <label>Precio:</label>
-          <input type="number" name="precio_producto" value={form.precio_producto} onChange={manejarCambio} step="0.01" required />
+          <label htmlFor="id_categoria"> Categoria </label>
+          <select name="id_categoria" value={categoriaSeleccionada} onChange={manejarCambio} required>
+            <option value="">Seleccionar categoría</option>
+            {Array.isArray(categorias) && categorias.map((categoria, index) => {
+              return (
+                <option key={categoria.id_categoria} value={categoria.id_categoria}>
+                  {categoria.nombre_categoria}
+                </option>
+              )
+            })}
+          </select>
 
-          <label>Stock:</label>
-          <input type="number" name="stock" value={form.stock} onChange={manejarCambio} required />
+          <label htmlFor="precio_producto"> Precio: </label>
+          <input type="number" id="precio_producto" name="precio_producto" value={form.precio_producto} onChange={manejarCambio} step="0.01" required />
 
-          <label>Talla:</label>
-          <input type="text" name="talla" value={form.talla} onChange={manejarCambio} />
+          <label htmlFor="stock"> Stock: </label>
+          <input type="number" id="stock" name="stock" value={form.stock} onChange={manejarCambio} required />
 
-          <label>color:</label>
-          <input type="text" name="color" value={form.color} onChange={manejarCambio} required />
+          <label htmlFor="talla"> Talla: </label>
+          <input type="text" id="talla" name="talla" value={tallaSeleccionada} onChange={manejarCambio} />
 
-          <label>Descripción:</label>
-          <input type="text" name="descripcion" value={form.descripcion} onChange={manejarCambio} />
+          <label htmlFor="color"> Color: </label>
+          <input type="text" id="color" name="color" value={colorSeleccionado} onChange={manejarCambio} required />
 
-          <label>Proveedor:</label>
-          <input type="text" name="nombre_proveedor" value={form.nombre_proveedor} onChange={manejarCambio} />
+          <label htmlFor="descripcion"> Descripción: </label>
+          <input type="text" id="descripcion" name="descripcion" value={form.descripcion} onChange={manejarCambio} />
 
-          <label>URL de Imagen:</label>
-          <input type="url" name="imagen_url" value={form.imagen_url} onChange={manejarCambio} />
+          <label htmlFor="nombre_proveedor"> Proveedor: </label>
+          <input type="text" id="nombre_proveedor" name="nombre_proveedor" value={proveedorSeleccionado} onChange={manejarCambio} />
+
+          <label htmlFor="imagen_url"> URL de Imagen: </label>
+          <input type="url" id="imagen_url" name="imagen_url" value={form.imagen_url} onChange={manejarCambio} />
 
           <button type="submit" style={{ marginTop: '20px', background: '#d1a2f5', color: 'white', padding: '10px 20px', border: 'none' }}>{editar ? 'ACTUALIZAR' : 'AGREGAR'}</button>
 
@@ -322,9 +407,10 @@ const Inventario = () => {
             <thead style={{ background: '#d1a2f5' }}>
               <tr>
                 <th>Id Prod</th>
-                <th>Id prov</th>
-                <th>Id Talla</th>
-                <th>Id Color</th>
+                <th>Categoria</th>
+                {/* <th>Id prov</th> */}
+                {/* <th>Id Talla</th> */}
+                {/* <th>Id Color</th> */}
                 <th>Nombre</th>
                 <th>Precio</th>
                 <th>Stock</th>
@@ -343,9 +429,10 @@ const Inventario = () => {
                 productos.map((producto, index) => (
                   <tr key={index}>
                     <td>{producto.id_producto}</td>
-                    <td>{producto.id_proveedor}</td>
-                    <td>{producto.id_talla}</td>
-                    <td>{producto.id_color}</td>
+                    <td>{producto.nombre_categoria}</td>
+                    {/* <td>{producto.id_proveedor}</td> */}
+                    {/* <td>{producto.id_talla}</td> */}
+                    {/* <td>{producto.id_color}</td> */}
                     <td>{producto.nombre_producto}</td>
                     <td>{producto.precio_producto}</td>
                     <td>{producto.stock}</td>
