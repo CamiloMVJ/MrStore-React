@@ -119,18 +119,6 @@ const Inventario = () => {
 
     supabase.schema('mrstore2').from('productos').insert([
       {
-    if (!validarURL(form.imagen_url)) return alert('URL de imagen inválida')
-  
-    const talla = tallas.find(t => t.talla === form.talla)
-    const color = colores.find(c => c.color === form.color)
-    const proveedor = proveedores.find(p => p.nombre_proveedor === form.nombre_proveedor)
-  
-    if (!talla || !color || !proveedor) return alert('Talla, color o proveedor inválido')
-  
-    const { data, error } = await supabase
-      .schema('mrstore2')
-      .from('productos')
-      .insert({
         nombre_producto: form.nombre_producto,
         precio_producto: parseFloat(form.precio_producto),
         descripcion: form.descripcion,
