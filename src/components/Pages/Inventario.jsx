@@ -43,7 +43,7 @@ const Inventario = () => {
       .schema('mrstore2').from('colores').select()
 
     if (error) {
-      alert('Error al cargar las tallas: ' + error.message)
+      alert('Error al cargar los colores: ' + error.message)
     } else {
       setColores(data)
     }
@@ -99,38 +99,52 @@ const Inventario = () => {
 
   //Crear
   const crearProducto = async () => {
-    if (!validarURL(form.imagen_url)) {
-      alert('La URL de la imagen no es válida.')
-      return
-    }
-
-    const { error } = await supabase.from('productos').insert([
-      {
+    if (!validarURL(form.imagen_url)) return alert('URL de imagen inválida')
+  
+    const talla = tallas.find(t => t.talla === form.talla)
+    const color = colores.find(c => c.color === form.color)
+    const proveedor = proveedores.find(p => p.nombre_proveedor === form.nombre_proveedor)
+  
+    if (!talla || !color || !proveedor) return alert('Talla, color o proveedor inválido')
+  
+    const { data, error } = await supabase
+      .schema('mrstore2')
+      .from('productos')
+      .insert({
         nombre_producto: form.nombre_producto,
-        precio_producto: parseFloat(form.precio_producto),
-        stock: parseInt(form.stock),
-        talla: form.talla,
-        color: form.color,
+        precio_producto: +form.precio_producto,
         descripcion: form.descripcion,
-        nombre_proveedor: form.nombre_proveedor,
         imagen_url: form.imagen_url
-      }
-    ])
-
-    if (error) {
-      alert('Error al crear producto: ' + error.message)
-    } else {
-      alert('Producto creado correctamente')
-      setForm({
-        id_producto: null, id_talla: null, id_color: null, id_proveedor: null, nombre_producto: '', precio_producto: '',
-        stock: '', talla: '', color: '', descripcion: '', nombre_proveedor: '', imagen_url: ''
       })
-      obtenerProductos()
-    }
+      .select('id_producto')
+  
+    if (error) return alert('Error al crear producto: ' + error.message)
+  
+    const id_producto = data[0].id_producto
+  
+    const { error: errP } = await supabase
+      .schema('mrstore2')
+      .from('detproductos')
+      .insert({
+        id_producto,
+        talla: talla.id_talla,
+        color: color.id_color,
+        id_proveedor: proveedor.id_proveedor,
+        stock: +form.stock
+      })
+  
+    if (errP) return alert('Error al crear el producto ' + errP.message)
+  
+    alert('Producto creado correctamente')
+    setForm({
+      id_producto: null, id_talla: null, id_color: null, id_proveedor: null,
+      nombre_producto: '', precio_producto: '', stock: '',
+      talla: '', color: '', descripcion: '', nombre_proveedor: '', imagen_url: ''
+    })
+    obtenerProductos()
   }
 
   //Actualizar
-
   const ActualizarDet = async () => {
     let id_talla = null
     let id_color = null
@@ -146,8 +160,6 @@ const Inventario = () => {
 
     colores.map((colores, index) => {
       if (colores.color == form.color) {
-        // console.log(colores.color, colores.id_color)
-        // console.log('id de color encontrado:', colores.id_color)
         id_color = colores.id_color
         setForm({ ...form, id_color: colores.id_color })
       }
@@ -155,8 +167,6 @@ const Inventario = () => {
 
     proveedores.map((proveedor, index) => {
       if(proveedor.nombre_proveedor == form.nombre_proveedor) {
-        // console.log(proveedor.nombre_proveedor, proveedor.id_proveedor)
-        // console.log('id de proveedor encontrado:', proveedor.id_proveedor)
         id_proveedor = proveedor.id_proveedor
         setForm({ ...form, id_proveedor: proveedor.id_proveedor })
       }
@@ -176,18 +186,6 @@ const Inventario = () => {
 
     console.log(data)
     console.log(error)
-    // if (error) {
-    //   alert('Error al actualizar producto: ' + error.message)
-    // } else {
-    //   alert('Producto actualizado correctamente')
-    //   setEditar(false)
-    //   setForm({
-    //     id_producto: null, id_talla: null, id_color: null, id_proveedor: null, nombre_producto: '',
-    //     precio_producto: '', stock: '', talla: '', color: '', descripcion: '', nombre_proveedor: '', imagen_url: ''
-    //   })
-
-    //   console.log(error)
-    // }
   }
 
   const ActualizarProducto = async () => {
@@ -201,16 +199,7 @@ const Inventario = () => {
 
     console.log(data)
     console.log(error)
-    // if (error) {
-    //   alert('Error al actualizar producto: ' + error.message)
-    // } else {
-    //   alert('Producto actualizado correctamente')
-    //   setEditar(false)
-    //   setForm({
-    //     id_producto: null, id_talla: null, id_color: null, id_proveedor: null, nombre_producto: '',
-    //     precio_producto: '', stock: '', talla: '', color: '', descripcion: '', nombre_proveedor: '', imagen_url: ''
-    //   })
-    // }
+
   }
 
   const actualizarProd = () => {
@@ -225,19 +214,44 @@ const Inventario = () => {
     }
   }
 
-
-
-  //Eliminar
-  const eliminarProducto = async (id) => {
+  //Eliminar  
+  const eliminarProducto = async (producto) => {
     if (!window.confirm('¿Seguro que quieres eliminar este producto?')) return
-    const { error } = await supabase.from('productos').delete().eq('id_producto', id)
-    if (error) {
-      alert('Error al eliminar producto: ' + error.message)
-    } else {
-      alert('Producto eliminado')
+  
+    try {
+      const { error: errorDet } = await supabase
+        .schema('mrstore2')
+        .from('detproductos') 
+        .delete()
+        //.eq('id_producto', producto.id_producto)
+        .eq('id_tallas', producto.id_talla)
+        .eq('id_colores', producto.id_colores)
+        .eq('id_proveedor', producto.id_proveedor)
+  
+      if (errorDet) {
+        alert('Error al eliminar detalle del producto: ' + errorDet.message)
+        return
+      }
+      const { error: errorProd } = await supabase
+        .from('productos')
+        .delete()
+        .eq('id_producto', producto.id_producto)
+  
+      if (errorProd) {
+        alert('Error al eliminar producto: ' + errorProd.message)
+        return
+      }
+  
+      alert('Producto eliminado correctamente')
       obtenerProductos()
+  
+    } catch (err) {
+      console.error('Error inesperado:', err)
+      alert('Error inesperado al eliminar producto')
     }
   }
+
+
 
   //Editar
 
@@ -260,7 +274,6 @@ const Inventario = () => {
     })
     console.log(producto)
   }
-
 
   const manejarEnvio = e => {
     e.preventDefault()
