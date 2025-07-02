@@ -1,7 +1,7 @@
 import Header from "../Header"
 import Glider from "../Glider"
 import { useState, useEffect } from "react";
-import { getTable } from "../../js/supabase"
+import {  getProducts } from "../../js/supabase"
 import ProductsCatalog from "../ProductsCatalog";
 import Footer from "../Footer";
 
@@ -13,7 +13,7 @@ const Home = () => {
             localStorage.clear()
         }
 
-        getTable('productos', 10).then(data => {
+        getProducts().then(data => {
             setProducts(data)
         })
     }, [])

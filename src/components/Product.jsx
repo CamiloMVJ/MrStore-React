@@ -2,9 +2,9 @@ import { useState, useEffect, act } from 'react'
 import { supabase, updateTable } from '../js/supabase'
 import Notification from './Notification'
 
-const Product = ({ producto, ActualizarTotal, ActualizarProductos }) => {
+const Product = ({ producto, ActualizarProductos }) => {
     const [colorYtalla, setColorYTalla] = useState([])
-    const [indexColorYTalla, setIndexColorYTalla] = useState()
+    const [indexColorYTalla, setIndexColorYTalla] = useState(0)
     const [product, setProduct] = useState(producto)
     const [cantidad, setCantidad] = useState(product.cantidad)
     const [precio, setPrecio] = useState(product.detproductos.productos.precio_producto)
@@ -60,7 +60,7 @@ const Product = ({ producto, ActualizarTotal, ActualizarProductos }) => {
                 }
             }
             ChangeDet(e.target.value)
-            ActualizarTotal()
+            ActualizarProductos()
         }
         catch (error) {
             console.log(error)
@@ -94,22 +94,27 @@ const Product = ({ producto, ActualizarTotal, ActualizarProductos }) => {
 
     const ActualizarCantidad = (e) => {
         e.preventDefault()
-        supabase.schema('mrstore2').from('detcarritocompras').update({
-            cantidad: e.target.cantidad.value
-        })
-            .eq('id_producto', product.detproductos.productos.id_producto)
-            .eq('color', product.detproductos.colores.id_color)
-            .eq('id_proveedor', product.detproductos.proveedores.id_proveedor)
-            .eq('talla', product.detproductos.tallas.id_talla)
-            .select()
-            .then(data => {
-                ActualizarSubtotal(data.data[0])
-                ActualizarTotal()
+        if (e.target.cantidad.value >= 1) {
+            supabase.schema('mrstore2').from('detcarritocompras').update({
+                cantidad: e.target.cantidad.value
             })
-
+                .eq('id_producto', product.detproductos.productos.id_producto)
+                .eq('color', product.detproductos.colores.id_color)
+                .eq('id_proveedor', product.detproductos.proveedores.id_proveedor)
+                .eq('talla', product.detproductos.tallas.id_talla)
+                .select()
+                .then(data => {
+                    ActualizarSubtotal(data.data[0])
+                    ActualizarProductos()
+                })
+        }
+        else {
+            setProduct({ ...product, cantidad: 1 })
+            setMessage('La cantidad debe ser mayor a 0')
+            setType('error')
+        }
     }
-    const EliminarDelCarrito = (e) => {
-        e.preventDefault()
+    const EliminarDelCarrito = () => {
         supabase.schema('mrstore2')
             .from('detcarritocompras')
             .delete()
@@ -121,7 +126,6 @@ const Product = ({ producto, ActualizarTotal, ActualizarProductos }) => {
                 // console.log(data)
                 ActualizarProductos()
             })
-        ActualizarTotal()
     }
     const ActualizarColorYTalla = (e) => {
         e.preventDefault()
@@ -136,14 +140,13 @@ const Product = ({ producto, ActualizarTotal, ActualizarProductos }) => {
                             <p><strong>{product.detproductos.productos.nombre_producto}</strong></p>
                             <span>{product.detproductos.productos.descripcion}</span> <br />
                             <span>{ }</span>
-                            <form onSubmit={EliminarDelCarrito} method="POST" style={{ display: 'inline' }}>
-                                <input type="hidden" name="id_carrito" defaultValue={product.id_carritocompras} />
-                                <input type="hidden" name="id_producto" defaultValue={product.detproductos.productos.id_producto} />
-                                <input type="hidden" name="id_color" defaultValue={product.detproductos.colores.id_color} />
-                                <input type="hidden" name="id_talla" defaultValue={product.detproductos.tallas.id_talla} />
-                                <input type="hidden" name="id_proveedor" defaultValue={product.detproductos.proveedores.id_proveedor} />
-                                <button type="submit" className="btn-danger">Eliminar del carrito</button>
-                            </form>
+                            {/* <form onSubmit={EliminarDelCarrito} method="POST" style={{ display: 'inline' }}> */}
+                            <input type="hidden" name="id_carrito" defaultValue={product.id_carritocompras} />
+                            <input type="hidden" name="id_producto" defaultValue={product.detproductos.productos.id_producto} />
+                            <input type="hidden" name="id_color" defaultValue={product.detproductos.colores.id_color} />
+                            <input type="hidden" name="id_talla" defaultValue={product.detproductos.tallas.id_talla} />
+                            <input type="hidden" name="id_proveedor" defaultValue={product.detproductos.proveedores.id_proveedor} />
+                            {/* </form> */}
                         </div>
                     </div>
                 </td>
@@ -193,7 +196,7 @@ const Product = ({ producto, ActualizarTotal, ActualizarProductos }) => {
                     <p>{subtotal}$</p>
                 </td>
                 <td>
-
+                    <button className="btn-danger btn-1" onClick={EliminarDelCarrito}>Eliminar</button>
                 </td>
             </tr >
         </>

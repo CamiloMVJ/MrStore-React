@@ -76,6 +76,7 @@ Header
   background-color: #c496f9;
   font-size: 1.3rem;
   color: var(--white);
+  width: 100vw;
 }
 
 .hei {
@@ -251,6 +252,7 @@ Hero Area
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -335,6 +337,7 @@ Hero Media Query
     left: 0;
   }
 }
+
 @media only screen and (max-width: 999px) {
   .glide__slide--active .left {
     top: 15%;
@@ -371,6 +374,7 @@ Hero Media Query
   .hero .left span {
     font-size: 1.4rem;
   }
+
   .hero .left p {
     font-size: 1.5rem;
     width: 80%;
@@ -792,8 +796,41 @@ Hero Media Query
   background-color: var(--purple);
   color: var(--white);
   display: inline-block;
-  border-radius: 1rem;
+  border-radius: 0.5rem;
   padding: 1rem 2rem;
+  margin: 0 !important;
+  border: 0;
+  cursor: pointer;
+}
+
+.btn-2 {
+  background-color: var(--purple);
+  color: var(--white);
+  display: inline-block;
+  border-radius: 0.5rem;
+  padding: .4rem 1rem !important;
+  margin: 0 !important;
+  width: 100px;
+}
+
+.btn-full {
+  background-color: var(--purple);
+  color: var(--white);
+  display: inline-block;
+  border-radius: 0.5rem;
+  padding: .4rem 1rem !important;
+  margin: 0 !important;
+  width: 100%;
+}
+
+.btn-1Trash {
+  background-color: var(--purple);
+  color: var(--white);
+  display: inline-block;
+  border-radius: 0.5rem;
+  padding: 1rem 1rem !important;
+  margin: 0 !important;
+  height: 50px;
 }
 
 .contact form div {
@@ -1409,6 +1446,7 @@ th:last-child {
 .login-form form h1 {
   margin-bottom: 1rem;
 }
+
 .login-form form p {
   margin-bottom: 2rem;
 }
@@ -1469,6 +1507,7 @@ th:last-child {
   border-right: 0px;
   border-style: solid;
 }
+
 .container2 {
   display: flex;
   justify-content: space-between;
@@ -1479,6 +1518,7 @@ th:last-child {
   height: 100%;
   padding-left: 30px;
 }
+
 .div2 {
   width: 45%;
   height: 100%;
@@ -1493,17 +1533,22 @@ th:last-child {
   color: var(--black);
   height: 4rem;
 }
+
 .selector {
   width: 100%;
-  border: 1px solid gray;
+  /* border: 1px solid gray; */
   border-radius: 5px;
-  padding: 0.5rem;
-  font-size: 1.6rem;
-  margin: 1rem auto;
+  height: 50px;
+  /* padding: 0.5rem; */
+  /* font-size: 1.6rem; */
+  /* margin: 1rem auto; */
 }
+
+
 .text {
   padding: 8px;
 }
+
 #dpto {
   padding: 10px;
   border: 2px solid black;
@@ -1515,6 +1560,7 @@ th:last-child {
   margin-top: 15px;
   cursor: pointer !important;
 }
+
 #dpto:hover {
   box-shadow: 2px 2px 5px black;
 }
@@ -1563,17 +1609,30 @@ th:last-child {
   margin-top: 15px;
 }
 
-form .btn-danger {
+.btn-danger {
   background: var(--red);
   color: white;
   padding: 0.7rem;
-  border: 1px solid var(--purple);
+  border: none;
+  border-radius: 5px;
   cursor: pointer;
   margin-top: 16px;
 }
 
 .bg-purple {
-  background: var(--purple);
+  background: var(--purple) !important;
+}
+
+.bg-red {
+  background: var(--red) !important;
+}
+
+.bg-green {
+  background: var(--green) !important;
+}
+
+.bg-black {
+  background: var(--black) !important;
 }
 
 .container .rightT {
@@ -1588,7 +1647,7 @@ form .btn-danger {
   justify-content: center;
 }
 
-.center-y{
+.center-y {
   display: grid;
   align-items: center;
 }
@@ -1651,12 +1710,14 @@ form .btn-danger {
   align-items: center;
   height: 30vh;
 }
+
 .metodos img {
   width: auto;
   height: 2.3em;
   box-sizing: border-box;
   margin: 3px;
 }
+
 .h1Pag {
   text-align: center;
   margin-top: 20px;
@@ -1679,23 +1740,31 @@ form .btn-danger {
 .TabInv {
   border: 1px solid var(--purple);
 }
+
 ::-webkit-scrollbar {
-  width: 10px; /* Ancho de la barra vertical */
-  height: 8px; /* Alto de la barra horizontal */
+  width: 10px;
+  /* Ancho de la barra vertical */
+  height: 8px;
+  /* Alto de la barra horizontal */
 }
 
 ::-webkit-scrollbar-track {
-  background: #f0f0f0; /* Color del fondo */
-  border-radius: 5px; /* Bordes redondeados */
+  background: #f0f0f0;
+  /* Color del fondo */
+  border-radius: 5px;
+  /* Bordes redondeados */
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #888; /* Color de la barra */
-  border-radius: 5px; /* Bordes redondeados */
+  background: #888;
+  /* Color de la barra */
+  border-radius: 5px;
+  /* Bordes redondeados */
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555; /* Color al pasar el mouse */
+  background: #555;
+  /* Color al pasar el mouse */
 }
 
 .input_inv {
@@ -1753,11 +1822,11 @@ form .btn-danger {
   max-height: 980px;
   overflow: scroll;
   /* display: none; */
-  
+
 }
 
 .categories::-webkit-scrollbar {
-display: none;
+  display: none;
 }
 
 .sticky {
@@ -1779,15 +1848,15 @@ display: none;
 }
 
 
-.product-info a{
+.product-info a {
   cursor: pointer;
 }
 
-.btmSpace{
+.btmSpace {
   margin-bottom: 100px;
 }
 
-.notification{
+.notification {
   position: absolute;
   border-radius: 3px;
   padding: 5px;
@@ -1806,19 +1875,19 @@ display: none;
   background: var(--green) !important;
 }
 
-.cart-table{
+.cart-table {
   /* width: 80%; */
   margin-left: 15px;
   margin-top: 15px;
 
   border-collapse: separate;
-  border-spacing: 0;        
+  border-spacing: 0;
   /* border: 1px solid #ccc;    */
-  border-radius: 5px;      
-  overflow: hidden;         
+  border-radius: 5px;
+  overflow: hidden;
 }
 
-.cart-total{
+.cart-total {
   width: 40%;
   vertical-align: top;
   margin-top: 15px;
@@ -1826,22 +1895,22 @@ display: none;
   /* justify-content: center; */
 }
 
-.cart-img{
+.cart-img {
   width: 150px;
   height: auto;
-  object-fit: cover;  
+  object-fit: cover;
 }
 
-.cart-text{
+.cart-text {
   width: 300px;
   display: grid;
 }
 
-.txt-center{
+.txt-center {
   text-align: center;
 }
 
-.form-select{
+.form-select {
   border: var(--black) 2px solid;
   border-radius: 3px;
   padding: 1px;
@@ -1851,30 +1920,33 @@ display: none;
   width: fit-content;
 }
 
-.roundBorder{
+.roundBorder {
   border-radius: 10px;
   border: 1px solid red;
   padding: 5px;
 }
 
-.borderbottom{
+.borderbottom {
   border-bottom: 1px solid gray;
 }
 
-.bgshadow{
+.bgshadow {
   width: 90%;
   background: rgb(255, 255, 255);
   /* border: 1px solid black; */
   border-radius: 10px;
   box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.1);
+  min-width: fit-content;
 }
 
-.flex{
+.flex {
   display: flex;
-  gap: 8rem;
+  gap: 2rem;
+  justify-content: space-around;
+
 }
 
-.margin{
+.margin {
   margin: 10rem auto;
 }
 
@@ -1885,12 +1957,17 @@ display: none;
   aspect-ratio: 1;
   border-radius: 50%;
   padding: 3px;
-  background: 
-    radial-gradient(farthest-side, var(--purple) 95%,#0000) 50% 0/12px 12px no-repeat,
-    radial-gradient(farthest-side,#0000 calc(100% - 5px),var(--purple) calc(100% - 4px)) content-box;
-  animation: l6 2s infinite ;
+  background:
+    radial-gradient(farthest-side, var(--purple) 95%, #0000) 50% 0/12px 12px no-repeat,
+    radial-gradient(farthest-side, #0000 calc(100% - 5px), var(--purple) calc(100% - 4px)) content-box;
+  animation: l6 2s infinite;
 }
-@keyframes l6 {to{transform: rotate(1turn)}}
+
+@keyframes l6 {
+  to {
+    transform: rotate(1turn)
+  }
+}
 
 /* Form popup */
 .form-popup {
@@ -1904,13 +1981,30 @@ display: none;
   z-index: 9;
 }
 
+.form-popupDel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  left: 430px;
+  top: 23px;
+  border: 2px solid #cfcfcf;
+  z-index: 10;
+  width: 330px;
+  height: 50px;
+  padding: 5px 0px 5px 0px;
+  box-sizing: content-box;
+  border-radius: 3px;
+}
+
 .form-container {
   max-width: 300px;
   padding: 10px;
   background-color: white;
 }
 
-.form-container input[type=text], .form-container input[type=password] {
+.form-container input[type=text],
+.form-container input[type=password] {
   width: 100%;
   padding: 15px;
   margin: 5px 0 22px 0;
@@ -1919,7 +2013,8 @@ display: none;
 }
 
 /* When the inputs get focus, do something */
-.form-container input[type=text]:focus, .form-container input[type=password]:focus {
+.form-container input[type=text]:focus,
+.form-container input[type=password]:focus {
   background-color: #ddd;
   outline: none;
 }
@@ -1932,7 +2027,7 @@ display: none;
   border: none;
   cursor: pointer;
   width: 100%;
-  margin-bottom:10px;
+  margin-bottom: 10px;
 }
 
 /* Add a red background color to the cancel button */
@@ -1941,6 +2036,53 @@ display: none;
 }
 
 /* Add some hover effects to buttons */
-.form-container .btn:hover, .open-button:hover {
+.form-container .btn:hover,
+.open-button:hover {
   opacity: 1;
+}
+
+.colorPurple {
+  color: var(--purple);
+}
+
+.colorWhite {
+  color: var(--white);
+}
+
+.summaryTable {
+  width: 80%;
+}
+
+.checkPopUp {
+  position: fixed;
+  z-index: 9;
+  margin: 0 auto;
+  background: rgba(49, 48, 48, 0.548);
+  top: 0;
+  /* left: 50%; */
+  text-align: center;
+  width: 100%;
+  height: 100vh;
+  backdrop-filter: blur(5px);
+}
+
+.table {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.table input {
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: 240px
+}
+
+.table select {
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: 240px
 }
