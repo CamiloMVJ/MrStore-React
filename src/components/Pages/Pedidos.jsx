@@ -12,7 +12,8 @@ const OrderHistory = () => {
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const { data, error } = await supabase.schema('mrstore2')
+                const { data, error } = await supabase
+                .schema('mrstore2')
                     .from('pedidos')
                     .select(`
                         id_pedido,

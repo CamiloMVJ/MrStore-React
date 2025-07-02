@@ -1,47 +1,83 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, data } from 'react-router-dom';
 import Header from '../Header';
 import Footer from '../Footer';
 import { supabase } from '../../js/supabase';
 
 const OrderDetails = () => {
-    const { orderId } = useParams().id_pedido;
-    const [order, setOrder] = useState(null);
+    const [id_pedido, setId_Pedido] = useState(useParams().id_pedido)
+    const [order, setOrder] = useState()
+    const [detpedidos, setdetpedidos] = useState([])
+    const [orders, setOrders] = useState(null);
+    const [envio, setenvio] = useState();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     
 
     useEffect(() => {
-        const fetchOrderDetails = async () => {
-            try {
-                const { data, error: supabaseError } = await supabase.schema('mrstore2').from('DetPedidos')
-                    .select(`
-                        SubTotal, 
-                        Cantidad, 
-                        PrecioVenta,
-                        Pedidos(id_Pedidos),
-                        detproductos(
-                            proveedores(id_proveedor, nombre_proveedor),
-                            colores(id_color, color),
-                            tallas(id_talla, talla), 
-                            productos(id_producto, nombre_producto, descripcion, precio_producto, imagen_url))`
-                        
-                    )
-                    .eq('id_Pedidos', orderId)
-                    .single();
-
-                if (supabaseError) throw supabaseError;
-                setOrder(data);
-                setLoading(false);
-            } catch (err) {
-                console.error('Error:', err);
-                setError(err.message);
+    const fetchDetOrderDetails = async () => {
+        try {
+            const { data, error: supabaseError } = await supabase
+                .schema('mrstore2')
+                .from('detpedidos')
+                .select(`
+                    id_producto,color,talla,id_proveedor,id_pedido,cantidad,subtotal,precioventa, detproductos(
+                            productos(id_producto, nombre_producto, descripcion, imagen_url, precio_producto))`)
+                 .eq('id_pedido', id_pedido).order('subtotal', {ascending: false});
+             if (supabaseError) throw error;
+                setdetpedidos(data)
+                setLoading(false)
+            } catch (error) {
+                console.error('Error fetching orders:', error);
                 setLoading(false);
             }
         };
+    const fetchOrder = async () => {
+        try {
+            const { data, error : supabaseError } = await supabase.schema('mrstore2').from('pedidos')
+            .select(`id_pedido,
+                        total,
+                        estadopedido,
+                        fecha_pedido`).eq('id_pedido', id_pedido).order('fecha_pedido', { ascending: false });
 
-        fetchOrderDetails();
-    }, [orderId]);
+                if (supabaseError) throw error;
+                
+                setOrders(data[0])
+                setLoading(false)
+            } catch (error) {
+                console.error('Error fetching orders:', error);
+                setLoading(false);
+            
+        }
+    };
+
+    const fetchShipping = async () => {
+        try {
+            const { data, error : supabaseError } = await supabase.schema('mrstore2').from('envios')
+            .select(`id_pedido,
+                costo_envio,
+                empresa_envio,
+                fechaentrega,
+                direcciones(id_direccion, direccion, nombre_dir)
+                `).eq('id_pedido', id_pedido ).order('costo_envio', {ascending:false});
+                console.log(data)
+            if (supabaseError) throw error;
+                console.log(data)
+                setenvio(data)
+                setLoading(false)
+            } catch (error) {
+                console.error('Error fetching orders:', error);
+                setLoading(false);
+            
+        }
+        
+    };
+    console.log(data)
+    fetchOrder()
+    fetchDetOrderDetails();
+    fetchShipping()
+}, []);
+
 
     const formatDate = (dateString) => {
         const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
@@ -49,6 +85,8 @@ const OrderDetails = () => {
     };
 
     const getStatusStyle = (status) => {
+        console.log(status)
+       const lowerStatus = status.toLowerCase();
         const styles = {
             padding: '0.5rem 1rem',
             borderRadius: '20px',
@@ -58,15 +96,16 @@ const OrderDetails = () => {
             marginLeft: '1rem'
         };
 
-        const statusMap = {
-            'completado': { backgroundColor: '#e6f7e6', color: '#2e7d32' },
-            'procesando': { backgroundColor: '#fff8e1', color: '#ff8f00' },
-            'cancelado': { backgroundColor: '#ffebee', color: '#c62828' },
-            'enviado': { backgroundColor: '#e3f2fd', color: '#1565c0' },
-            'pendiente': { backgroundColor: '#f5f5f5', color: '#666' }
-        };
-
-        return { ...styles, ...statusMap[status.toLowerCase()] };
+        if (lowerStatus === 'completado') {
+            return { ...styles, backgroundColor: '#e6f7e6', color: '#2e7d32' };
+        } else if (lowerStatus === 'pendiente') {
+            return { ...styles, backgroundColor: '#fff8e1', color: '#ff8f00' };
+        } else if (lowerStatus === 'cancelado') {
+            return { ...styles, backgroundColor: '#ffebee', color: '#c62828' };
+        } else if (lowerStatus === 'enviado') {
+            return { ...styles, backgroundColor: '#e3f2fd', color: '#1565c0' };
+        }
+        return styles;
     };
 
     if (loading) {
@@ -99,14 +138,14 @@ const OrderDetails = () => {
         );
     }
 
-    if (!order) {
+    if (!detpedidos) {
         return (
             <>
                 <Header />
                 <div style={styles.notFoundContainer}>
                     <i className="bx bx-package" style={styles.notFoundIcon}></i>
                     <h3 style={styles.notFoundTitle}>Pedido no encontrado</h3>
-                    <p style={styles.notFoundText}>No se encontró el pedido #{orderId}</p>
+                    <p style={styles.notFoundText}>No se encontró el pedido #{order.id_pedido}</p>
                     <Link to="/Pedidos" style={styles.backButton}>
                         Volver al historial
                     </Link>
@@ -119,16 +158,16 @@ const OrderDetails = () => {
     return (
         <>
             <Header />
-            <section style={styles.section}>
+            {orders?(<section style={styles.section}>
                 <div style={styles.container}>
-                    <Link to="/historial-pedidos" style={styles.backLink}>
+                    <Link to="/Pedidos" style={styles.backLink}>
                         <i className="bx bx-arrow-back"></i> Volver al historial
                     </Link>
-
+                    {console.log(orders)}
                     <div style={styles.header}>
-                        <h1 style={styles.title}>Detalles del Pedido #{order.id_pedido}</h1>
-                        <div style={getStatusStyle(order.estado)}>
-                            {order.estado}
+                        <h1 style={styles.title}>Detalles del Pedido #{orders.id_pedido}</h1>
+                        <div style={getStatusStyle(orders.estadopedido)}>
+                            {orders.estadopedido}
                         </div>
                     </div>
 
@@ -138,15 +177,15 @@ const OrderDetails = () => {
                             <div style={styles.infoGrid}>
                                 <div style={styles.infoItem}>
                                     <span style={styles.infoLabel}>Fecha:</span>
-                                    <span>{formatDate(order.fecha_pedido)}</span>
+                                    <span>{formatDate(orders.fecha_pedido)}</span>
                                 </div>
                                 <div style={styles.infoItem}>
                                     <span style={styles.infoLabel}>Método de pago:</span>
-                                    <span>{order.metodo_pago || 'No especificado'}</span>
+                                    <span>{orders.metodo_pago || 'Transferencia'}</span>
                                 </div>
                                 <div style={styles.infoItem}>
                                     <span style={styles.infoLabel}>Total:</span>
-                                    <span style={styles.totalPrice}>${order.total.toFixed(2)}</span>
+                                    <span style={styles.totalPrice}>${orders.total.toFixed(2)}</span>
                                 </div>
                             </div>
                         </div>
@@ -154,7 +193,8 @@ const OrderDetails = () => {
                         <div style={styles.infoCard}>
                             <h3 style={styles.infoTitle}>Dirección de Envío</h3>
                             <p style={styles.addressText}>
-                                {order.direccion_envio || 'No especificada'}
+                                {console.log(envio)}
+                                {envio.direcciones.direccion || 'No especificada'}
                             </p>
                         </div>
                     </div>
@@ -162,27 +202,27 @@ const OrderDetails = () => {
                     <div style={styles.productsSection}>
                         <h2 style={styles.sectionTitle}>Productos</h2>
                         <div style={styles.productsList}>
-                            {order.productos_pedidos.map((item, index) => (
+                            {detpedidos.map((item, index) => (
                                 <div key={index} style={styles.productCard}>
                                     <img 
-                                        src={item.producto.imagen_principal} 
-                                        alt={item.producto.nombre_producto} 
+                                        src={item.detproductos.productos.imagen_url} 
+                                        alt={item.detproductos.productos.nombre_producto} 
                                         style={styles.productImage}
                                     />
                                     <div style={styles.productInfo}>
-                                        <h4 style={styles.productName}>{item.producto.nombre_producto}</h4>
+                                        <h4 style={styles.productName}>{item.detproductos.productos.nombre_producto}</h4>
                                         <p style={styles.productDescription}>
-                                            {item.producto.descripcion || 'Sin descripción'}
+                                            {item.detproductos.productos.descripcion || 'Sin descripción'}
                                         </p>
                                         <div style={styles.productMeta}>
                                             <span style={styles.productPrice}>
-                                                ${item.producto.precio.toFixed(2)}
+                                                ${item.detproductos.productos.precio_producto.toFixed(2)}
                                             </span>
                                             <span style={styles.productQuantity}>
                                                 Cantidad: {item.cantidad}
                                             </span>
                                             <span style={styles.productSubtotal}>
-                                                Subtotal: ${(item.producto.precio * item.cantidad).toFixed(2)}
+                                                Subtotal: ${(item.detproductos.productos.precio_producto * item.cantidad).toFixed(2)}
                                             </span>
                                         </div>
                                     </div>
@@ -195,7 +235,7 @@ const OrderDetails = () => {
                         <h3 style={styles.summaryTitle}>Resumen del Pedido</h3>
                         <div style={styles.summaryRow}>
                             <span>Subtotal:</span>
-                            <span>${order.total.toFixed(2)}</span>
+                            <span>${orders.total.toFixed(2)}</span>
                         </div>
                         <div style={styles.summaryRow}>
                             <span>Envío:</span>
@@ -207,11 +247,12 @@ const OrderDetails = () => {
                         </div>
                         <div style={{ ...styles.summaryRow, ...styles.totalRow }}>
                             <span style={styles.totalLabel}>Total:</span>
-                            <span style={styles.totalPrice}>${order.total.toFixed(2)}</span>
+                            <span style={styles.totalPrice}>${orders.total.toFixed(2)}</span>
                         </div>
                     </div>
                 </div>
-            </section>
+            </section>):null}
+            
             <Footer />
             <style>{`
                 @keyframes spin {
