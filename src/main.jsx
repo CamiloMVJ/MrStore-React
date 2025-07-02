@@ -11,6 +11,7 @@ import SignUpMeth from './components/Pages/SignUp.jsx';
 import Inventario from './components/Pages/Inventario.jsx';
 import Cart from './components/Pages/Cart.jsx';
 import './css/styles.css'
+import './css/inventario.css'
 
 const router = createBrowserRouter([
   { path: '/', element: <Home />, errorElement: <ErrorBoundary /> },
