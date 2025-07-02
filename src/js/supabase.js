@@ -116,8 +116,10 @@ export const getProducts = async (limit = 10, all = false) => {
       .eq('productos.estado', true)
       .gt('stock', 0)
       .order('id_producto', { ascending: false })
-
-    const products = data.map(item => {
+    const products = data.filter(item => {
+      if(item.productos === null) return false
+      return true
+    }).map(item => {
       return {
         id_producto: item.productos.id_producto,
         nombre_producto: item.productos.nombre_producto,
@@ -127,7 +129,7 @@ export const getProducts = async (limit = 10, all = false) => {
         id_categoria: item.productos.id_categoria,
         estado: item.productos.estado
       }
-    }).filter(() => true)
+    })
 
     const response = Object.values(products.reduce((acc, curr) => {
       if (!acc[curr.id_producto]) {
@@ -135,7 +137,7 @@ export const getProducts = async (limit = 10, all = false) => {
       }
       return acc
     }, {}))
-
+    
     if (error) throw error
     if (all) return response
     return response.slice(0, limit)

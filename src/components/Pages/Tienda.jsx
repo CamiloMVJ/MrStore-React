@@ -70,7 +70,7 @@ const Tienda = () => {
                 
                 const { data } = await query
                 setProducts(data || [])
-                setTotalPages(Math.ceil((data?.length || 0) / 10))
+                setTotalPages(Math.ceil((data?.length || 0) / 12))
             } catch (error) {
                 console.error("Error fetching products:", error)
             } finally {
@@ -174,7 +174,7 @@ const Tienda = () => {
                             </div>
                         ) : (
                             <>
-                                <ProductsCatalog productos={products.slice((page - 1) * 10, page * 10)} />
+                                <ProductsCatalog productos={products.slice((page - 1) * 12, page * 12)} />
                                 
                                 {totalPages > 1 && (
                                     <div className="pagination">
