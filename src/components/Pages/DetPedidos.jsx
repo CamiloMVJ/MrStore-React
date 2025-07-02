@@ -58,12 +58,12 @@ const OrderDetails = () => {
                 costo_envio,
                 empresa_envio,
                 fechaentrega,
+                descuento,
                 direcciones(id_direccion, direccion, nombre_dir)
                 `).eq('id_pedido', id_pedido ).order('costo_envio', {ascending:false});
-                console.log(data)
             if (supabaseError) throw error;
-                console.log(data)
-                setenvio(data)
+                console.log(data[0])
+                setenvio(data[0])
                 setLoading(false)
             } catch (error) {
                 console.error('Error fetching orders:', error);
@@ -72,7 +72,6 @@ const OrderDetails = () => {
         }
         
     };
-    console.log(data)
     fetchOrder()
     fetchDetOrderDetails();
     fetchShipping()
@@ -85,7 +84,6 @@ const OrderDetails = () => {
     };
 
     const getStatusStyle = (status) => {
-        console.log(status)
        const lowerStatus = status.toLowerCase();
         const styles = {
             padding: '0.5rem 1rem',
@@ -158,12 +156,11 @@ const OrderDetails = () => {
     return (
         <>
             <Header />
-            {orders?(<section style={styles.section}>
+            {(orders && envio) ? (<section style={styles.section}>
                 <div style={styles.container}>
                     <Link to="/Pedidos" style={styles.backLink}>
                         <i className="bx bx-arrow-back"></i> Volver al historial
                     </Link>
-                    {console.log(orders)}
                     <div style={styles.header}>
                         <h1 style={styles.title}>Detalles del Pedido #{orders.id_pedido}</h1>
                         <div style={getStatusStyle(orders.estadopedido)}>
@@ -193,7 +190,6 @@ const OrderDetails = () => {
                         <div style={styles.infoCard}>
                             <h3 style={styles.infoTitle}>Dirección de Envío</h3>
                             <p style={styles.addressText}>
-                                {console.log(envio)}
                                 {envio.direcciones.direccion || 'No especificada'}
                             </p>
                         </div>
@@ -235,19 +231,19 @@ const OrderDetails = () => {
                         <h3 style={styles.summaryTitle}>Resumen del Pedido</h3>
                         <div style={styles.summaryRow}>
                             <span>Subtotal:</span>
-                            <span>${orders.total.toFixed(2)}</span>
+                            <span>{orders.total.toFixed(2)} $</span>
                         </div>
                         <div style={styles.summaryRow}>
                             <span>Envío:</span>
-                            <span>Gratis</span>
+                            <span>{envio.costo_envio} $</span>
                         </div>
                         <div style={styles.summaryRow}>
                             <span>Descuento:</span>
-                            <span>$0.00</span>
+                            <span>{envio.descuento} $</span>
                         </div>
                         <div style={{ ...styles.summaryRow, ...styles.totalRow }}>
                             <span style={styles.totalLabel}>Total:</span>
-                            <span style={styles.totalPrice}>${orders.total.toFixed(2)}</span>
+                            <span style={styles.totalPrice}>${(Number(orders.total.toFixed(2)) + envio.costo_envio)}</span>
                         </div>
                     </div>
                 </div>

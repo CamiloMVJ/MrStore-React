@@ -13,7 +13,7 @@ const OrderHistory = () => {
         const fetchOrders = async () => {
             try {
                 const { data, error } = await supabase
-                .schema('mrstore2')
+                    .schema('mrstore2')
                     .from('pedidos')
                     .select(`
                         id_pedido,
@@ -32,22 +32,22 @@ const OrderHistory = () => {
                 setLoading(false);
             }
         };
-        
+
         const fetchDetOrders = async () => {
             try {
-                 const { data, error } = await supabase.schema('mrstore2')
-                 .from('detpedidos')
-                 .select(`id_producto,color,talla,id_proveedor,id_pedido,cantidad,subtotal,precioventa, detproductos(
-                            productos(id_producto, nombre_producto, descripcion, imagen_url, precio_producto))`).limit(2)
-                 .order('subtotal', {ascending: false});
+                const { data, error } = await supabase.schema('mrstore2')
+                    .from('detpedidos')
+                    .select(`id_producto,color,talla,id_proveedor,id_pedido,cantidad,subtotal,precioventa, detproductos(
+                            productos(id_producto, nombre_producto, descripcion, imagen_url, precio_producto))`)
+                    .order('subtotal', { ascending: false });
                 if (error) throw error;
                 setdetpedidos(data)
                 console.log(data)
-                 
+
             }
             catch (error) {
                 console.error('Error fetching orders:', error);
-                
+
 
             }
         }
@@ -59,7 +59,7 @@ const OrderHistory = () => {
     //     fetchDetOrders(id_pedido)
 
     // },[id_pedido])
-    
+
 
     const formatDate = (dateString) => {
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -133,7 +133,7 @@ const OrderHistory = () => {
                         fontSize: '2rem',
                         fontWeight: '600'
                     }}>Historial de Pedidos</h1>
-                    
+
                     {orders.length === 0 ? (
                         <div style={{
                             textAlign: 'center',
@@ -172,44 +172,43 @@ const OrderHistory = () => {
                             gap: '1.5rem'
                         }}>
                             {orders.map((order) => {
-                                return(
+                                return (
                                     (
-                                <div key={order.id_pedido} style={{
-                                    background: 'white',
-                                    borderRadius: '10px',
-                                    overflow: 'hidden',
-                                    boxShadow: '0 2px 15px rgba(0, 0, 0, 0.05)',
-                                    transition: 'transform 0.3s ease, box-shadow 0.3s ease'
-                                }}>
-                                    <div style={{
-                                        display: 'flex',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center',
-                                        padding: '1.5rem',
-                                        borderBottom: '1px solid #eee'
-                                    }}>
-                                        <div>
-                                            <h3 style={{
-                                                color: '#333',
-                                                margin: '0',
-                                                fontSize: '1.9rem'
-                                            }}>Pedido #{order.id_pedido}</h3>
-                                            <p style={{
-                                                color: '#888',
-                                                fontSize: '1.2rem',
-                                                marginTop: '0.3rem'
-                                            }}>{formatDate(order.fecha_pedido)}</p>
-                                        </div>
-                                        <div style={getStatusStyle(order.estadopedido)}>
-                                            {order.estadopedido}
-                                        </div>
-                                    </div>
-                                    
-                                    <div style={{
-                                        padding: '1rem 1.5rem'
-                                    }}> 
-                                        { detpedidos.filter(item => item.id_pedido == order.id_pedido).map((item, index) => {
-                                            console.log(item)
+                                        <div key={order.id_pedido} style={{
+                                            background: 'white',
+                                            borderRadius: '10px',
+                                            overflow: 'hidden',
+                                            boxShadow: '0 2px 15px rgba(0, 0, 0, 0.05)',
+                                            transition: 'transform 0.3s ease, box-shadow 0.3s ease'
+                                        }}>
+                                            <div style={{
+                                                display: 'flex',
+                                                justifyContent: 'space-between',
+                                                alignItems: 'center',
+                                                padding: '1.5rem',
+                                                borderBottom: '1px solid #eee'
+                                            }}>
+                                                <div>
+                                                    <h3 style={{
+                                                        color: '#333',
+                                                        margin: '0',
+                                                        fontSize: '1.9rem'
+                                                    }}>Pedido #{order.id_pedido}</h3>
+                                                    <p style={{
+                                                        color: '#888',
+                                                        fontSize: '1.2rem',
+                                                        marginTop: '0.3rem'
+                                                    }}>{formatDate(order.fecha_pedido)}</p>
+                                                </div>
+                                                <div style={getStatusStyle(order.estadopedido)}>
+                                                    {order.estadopedido}
+                                                </div>
+                                            </div>
+
+                                            <div style={{
+                                                padding: '1rem 1.5rem'
+                                            }}>
+                                                { detpedidos.filter(item => item.id_pedido == order.id_pedido).slice(0,2).map((item, index) => {
                                             return(
                                                 (
                                             <div key={index} style={{
@@ -244,40 +243,40 @@ const OrderHistory = () => {
                                         )
                                             )
                                         })}
-                                    </div>
-                                    
-                                    <div style={{
-                                        display: 'flex',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center',
-                                        padding: '1.2rem 1.5rem',
-                                        backgroundColor: '#fafafa',
-                                        borderTop: '1px solid #eee'
-                                    }}>
-                                        <div style={{
-                                            display: 'flex',
-                                            gap: '0.5rem',
-                                            fontWeight: '600',
-                                            color: '#333'
-                                        }}>
-                                            <span>Total:</span>
-                                            <span style={{ color: '#c496f9' }}>${order.total.toFixed(2)}</span>
+                                            </div>
+
+                                            <div style={{
+                                                display: 'flex',
+                                                justifyContent: 'space-between',
+                                                alignItems: 'center',
+                                                padding: '1.2rem 1.5rem',
+                                                backgroundColor: '#fafafa',
+                                                borderTop: '1px solid #eee'
+                                            }}>
+                                                <div style={{
+                                                    display: 'flex',
+                                                    gap: '0.5rem',
+                                                    fontWeight: '600',
+                                                    color: '#333'
+                                                }}>
+                                                    <span>Total:</span>
+                                                    <span style={{ color: '#c496f9' }}>${order.total.toFixed(2)}</span>
+                                                </div>
+                                                <button onClick={() => { window.location.href = `/DetPedidos/${order.id_pedido}` }} style={{
+                                                    backgroundColor: 'transparent',
+                                                    color: '#c496f9',
+                                                    border: '1px solid #c496f9',
+                                                    padding: '0.5rem 1.2rem',
+                                                    borderRadius: '5px',
+                                                    fontWeight: '500',
+                                                    cursor: 'pointer',
+                                                    transition: 'all 0.3s ease'
+                                                }}>
+                                                    Ver detalles
+                                                </button>
+                                            </div>
                                         </div>
-                                        <button onClick= {() => {window.location.href= `/DetPedidos/${order.id_pedido}`}} style={{
-                                            backgroundColor: 'transparent',
-                                            color: '#c496f9',
-                                            border: '1px solid #c496f9',
-                                            padding: '0.5rem 1.2rem',
-                                            borderRadius: '5px',
-                                            fontWeight: '500',
-                                            cursor: 'pointer',
-                                            transition: 'all 0.3s ease'
-                                        }}>
-                                            Ver detalles
-                                        </button>
-                                    </div>
-                                </div>
-                            )
+                                    )
                                 )
                             })}
                         </div>
@@ -310,3 +309,4 @@ const OrderHistory = () => {
 };
 
 export default OrderHistory;
+// 
