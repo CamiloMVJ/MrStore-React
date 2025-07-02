@@ -443,53 +443,52 @@ const Inventario = () => {
         {cargando ? (
           <p>Cargando productos...</p>
         ) : (
-          <table border="1.9" cellPadding="10" style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead style={{ background: '#d1a2f5' }}>
-              <tr>
-                <th>Id Prod</th>
-                <th>Categoria</th>
-                {/* <th>Id prov</th> */}
-                {/* <th>Id Talla</th> */}
-                {/* <th>Id Color</th> */}
-                <th>Nombre</th>
-                <th>Precio</th>
-                <th>Stock</th>
-                <th>Talla</th>
-                <th>color</th>
-                <th>Descripción</th>
-                <th>Proveedor</th>
-                <th>Imagen</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {productos.length === 0 ? (
-                <tr><td colSpan="9" style={{ textAlign: 'center' }}>No hay productos</td></tr>
-              ) : (
-                productos.map((producto, index) => (
-                  <tr key={index}>
-                    <td>{producto.id_producto}</td>
-                    <td>{producto.nombre_categoria}</td>
-                    {/* <td>{producto.id_proveedor}</td> */}
-                    {/* <td>{producto.id_talla}</td> */}
-                    {/* <td>{producto.id_color}</td> */}
-                    <td>{producto.nombre_producto}</td>
-                    <td>{producto.precio_producto}</td>
-                    <td>{producto.stock}</td>
-                    <td>{producto.talla}</td>
-                    <td>{producto.color}</td>
-                    <td>{producto.descripcion}</td>
-                    <td>{producto.nombre_proveedor}</td>
-                    <td><img src={producto.imagen_url} alt="imagen" width="50" /></td>
-                    <td>
-                      <button onClick={() => editarProducto(producto)} style={{ marginRight: '5px', background: '#d1a2f5', color: 'white', border: 'none', padding: '5px 10px' }}>EDITAR</button>
-                      <button onClick={() => eliminarProducto(producto.id_producto)} style={{ background: '#d1a2f5', color: 'white', border: 'none', padding: '5px 10px' }}>ELIMINAR</button>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+          <div className='table-responsive'>
+            <table border="1.9" cellPadding="10" style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead style={{ background: '#d1a2f5' }}>
+                <tr style={{ position: 'sticky', top: 0 }}>
+                  <th>Id Prod</th>
+                  <th>Categoria</th>
+                  <th>Nombre</th>
+                  <th>Precio</th>
+                  <th>Stock</th>
+                  <th>Talla</th>
+                  <th>color</th>
+                  <th>Descripción</th>
+                  <th>Proveedor</th>
+                  <th>Imagen</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {productos.length === 0 ? (
+                  <tr><td colSpan="9" style={{ textAlign: 'center' }}>No hay productos</td></tr>
+                ) : (
+                  productos.map((producto, index) => (
+                    <tr key={index}>
+                      <td>{producto.id_producto}</td>
+                      <td>{producto.nombre_categoria}</td>
+                      {/* <td>{producto.id_proveedor}</td> */}
+                      {/* <td>{producto.id_talla}</td> */}
+                      {/* <td>{producto.id_color}</td> */}
+                      <td>{producto.nombre_producto}</td>
+                      <td>{producto.precio_producto}</td>
+                      <td>{producto.stock}</td>
+                      <td>{producto.talla}</td>
+                      <td>{producto.color}</td>
+                      <td>{producto.descripcion}</td>
+                      <td>{producto.nombre_proveedor}</td>
+                      <td><img src={producto.imagen_url} alt="imagen" width="50" /></td>
+                      <td>
+                        <button onClick={() => editarProducto(producto)} style={{ marginRight: '5px', background: '#d1a2f5', color: 'white', border: 'none', padding: '5px 10px' }}>EDITAR</button>
+                        <button onClick={() => eliminarProducto(producto.id_producto)} style={{ background: '#d1a2f5', color: 'white', border: 'none', padding: '5px 10px' }}>ELIMINAR</button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </>
