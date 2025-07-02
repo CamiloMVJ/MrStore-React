@@ -108,6 +108,43 @@ export const getTable = async (table, rowsQnt = '', columns = '') => {
   }
 }
 
+export const getProducts = async (limit = 10, all = false) => {
+  try {
+    const { data, error } = await supabase.schema('mrstore2').from('detproductos')
+      .select(`stock,
+      productos(id_producto, nombre_producto, descripcion, imagen_url, precio_producto, id_categoria, estado)`)
+      .eq('productos.estado', true)
+      .gt('stock', 0)
+      .order('id_producto', { ascending: false })
+
+    const products = data.map(item => {
+      return {
+        id_producto: item.productos.id_producto,
+        nombre_producto: item.productos.nombre_producto,
+        descripcion: item.productos.descripcion,
+        imagen_url: item.productos.imagen_url,
+        precio_producto: item.productos.precio_producto,
+        id_categoria: item.productos.id_categoria,
+        estado: item.productos.estado
+      }
+    }).filter(() => true)
+
+    const response = Object.values(products.reduce((acc, curr) => {
+      if (!acc[curr.id_producto]) {
+        acc[curr.id_producto] = curr
+      }
+      return acc
+    }, {}))
+
+    if (error) throw error
+    if (all) return response
+    return response.slice(0, limit)
+  } catch (error) {
+    console.error("Error al obtener productos:", error.message)
+    throw error
+  }
+}
+
 export const addProductToCart = async (id_carrito, idProducto, id_color, id_talla, id_proveedor, cantidad) => {
   try {
     const { data, error } = await supabase.schema('mrstore2').from('detcarritocompras').insert({

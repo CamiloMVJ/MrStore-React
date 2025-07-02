@@ -76,6 +76,7 @@ Header
   background-color: #c496f9;
   font-size: 1.3rem;
   color: var(--white);
+  width: 100vw;
 }
 
 .hei {
@@ -1608,11 +1609,12 @@ th:last-child {
   margin-top: 15px;
 }
 
-form .btn-danger {
+.btn-danger {
   background: var(--red);
   color: white;
   padding: 0.7rem;
-  border: 1px solid var(--purple);
+  border: none;
+  border-radius: 5px;
   cursor: pointer;
   margin-top: 16px;
 }
@@ -1627,6 +1629,10 @@ form .btn-danger {
 
 .bg-green {
   background: var(--green) !important;
+}
+
+.bg-black {
+  background: var(--black) !important;
 }
 
 .container .rightT {
@@ -1930,6 +1936,7 @@ form .btn-danger {
   /* border: 1px solid black; */
   border-radius: 10px;
   box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.1);
+  min-width: fit-content;
 }
 
 .flex {
@@ -2038,6 +2045,44 @@ form .btn-danger {
   color: var(--purple);
 }
 
+.colorWhite {
+  color: var(--white);
+}
+
 .summaryTable {
   width: 80%;
+}
+
+.checkPopUp {
+  position: fixed;
+  z-index: 9;
+  margin: 0 auto;
+  background: rgba(49, 48, 48, 0.548);
+  top: 0;
+  /* left: 50%; */
+  text-align: center;
+  width: 100%;
+  height: 100vh;
+  backdrop-filter: blur(5px);
+}
+
+.table {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.table input {
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: 240px
+}
+
+.table select {
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: 240px
 }
