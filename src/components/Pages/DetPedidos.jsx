@@ -12,7 +12,36 @@ const OrderDetails = () => {
   const [envio, setenvio] = useState();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-const [confirmacion, setpago] = useState([])
+  const [confirmacion, setpago] = useState([])
+
+  const confirmarPago = async () => {
+    try {
+      setLoading(true);
+
+      // 1. Confirmar el pago
+      const { data, error } = await supabase
+        .schema('mrstore2')
+        .from('pagos')
+        .update({ estado_pago: true })
+        .eq('id_pedido', id_pedido).select()
+
+      console.log(data, error, id_pedido)
+      if (error) throw error;
+
+
+      // 3. Refrescar los datos o actualizar localmente
+      // console.log('Pedido confirmado:', pedidoData);
+      // alert('Pago y estado del pedido actualizados');
+      // setpago(pagoData[0]); // si estás usando esto
+      // Actualizá estado local si estás usando uno tipo setOrders
+
+    } catch (error) {
+      console.error('Error al confirmar el pago:', error);
+      alert('Error al confirmar el pedido');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     const fetchDetOrderDetails = async () => {
@@ -85,43 +114,7 @@ const [confirmacion, setpago] = useState([])
       }
     };
 
-    const confirmarPago = async (id_pedido) => {
-  try {
-    setLoading(true);
-
-    // 1. Confirmar el pago
-    const { data: pagoData, error: pagoError } = await supabase
-      .schema('mrstore2')
-      .from('pagos')
-      .update({ estado_pago: true })
-      .eq('id_pedido', id_pedido);
-
-    if (pagoError) throw pagoError;
-
-    // 2. Actualizar el estado del pedido
-    const { data: pedidoData, error: pedidoError } = await supabase
-      .schema('mrstore2')
-      .from('pedidos')
-      .update({ estadopedido: 'Confirmado' })
-      .eq('id_pedido', id_pedido);
-
-    if (pedidoError) throw pedidoError;
-
-    // 3. Refrescar los datos o actualizar localmente
-    console.log('Pedido confirmado:', pedidoData);
-    alert('Pago y estado del pedido actualizados');
-    setpago(pagoData[0]); // si estás usando esto
-    // Actualizá estado local si estás usando uno tipo setOrders
-
-  } catch (error) {
-    console.error('Error al confirmar el pago:', error);
-    alert('Error al confirmar el pedido');
-  } finally {
-    setLoading(false);
-  }
-};
-
-    confirmarPago();
+    // confirmarPago();
     fetchOrder();
     fetchDetOrderDetails();
     fetchShipping();
@@ -149,7 +142,7 @@ const [confirmacion, setpago] = useState([])
       marginLeft: "1rem",
     };
 
-    if (lowerStatus === "completado") {
+    if (lowerStatus === "confirmado") {
       return { ...styles, backgroundColor: "#e6f7e6", color: "#2e7d32" };
     } else if (lowerStatus === "pendiente") {
       return { ...styles, backgroundColor: "#fff8e1", color: "#ff8f00" };
@@ -244,7 +237,7 @@ const [confirmacion, setpago] = useState([])
                   </div>
                   <div className="mt-6">
                     <button
-                      onClick={() => confirmarPago()}
+                      onClick={confirmarPago}
                       style={{
                         backgroundColor: "#c496f9",
                         color: "white",
