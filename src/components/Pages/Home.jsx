@@ -13,7 +13,7 @@ const Home = () => {
             localStorage.clear()
         }
 
-        getProducts().then(data => {
+        getProducts(12).then(data => {
             setProducts(data)
         })
     }, [])

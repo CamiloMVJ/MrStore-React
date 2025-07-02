@@ -12,7 +12,7 @@ const Cart = () => {
     const [loading, setLoading] = useState(true)
     const [ActTotal, setActTotal] = useState(false)
     const [direcciones, setDirecciones] = useState([])
-    const [DirActiva, setDirActiva] = useState(0)
+    const [DirActiva, setDirActiva] = useState(null)
     const [session, setSession] = useState(JSON.parse(sessionStorage.getItem('session')))
     const [Descuento, setDescuento] = useState(0)
     const [Envio, setEnvio] = useState(0)
@@ -94,6 +94,10 @@ const Cart = () => {
             if (cartItems.length === 0) {
                 setMessage("El carrito está vacío.")
                 setType("error")
+                return
+            }
+            if (DirActiva === "") {
+                console.error("Por favor seleccione una direccion de envio")
                 return
             }
             if (ValidarStock()) {
@@ -255,7 +259,7 @@ const Cart = () => {
                                     <h2 className='title'>Resumen de carrito</h2>
                                     <div className='flex' style={{ justifyContent: "center", alignItems: "baseline" }}>
                                         <label htmlFor=""> Diccion de envio</label>
-                                        <select className="selector" style={{ width: "100px", textAlign: "center", height: "25px", marginBottom: "20px" }} name="direccion" value={DirActiva} onChange={handleDirChange}>
+                                        <select className="selector" style={{ width: "100px", textAlign: "center", height: "25px", marginBottom: "20px" }} name="direccion" value={DirActiva || ""} onChange={handleDirChange}>
                                             {DirActiva === '' ? (<option value="" disabled>Seleccione una direccion</option>) : null}
                                             {direcciones.map((dir, index) => {
                                                 return (
@@ -289,7 +293,14 @@ const Cart = () => {
                                         </table>
                                     </div>
                                     <div className='center' style={{ marginTop: "20px" }}>
-                                        <button className='btn-1' style={{ textAlign: "center" }} onClick={() => { setPopUpPago(!PopUpPago) }}>Pagar</button>
+                                        <button className='btn-1' style={{ textAlign: "center" }} onClick={() => { 
+                                            if (DirActiva === null || DirActiva === '') {
+                                                setMessage("Por favor seleccione una direccion de envio")
+                                                setType("error")
+                                                return
+                                            }
+                                            setPopUpPago(!PopUpPago)
+                                        }}>Pagar</button>
                                     </div>
                                 </div>
                             </>
