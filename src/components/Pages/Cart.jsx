@@ -21,6 +21,7 @@ const Cart = () => {
     const [banco, setBanco] = useState('')
     const [message, setMessage] = useState('')
     const [type, setType] = useState('')
+    const [precioxKG, setPrecioxKG] = useState(1)
 
     useEffect(() => {
         if (message === null) return
@@ -30,6 +31,11 @@ const Cart = () => {
         }, 3000)
         return () => clearTimeout(timer)
     }, [message])
+
+    useEffect(() => {
+        fetchDirecciones()
+        setActCarrito(!ActCarrito)
+    }, [])
 
     useEffect(() => {
         const fetchCarrito = async () => {
@@ -67,13 +73,55 @@ const Cart = () => {
             }
         }
         fetchCarrito()
-
+        fetchPrecioxKG(DirActiva)
     }, [ActCarrito])
 
-    useEffect(() => {
-        setActCarrito(!ActCarrito)
-        fetchDirecciones()
-    }, [])
+    const fetchDirecciones = async () => {
+        supabase.schema('mrstore2').from('direcciones').select()
+            .eq('id_cliente', session.id_cliente)
+            .eq('estado', true)
+            .then(data => {
+                if (data.data.length > 0) {
+                    let id = data.data.filter(dir => dir.es_principal === true)
+                    setDirecciones(data.data)
+                    if (id.length == 1) {
+                        setDirActiva(id[0].id_direccion)
+                        fetchPrecioxKG(id[0].id_direccion)
+                        return
+                    }
+                    return
+                }
+                setDirActiva('')
+            })
+    }
+
+    const fetchPrecioxKG = async (idDir) => {
+        try {
+            const { data, error } = await supabase.schema('mrstore2').from('direcciones').select(`
+                departamentos(id_departamento, precio_envio),
+                clientes(id_cliente, carritocompras(id_carritocompras, detcarritocompras(id_carritocompras,cantidad)))`)
+                .eq('clientes.carritocompras.id_carritocompras', session.id_carrito)
+                .eq('id_direccion', idDir)
+            // console.log(data)
+            const datos = data.map(item => {
+                return {
+                    precio: item.departamentos.precio_envio,
+                    cantidad: item.clientes.carritocompras[0].detcarritocompras.reduce((acc, item) => acc + item.cantidad, 0)
+                }
+            })
+            setEnvio(datos[0].cantidad * 0.375 * datos[0].precio)
+            if (error) {
+                console.error("Error al obtener el precio por kg:", error)
+                return
+            }
+            setPrecioxKG(data)
+        }
+        catch (error) {
+
+        }
+    }
+
+
 
     const ValidarStock = () => {
         const hayStockInsuficiente = cartItems.some(item => {
@@ -164,23 +212,7 @@ const Cart = () => {
             console.error("Error al generar el envio:", error)
         }
     }
-    const fetchDirecciones = async () => {
-        supabase.schema('mrstore2').from('direcciones').select()
-            .eq('id_cliente', session.id_cliente)
-            .eq('estado', true)
-            .then(data => {
-                if (data.data.length > 0) {
-                    let id = data.data.filter(dir => dir.es_principal === true)
-                    setDirecciones(data.data)
-                    if (id.length == 1) {
-                        setDirActiva(id[0].id_direccion)
-                        return
-                    }
-                    return
-                }
-                setDirActiva('')
-            })
-    }
+
 
     const handleDirChange = (e) => {
         e.preventDefault()
@@ -293,7 +325,7 @@ const Cart = () => {
                                         </table>
                                     </div>
                                     <div className='center' style={{ marginTop: "20px" }}>
-                                        <button className='btn-1' style={{ textAlign: "center" }} onClick={() => { 
+                                        <button className='btn-1' style={{ textAlign: "center" }} onClick={() => {
                                             if (DirActiva === null || DirActiva === '') {
                                                 setMessage("Por favor seleccione una direccion de envio")
                                                 setType("error")

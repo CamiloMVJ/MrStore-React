@@ -13,7 +13,7 @@ import Cart from './components/Pages/Cart.jsx';
 import Pedidos from './components/Pages/Pedidos.jsx';
 import DetPedidos from './components/Pages/DetPedidos.jsx';
 import './css/styles.css'
-import './css/inventario.css'
+// import './css/inventario.css'
 
 const router = createBrowserRouter([
   { path: '/', element: <Home />, errorElement: <ErrorBoundary /> },
@@ -27,6 +27,7 @@ const router = createBrowserRouter([
   {path: '/Inventario', element: <Inventario/>},
   {path: '/Pedidos', element: <Pedidos/>},
   {path: '/DetPedidos/:id_pedido', element: <DetPedidos/>},
+  {path: '/passrecovery', element: <ErrorBoundary />},
 ])
 
 

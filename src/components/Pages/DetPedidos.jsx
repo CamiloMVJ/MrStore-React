@@ -12,19 +12,20 @@ const OrderDetails = () => {
     const [envio, setenvio] = useState();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    
+
 
     useEffect(() => {
-    const fetchDetOrderDetails = async () => {
-        try {
-            const { data, error: supabaseError } = await supabase
-                .schema('mrstore2')
-                .from('detpedidos')
-                .select(`
-                    id_producto,color,talla,id_proveedor,id_pedido,cantidad,subtotal,precioventa, detproductos(
+        const fetchDetOrderDetails = async () => {
+            try {
+                const { data, error: supabaseError } = await supabase
+                    .schema('mrstore2')
+                    .from('detpedidos')
+                    .select(`
+                    id_producto,color,talla,id_proveedor,id_pedido,cantidad,subtotal,precioventa, 
+                    detproductos(
                             productos(id_producto, nombre_producto, descripcion, imagen_url, precio_producto))`)
-                 .eq('id_pedido', id_pedido).order('subtotal', {ascending: false});
-             if (supabaseError) throw error;
+                    .eq('id_pedido', id_pedido).order('subtotal', { ascending: false });
+                if (supabaseError) throw error;
                 setdetpedidos(data)
                 setLoading(false)
             } catch (error) {
@@ -32,50 +33,51 @@ const OrderDetails = () => {
                 setLoading(false);
             }
         };
-    const fetchOrder = async () => {
-        try {
-            const { data, error : supabaseError } = await supabase.schema('mrstore2').from('pedidos')
-            .select(`id_pedido,
+        const fetchOrder = async () => {
+            try {
+                const { data, error: supabaseError } = await supabase.schema('mrstore2').from('pedidos')
+                    .select(`id_pedido,
                         total,
                         estadopedido,
                         fecha_pedido`).eq('id_pedido', id_pedido).order('fecha_pedido', { ascending: false });
 
                 if (supabaseError) throw error;
-                
+
                 setOrders(data[0])
                 setLoading(false)
             } catch (error) {
                 console.error('Error fetching orders:', error);
                 setLoading(false);
-            
-        }
-    };
 
-    const fetchShipping = async () => {
-        try {
-            const { data, error : supabaseError } = await supabase.schema('mrstore2').from('envios')
-            .select(`id_pedido,
+            }
+        };
+
+        const fetchShipping = async () => {
+            try {
+                const { data, error: supabaseError } = await supabase.schema('mrstore2').from('envios')
+                    .select(`id_pedido,
                 costo_envio,
                 empresa_envio,
                 fechaentrega,
                 descuento,
                 direcciones(id_direccion, direccion, nombre_dir)
-                `).eq('id_pedido', id_pedido ).order('costo_envio', {ascending:false});
-            if (supabaseError) throw error;
+                `).eq('id_pedido', id_pedido).order('costo_envio', { ascending: false });
+                console.log(data)
+                if (supabaseError) throw error;
                 console.log(data[0])
                 setenvio(data[0])
                 setLoading(false)
             } catch (error) {
                 console.error('Error fetching orders:', error);
                 setLoading(false);
-            
-        }
-        
-    };
-    fetchOrder()
-    fetchDetOrderDetails();
-    fetchShipping()
-}, []);
+
+            }
+
+        };
+        fetchOrder()
+        fetchDetOrderDetails();
+        fetchShipping()
+    }, []);
 
 
     const formatDate = (dateString) => {
@@ -84,7 +86,7 @@ const OrderDetails = () => {
     };
 
     const getStatusStyle = (status) => {
-       const lowerStatus = status.toLowerCase();
+        const lowerStatus = status.toLowerCase();
         const styles = {
             padding: '0.5rem 1rem',
             borderRadius: '20px',
@@ -200,9 +202,9 @@ const OrderDetails = () => {
                         <div style={styles.productsList}>
                             {detpedidos.map((item, index) => (
                                 <div key={index} style={styles.productCard}>
-                                    <img 
-                                        src={item.detproductos.productos.imagen_url} 
-                                        alt={item.detproductos.productos.nombre_producto} 
+                                    <img
+                                        src={item.detproductos.productos.imagen_url}
+                                        alt={item.detproductos.productos.nombre_producto}
                                         style={styles.productImage}
                                     />
                                     <div style={styles.productInfo}>
@@ -247,8 +249,8 @@ const OrderDetails = () => {
                         </div>
                     </div>
                 </div>
-            </section>):null}
-            
+            </section>) : null}
+
             <Footer />
             <style>{`
                 @keyframes spin {
