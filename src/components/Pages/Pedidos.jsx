@@ -51,6 +51,8 @@ const OrderHistory = () => {
 
             }
         }
+
+        
         fetchDetOrders()
         fetchOrders();
     }, []);
@@ -66,12 +68,14 @@ const OrderHistory = () => {
         return new Date(dateString).toLocaleDateString('es-ES', options);
     };
 
+    
+
     const getStatusStyle = (status) => {
         const lowerStatus = status.toLowerCase();
         const styles = {
             padding: '0.3rem 0.8rem',
             borderRadius: '20px',
-            fontSize: '0.85rem',
+            fontSize: '1.5rem',
             fontWeight: '500',
             display: 'inline-block'
         };
