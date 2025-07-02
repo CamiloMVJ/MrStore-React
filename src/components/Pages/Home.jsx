@@ -2,7 +2,6 @@ import Header from "../Header"
 import Glider from "../Glider"
 import { useState, useEffect } from "react";
 import {  getProducts } from "../../js/supabase"
-import { getTable } from "../../js/supabase"
 import Footer from "../Footer"; 
 import ProductsCatalog from "../ProductsCatalog";
 
