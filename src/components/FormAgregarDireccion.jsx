@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const FormAgregarDireccion = ({
     AddDirvisible,
@@ -59,6 +60,16 @@ const FormAgregarDireccion = ({
             </form>
         </div>
     );
+};
+
+FormAgregarDireccion.propTypes = {
+    AddDirvisible: PropTypes.bool,
+    DireccionEvent: PropTypes.func.isRequired,
+    departamentos: PropTypes.array,
+    handleDepChange: PropTypes.func.isRequired,
+    departamento: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    openPopUp: PropTypes.func.isRequired,
+    display: PropTypes.string,
 };
 
 export default FormAgregarDireccion;

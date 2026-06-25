@@ -66,6 +66,7 @@ const Perfil = () => {
                     setLinkMaps(dir.maps_link)
                     setDepartamento(dir.id_departamento)
                 }
+                return null
             })
         }
         else {

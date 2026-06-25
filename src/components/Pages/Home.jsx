@@ -43,7 +43,7 @@ const Home = () => {
                     <form onSubmit={Tienda}>
                         <button className="category-btn" type="submit">
                             <div className="cat">
-                                <img src="https://ieozatljukwgdhkwfyyz.supabase.co/storage/v1/object/public/Images//acce.jpeg" alt="" />
+                                <img src="https://sxztljzznquujxhwgddm.supabase.co/storage/v1/object/public/Images//acce.jpeg" alt="" />
                                 <div>
                                     <p>ACCESORIOS</p>
                                     <input type="hidden" defaultValue='Accesorios' id="categoria" name="categoria" />

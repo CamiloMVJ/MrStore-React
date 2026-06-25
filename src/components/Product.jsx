@@ -203,4 +203,4 @@ const Product = ({ producto, ActualizarProductos }) => {
     )
 }
 
-export default Product
+export default Product 

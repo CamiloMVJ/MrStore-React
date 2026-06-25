@@ -34,7 +34,7 @@ const Glider = () => {
                                     <Link className="hero-btn" draggable="true" to="/Tienda">COMPRA AHORA!!</Link>
                                 </div>
                                 <div className="right">
-                                    <img className="img1" src="https://ieozatljukwgdhkwfyyz.supabase.co/storage/v1/object/public/Images//hero-1.png" alt="" />
+                                    <img className="img1" src="https://sxztljzznquujxhwgddm.supabase.co/storage/v1/object/public/Images//hero-1.png" alt="" />
                                 </div>
                             </div>
                         </li>
@@ -47,7 +47,7 @@ const Glider = () => {
                                     <Link className="hero-btn" draggable="true" to="/Tienda">COMPRA AHORA!!</Link>
                                 </div>
                                 <div className="right">
-                                    <img className="img2" src="https://ieozatljukwgdhkwfyyz.supabase.co/storage/v1/object/public/Images//hero-2.png" alt="" />
+                                    <img className="img2" src="https://sxztljzznquujxhwgddm.supabase.co/storage/v1/object/public/Images//hero-2.png" alt="" />
                                 </div>
                             </div>
                         </li>

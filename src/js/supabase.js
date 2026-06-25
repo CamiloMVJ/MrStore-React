@@ -1,9 +1,8 @@
 import { createClient } from "@supabase/supabase-js"
 import { timeStampz } from "./dateFormat.js"
-import { timeStamp } from "./dateFormat.js"
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_KEY
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 export const signInWithEmail = async (email, pass) => {
@@ -210,6 +209,73 @@ export const updateTable = async (table, id, idName, updatedData) => {
   } catch (e) {
     console.error("Error al actualizar datos:", e.message)
     throw e
+  }
+}
+
+export const getOrderDetailsById = async (id_pedido) => {
+  try {
+    const [orderResult, detailsResult, shippingResult] = await Promise.all([
+      supabase
+        .schema('mrstore2')
+        .from('pedidos')
+        .select(`id_pedido, total, estadopedido, fecha_pedido`)
+        .eq('id_pedido', id_pedido)
+        .single(),
+      supabase
+        .schema('mrstore2')
+        .from('detpedidos')
+        .select(`
+          id_producto,color,talla,id_proveedor,id_pedido,cantidad,subtotal,precioventa,
+          detproductos(
+            productos(id_producto, nombre_producto, descripcion, imagen_url, precio_producto)
+          )
+        `)
+        .eq('id_pedido', id_pedido)
+        .order('subtotal', { ascending: false }),
+      supabase
+        .schema('mrstore2')
+        .from('envios')
+        .select(`
+          id_pedido,
+          costo_envio,
+          empresa_envio,
+          fechaentrega,
+          descuento,
+          direcciones(id_direccion, direccion, nombre_dir)
+        `)
+        .eq('id_pedido', id_pedido)
+        .single(),
+    ])
+
+    if (orderResult.error) throw orderResult.error
+    if (detailsResult.error) throw detailsResult.error
+    if (shippingResult.error) throw shippingResult.error
+
+    return {
+      order: orderResult.data,
+      details: detailsResult.data ?? [],
+      shipping: shippingResult.data,
+    }
+  } catch (error) {
+    console.error('Error al obtener detalles del pedido:', error.message)
+    throw error
+  }
+}
+
+export const confirmOrderPayment = async (id_pedido) => {
+  try {
+    const { data, error } = await supabase
+      .schema('mrstore2')
+      .from('pagos')
+      .update({ estado_pago: true })
+      .eq('id_pedido', id_pedido)
+      .select()
+
+    if (error) throw error
+    return data
+  } catch (error) {
+    console.error('Error al confirmar el pago:', error.message)
+    throw error
   }
 }
 

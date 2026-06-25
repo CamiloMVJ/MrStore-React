@@ -8,13 +8,13 @@ const Footer = () => {
                         <p>Amamos atender a nuestros clientes con el mejor servicio por eso si
                             tienes alguna duda no dudes en contactarnos
                         </p>
-                        <a href="" className="btn btn-1">Contacto</a>
+                        <button className="btn btn-1">Contacto</button>
                     </div>
                     <div className="col">
                         <form action="">
                             <div>
                                 <input type="email" placeholder="Email Address" name="email"/>
-                                    <a href="">enviar</a>
+                                    <a href="/">enviar</a>
                             </div>
                         </form>
                     </div>
@@ -25,9 +25,9 @@ const Footer = () => {
                 <div className="row">
                     <div className="col d-flex">
                         <h4>INFORMACION</h4>
-                        <a href="">Acerca de nosotros</a>
-                        <a href="">Contactanos</a>
-                        <a href="">Terminos</a>
+                        <a href="/">Acerca de nosotros</a>
+                        <a href="/">Contactanos</a>
+                        <a href="/">Terminos</a>
                     </div>
                     <div className="col d-flex">
                         <span><i className='bx bxl-facebook-square'></i></span>

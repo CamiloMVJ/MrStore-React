@@ -41,6 +41,7 @@ const ProductsCatalog = ({ productos }) => {
                             className="product-image-btn"
                             aria-label="Ver detalles del producto"
                         >
+                            {/* {console.log(producto.imagen_url)} */}
                             <img 
                                 src={producto.imagen_url || '/placeholder-product.jpg'} 
                                 alt={producto.nombre_producto} 

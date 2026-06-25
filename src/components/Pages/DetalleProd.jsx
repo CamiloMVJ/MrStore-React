@@ -31,7 +31,7 @@ const DetalleProd = () => {
             setTypeError("error")
             return
         }
-        if (!indexColorYTalla || indexColorYTalla === "Select Size") {
+        if (!indexColorYTalla || indexColorYTalla == "Select Size") {
             setMessageError("Debes seleccionar un color y talla")
             setTypeError("error")
             return
@@ -41,7 +41,7 @@ const DetalleProd = () => {
             setTypeError("error")
             return
         }
-        if (indexColorYTalla) {
+        if (indexColorYTalla && product?.id_producto && colorYtalla[indexColorYTalla]) {
             addProductToCart(session.id_carrito, product.id_producto, colorYtalla[indexColorYTalla].colores.id_color,
                 colorYtalla[indexColorYTalla].tallas.id_talla, product.id_proveedor, cantidad).then(({ message, type }) => {
                     setMessageError(message)

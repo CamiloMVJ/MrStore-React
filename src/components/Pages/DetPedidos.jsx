@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
-import { useParams, Link, data } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import Header from "../Header";
 import Footer from "../Footer";
-import { supabase } from "../../js/supabase";
+import { confirmOrderPayment, getOrderDetailsById } from "../../js/supabase";
 
 const OrderDetails = () => {
-  const [id_pedido, setId_Pedido] = useState(useParams().id_pedido);
-  const [order, setOrder] = useState();
+  const { id_pedido } = useParams();
   const [detpedidos, setdetpedidos] = useState([]);
   const [orders, setOrders] = useState(null);
   const [envio, setenvio] = useState();
@@ -17,23 +16,11 @@ const OrderDetails = () => {
   const confirmarPago = async () => {
     try {
       setLoading(true);
-
-      // 1. Confirmar el pago
-      const { data, error } = await supabase
-        .schema('mrstore2')
-        .from('pagos')
-        .update({ estado_pago: true })
-        .eq('id_pedido', id_pedido).select()
-
-      console.log(data, error, id_pedido)
-      if (error) throw error;
-
-
-      // 3. Refrescar los datos o actualizar localmente
-      // console.log('Pedido confirmado:', pedidoData);
-      // alert('Pago y estado del pedido actualizados');
-      // setpago(pagoData[0]); // si estás usando esto
-      // Actualizá estado local si estás usando uno tipo setOrders
+      await confirmOrderPayment(id_pedido)
+      const details = await getOrderDetailsById(id_pedido)
+      setOrders(details.order)
+      setdetpedidos(details.details)
+      setenvio(details.shipping)
 
     } catch (error) {
       console.error('Error al confirmar el pago:', error);
@@ -44,81 +31,22 @@ const OrderDetails = () => {
   };
 
   useEffect(() => {
-    const fetchDetOrderDetails = async () => {
+    const loadOrderDetails = async () => {
       try {
-        const { data, error: supabaseError } = await supabase
-          .schema("mrstore2")
-          .from("detpedidos")
-          .select(
-            `
-                    id_producto,color,talla,id_proveedor,id_pedido,cantidad,subtotal,precioventa, detproductos(
-                            productos(id_producto, nombre_producto, descripcion, imagen_url, precio_producto))`
-          )
-          .eq("id_pedido", id_pedido)
-          .order("subtotal", { ascending: false });
-        if (supabaseError) throw error;
-        setdetpedidos(data);
-        setLoading(false);
+        setLoading(true)
+        const details = await getOrderDetailsById(id_pedido)
+        setOrders(details.order)
+        setdetpedidos(details.details)
+        setenvio(details.shipping)
       } catch (error) {
-        console.error("Error fetching orders:", error);
-        setLoading(false);
+        setError(error.message)
+      } finally {
+        setLoading(false)
       }
-    };
-    const fetchOrder = async () => {
-      try {
-        const { data, error: supabaseError } = await supabase
-          .schema("mrstore2")
-          .from("pedidos")
-          .select(
-            `id_pedido,
-                        total,
-                        estadopedido,
-                        fecha_pedido`
-          )
-          .eq("id_pedido", id_pedido)
-          .order("fecha_pedido", { ascending: false });
+    }
 
-        if (supabaseError) throw error;
-
-        setOrders(data[0]);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching orders:", error);
-        setLoading(false);
-      }
-    };
-
-    const fetchShipping = async () => {
-      try {
-        const { data, error: supabaseError } = await supabase
-          .schema("mrstore2")
-          .from("envios")
-          .select(
-            `id_pedido,
-                costo_envio,
-                empresa_envio,
-                fechaentrega,
-                descuento,
-                direcciones(id_direccion, direccion, nombre_dir)
-                `
-          )
-          .eq("id_pedido", id_pedido)
-          .order("costo_envio", { ascending: false });
-        if (supabaseError) throw error;
-        console.log(data[0]);
-        setenvio(data[0]);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching orders:", error);
-        setLoading(false);
-      }
-    };
-
-    // confirmarPago();
-    fetchOrder();
-    fetchDetOrderDetails();
-    fetchShipping();
-  }, []);
+    loadOrderDetails();
+  }, [id_pedido]);
 
   const formatDate = (dateString) => {
     const options = {
@@ -192,7 +120,7 @@ const OrderDetails = () => {
           <i className="bx bx-package" style={styles.notFoundIcon}></i>
           <h3 style={styles.notFoundTitle}>Pedido no encontrado</h3>
           <p style={styles.notFoundText}>
-            No se encontró el pedido #{order.id_pedido}
+            No se encontró el pedido #{id_pedido}
           </p>
           <Link to="/Pedidos" style={styles.backButton}>
             Volver al historial
@@ -253,7 +181,15 @@ const OrderDetails = () => {
                         e.currentTarget.style.backgroundColor = "#b080f0";
                         e.currentTarget.style.transform = "translateY(-2px)";
                       }}
+                      onFocus={(e) => {
+                        e.currentTarget.style.backgroundColor = "#b080f0";
+                        e.currentTarget.style.transform = "translateY(-2px)";
+                      }}
                       onMouseOut={(e) => {
+                        e.currentTarget.style.backgroundColor = "#c496f9";
+                        e.currentTarget.style.transform = "translateY(0)";
+                      }}
+                      onBlur={(e) => {
                         e.currentTarget.style.backgroundColor = "#c496f9";
                         e.currentTarget.style.transform = "translateY(0)";
                       }}
