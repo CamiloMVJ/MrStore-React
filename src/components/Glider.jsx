@@ -10,7 +10,7 @@ const Glider = () => {
             const glide = new Glide(elem, {
                 type: 'carousel',
                 startAt: 0,
-                // autoplay: 3000,
+                autoplay: 3000,
                 gap: 0,
                 hoverpause: true,
                 perView: 1,

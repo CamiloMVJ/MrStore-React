@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom"
+
 const Footer = () => {
     return (
         <>
@@ -25,9 +27,9 @@ const Footer = () => {
                 <div className="row">
                     <div className="col d-flex">
                         <h4>INFORMACION</h4>
-                        <a href="/">Acerca de nosotros</a>
-                        <a href="/">Contactanos</a>
-                        <a href="/">Terminos</a>
+                        <Link to="/">Acerca de nosotros</Link>
+                        <Link to="/">Contactanos</Link>
+                        <Link to="/">Terminos</Link>
                     </div>
                     <div className="col d-flex">
                         <span><i className='bx bxl-facebook-square'></i></span>

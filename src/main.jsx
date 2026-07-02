@@ -22,12 +22,12 @@ const router = createBrowserRouter([
   { path: '/DetProd/:id_prod', element: <DetalleProd /> },
   { path: '/login', element: <Login /> },
   { path: '/perfil', element: <Perfil /> },
-  {path: '/signup', element: <SignUpMeth />},
-  {path: '/cart', element: <Cart/>},
-  {path: '/Inventario', element: <Inventario/>},
-  {path: '/Pedidos', element: <Pedidos/>},
-  {path: '/DetPedidos/:id_pedido', element: <DetPedidos/>},
-  {path: '/passrecovery', element: <ErrorBoundary />},
+  { path: '/signup', element: <SignUpMeth />},
+  { path: '/cart', element: <Cart/>},
+  { path: '/Inventario', element: <Inventario/>},
+  { path: '/Pedidos', element: <Pedidos/>},
+  { path: '/DetPedidos/:id_pedido', element: <DetPedidos/>},
+  { path: '/passrecovery', element: <ErrorBoundary />},
 ])
 
 
