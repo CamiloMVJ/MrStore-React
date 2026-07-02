@@ -5,6 +5,7 @@ import Login from "./components/Pages/Login";
 import Perfil from "./components/Pages/Perfil";
 import Tienda from "./components/Pages/Tienda";
 import DetalleProd from "./components/Pages/DetalleProd";
+import Cart from "./components/Pages/Cart";
 
 function App() {
 
@@ -18,6 +19,7 @@ function App() {
           <Route path='/DetProd/:id_prod' element={<DetalleProd />}/>
           <Route path='/pedidos' />
           <Route path='/inventario' />
+          <Route path='/cart' element={<Cart/>} />
           <Route path="/login" element={<Login />}/>
           <Route path="/perfil" element ={<Perfil/>} />
         </Routes>

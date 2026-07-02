@@ -1,15 +1,19 @@
 import Header from "../Header"
 import Glider from "../Glider"
 import { useState, useEffect } from "react";
-import { getTable } from "../../js/supabase"
-import Products from "../Products";
-import Footer from "../Footer";
+import {  getProducts } from "../../js/supabase"
+import Footer from "../Footer"; 
+import ProductsCatalog from "../ProductsCatalog";
 
 const Home = () => {
     const [navSections, setNavSections] = useState([{ title: "Inicio" }, { title: "Tienda" }])
     const [products, setProducts] = useState([])
     useEffect(() => {
-        getTable('productos', 10).then(data => {
+        if(!sessionStorage.getItem('session')) {
+            localStorage.clear()
+        }
+
+        getProducts(12).then(data => {
             setProducts(data)
         })
     }, [])
@@ -39,7 +43,7 @@ const Home = () => {
                     <form onSubmit={Tienda}>
                         <button className="category-btn" type="submit">
                             <div className="cat">
-                                <img src="https://ieozatljukwgdhkwfyyz.supabase.co/storage/v1/object/public/Images//acce.jpeg" alt="" />
+                                <img src="https://sxztljzznquujxhwgddm.supabase.co/storage/v1/object/public/Images//acce.jpeg" alt="" />
                                 <div>
                                     <p>ACCESORIOS</p>
                                     <input type="hidden" defaultValue='Accesorios' id="categoria" name="categoria" />
@@ -68,7 +72,7 @@ const Home = () => {
                     <h1>NUESTROS PRODUCTOS</h1>
                     <p>Calidad a tus manos</p>
                 </div>
-                <Products productos={products} />
+                <ProductsCatalog productos={products} />
             </section>
             <Footer />
         </>

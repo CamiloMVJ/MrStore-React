@@ -9,7 +9,7 @@
   --grey1: #f0f0f0;
   --grey2: #e9d7d3;
   --red: #e16554;
-  --green: #54e165;
+  --green: #5ebe27;
 }
 
 /* Basic Reset */
@@ -76,6 +76,7 @@ Header
   background-color: #c496f9;
   font-size: 1.3rem;
   color: var(--white);
+  width: 100vw;
 }
 
 .hei {
@@ -123,6 +124,10 @@ Navigation
   color: var(--purple);
 }
 
+.nav-center .nav-link:hover::after {
+  color: var(--purple);
+}
+
 .nav-center .hamburger {
   display: none;
   font-size: 2.3rem;
@@ -155,6 +160,211 @@ Navigation
   height: 2rem;
   width: 2rem;
   justify-content: center;
+}
+
+/* Products catalog */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+  padding: 1rem 0;
+}
+
+.product-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(138, 79, 255, 0.15);
+}
+
+.product-image-container {
+  position: relative;
+  height: 250px;
+  overflow: hidden;
+}
+
+.product-image-btn {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.product-image-btn:hover .product-image {
+  transform: scale(1.05);
+}
+
+.add-to-cart-btn {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  background: var(--purple);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.add-to-cart-btn:hover {
+  background: #8a4fff;
+  transform: scale(1.1);
+}
+
+.add-to-cart-btn:disabled {
+  background: var(--purple);
+}
+
+.add-to-cart-btn i {
+  font-size: 1.5rem;
+}
+
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.product-info {
+  padding: 1.5rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-name {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.product-description {
+  color: #666;
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+  flex-grow: 1;
+}
+
+.product-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+}
+
+.product-price {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #8a4fff;
+}
+
+.view-details-btn {
+  background: none;
+  border: none;
+  color: var(--purple);
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: all 0.2s;
+}
+
+.view-details-btn:hover {
+  color: #7b3aff;
+  text-decoration: underline;
+}
+
+@media (max-width: 1024px) {
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .product-image-container {
+    height: 220px;
+  }
+}
+
+@media (max-width: 768px) {
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.2rem;
+  }
+
+  .product-info {
+    padding: 1rem;
+  }
+
+  .product-name {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .products-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .product-image-container {
+    height: 180px;
+  }
+
+  .add-to-cart-btn {
+    width: 40px;
+    height: 40px;
+    bottom: 10px;
+    right: 10px;
+  }
+
+  .product-name {
+    font-size: 1rem;
+  }
+
+  .product-description {
+    font-size: 0.85rem;
+  }
+
+  .product-price {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .products-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media only screen and (max-width: 768px) {
@@ -231,6 +441,7 @@ Hero Area
   height: calc(100vh - 6rem);
   margin: 0 4rem;
   overflow: hidden;
+  border-radius: 1rem;
 }
 
 .hero .center {
@@ -247,6 +458,7 @@ Hero Area
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -283,6 +495,7 @@ Hero Area
   margin-top: 1rem;
   background-color: var(--purple);
   color: white;
+  border-radius: 1rem;
 }
 
 .hero .right {
@@ -331,6 +544,7 @@ Hero Media Query
     left: 0;
   }
 }
+
 @media only screen and (max-width: 999px) {
   .glide__slide--active .left {
     top: 15%;
@@ -367,6 +581,7 @@ Hero Media Query
   .hero .left span {
     font-size: 1.4rem;
   }
+
   .hero .left p {
     font-size: 1.5rem;
     width: 80%;
@@ -409,6 +624,11 @@ Hero Media Query
   margin: auto;
   object-fit: cover;
   transition: all 2s ease;
+  border-radius: 1rem;
+}
+
+.cat-center .cat div {
+  border-radius: 1rem;
 }
 
 .cat-center .cat:hover img {
@@ -788,8 +1008,41 @@ Hero Media Query
   background-color: var(--purple);
   color: var(--white);
   display: inline-block;
-  border-radius: 1rem;
+  border-radius: 0.5rem;
   padding: 1rem 2rem;
+  margin: 0 !important;
+  border: 0;
+  cursor: pointer;
+}
+
+.btn-2 {
+  background-color: var(--purple);
+  color: var(--white);
+  display: inline-block;
+  border-radius: 0.5rem;
+  padding: .4rem 1rem !important;
+  margin: 0 !important;
+  width: 100px;
+}
+
+.btn-full {
+  background-color: var(--purple);
+  color: var(--white);
+  display: inline-block;
+  border-radius: 0.5rem;
+  padding: .4rem 1rem !important;
+  margin: 0 !important;
+  width: 100%;
+}
+
+.btn-1Trash {
+  background-color: var(--purple);
+  color: var(--white);
+  display: inline-block;
+  border-radius: 0.5rem;
+  padding: 1rem 1rem !important;
+  margin: 0 !important;
+  height: 50px;
 }
 
 .contact form div {
@@ -1191,8 +1444,8 @@ table {
 }
 
 .cart-info {
+  width: 100%;
   display: flex;
-  flex-wrap: wrap;
 }
 
 th {
@@ -1392,7 +1645,8 @@ th:last-child {
 /* Login Form */
 .login-form {
   padding: 5rem 0;
-  max-width: 50rem;
+  max-width: 40rem;
+  min-width: 40rem;
   margin: 5rem auto;
 }
 
@@ -1404,6 +1658,7 @@ th:last-child {
 .login-form form h1 {
   margin-bottom: 1rem;
 }
+
 .login-form form p {
   margin-bottom: 2rem;
 }
@@ -1413,6 +1668,16 @@ th:last-child {
 }
 
 .login-form form input {
+  border: 1px solid #ccc;
+  outline: none;
+  padding: 1.5rem 0;
+  text-indent: 1rem;
+  font-size: 1.6rem;
+  margin-bottom: 2rem;
+  border-radius: 0.5rem;
+}
+
+.login-form form select {
   border: 1px solid #ccc;
   outline: none;
   padding: 1.5rem 0;
@@ -1454,6 +1719,7 @@ th:last-child {
   border-right: 0px;
   border-style: solid;
 }
+
 .container2 {
   display: flex;
   justify-content: space-between;
@@ -1464,6 +1730,7 @@ th:last-child {
   height: 100%;
   padding-left: 30px;
 }
+
 .div2 {
   width: 45%;
   height: 100%;
@@ -1478,13 +1745,22 @@ th:last-child {
   color: var(--black);
   height: 4rem;
 }
+
 .selector {
   width: 100%;
-  cursor: text;
+  /* border: 1px solid gray; */
+  border-radius: 5px;
+  height: 50px;
+  /* padding: 0.5rem; */
+  /* font-size: 1.6rem; */
+  /* margin: 1rem auto; */
 }
+
+
 .text {
   padding: 8px;
 }
+
 #dpto {
   padding: 10px;
   border: 2px solid black;
@@ -1496,6 +1772,7 @@ th:last-child {
   margin-top: 15px;
   cursor: pointer !important;
 }
+
 #dpto:hover {
   box-shadow: 2px 2px 5px black;
 }
@@ -1544,16 +1821,30 @@ th:last-child {
   margin-top: 15px;
 }
 
-form .btn-danger {
+.btn-danger {
   background: var(--red);
+  color: white;
   padding: 0.7rem;
-  border: 1px solid var(--purple);
+  border: none;
+  border-radius: 5px;
   cursor: pointer;
   margin-top: 16px;
 }
 
 .bg-purple {
-  background: var(--purple);
+  background: var(--purple) !important;
+}
+
+.bg-red {
+  background: var(--red) !important;
+}
+
+.bg-green {
+  background: var(--green) !important;
+}
+
+.bg-black {
+  background: var(--black) !important;
 }
 
 .container .rightT {
@@ -1566,6 +1857,15 @@ form .btn-danger {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.center-y {
+  display: grid;
+  align-items: center;
+}
+
+.allheight {
+  height: 100vh;
 }
 
 .btrPadding {
@@ -1622,12 +1922,14 @@ form .btn-danger {
   align-items: center;
   height: 30vh;
 }
+
 .metodos img {
   width: auto;
   height: 2.3em;
   box-sizing: border-box;
   margin: 3px;
 }
+
 .h1Pag {
   text-align: center;
   margin-top: 20px;
@@ -1650,23 +1952,31 @@ form .btn-danger {
 .TabInv {
   border: 1px solid var(--purple);
 }
+
 ::-webkit-scrollbar {
-  width: 10px; /* Ancho de la barra vertical */
-  height: 8px; /* Alto de la barra horizontal */
+  width: 10px;
+  /* Ancho de la barra vertical */
+  height: 8px;
+  /* Alto de la barra horizontal */
 }
 
 ::-webkit-scrollbar-track {
-  background: #f0f0f0; /* Color del fondo */
-  border-radius: 5px; /* Bordes redondeados */
+  background: #f0f0f0;
+  /* Color del fondo */
+  border-radius: 5px;
+  /* Bordes redondeados */
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #888; /* Color de la barra */
-  border-radius: 5px; /* Bordes redondeados */
+  background: #888;
+  /* Color de la barra */
+  border-radius: 5px;
+  /* Bordes redondeados */
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555; /* Color al pasar el mouse */
+  background: #555;
+  /* Color al pasar el mouse */
 }
 
 .input_inv {
@@ -1724,11 +2034,11 @@ form .btn-danger {
   max-height: 980px;
   overflow: scroll;
   /* display: none; */
-  
+
 }
 
 .categories::-webkit-scrollbar {
-display: none;
+  display: none;
 }
 
 .sticky {
@@ -1750,15 +2060,15 @@ display: none;
 }
 
 
-.product-info a{
+.product-info a {
   cursor: pointer;
 }
 
-.btmSpace{
+.btmSpace {
   margin-bottom: 100px;
 }
 
-.notification{
+.notification {
   position: absolute;
   border-radius: 3px;
   padding: 5px;
@@ -1775,4 +2085,216 @@ display: none;
 
 .success {
   background: var(--green) !important;
+}
+
+.cart-table {
+  /* width: 80%; */
+  margin-left: 15px;
+  margin-top: 15px;
+
+  border-collapse: separate;
+  border-spacing: 0;
+  /* border: 1px solid #ccc;    */
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.cart-total {
+  width: 40%;
+  vertical-align: top;
+  margin-top: 15px;
+  /* display: flex; */
+  /* justify-content: center; */
+}
+
+.cart-img {
+  width: 150px;
+  height: auto;
+  object-fit: cover;
+}
+
+.cart-text {
+  width: 300px;
+  display: grid;
+}
+
+.txt-center {
+  text-align: center;
+}
+
+.form-select {
+  border: var(--black) 2px solid;
+  border-radius: 3px;
+  padding: 1px;
+  margin-left: 5px;
+  background: var(--purple);
+  color: white;
+  width: fit-content;
+}
+
+.roundBorder {
+  border-radius: 10px;
+  border: 1px solid red;
+  padding: 5px;
+}
+
+.borderbottom {
+  border-bottom: 1px solid gray;
+}
+
+.bgshadow {
+  width: 90%;
+  background: rgb(255, 255, 255);
+  /* border: 1px solid black; */
+  border-radius: 10px;
+  box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.1);
+  min-width: fit-content;
+}
+
+.flex {
+  display: flex;
+  gap: 2rem;
+  justify-content: space-around;
+
+}
+
+.margin {
+  margin: 10rem auto;
+}
+
+/* HTML: <div class="loader"></div> */
+.loader {
+  margin: 15px;
+  width: 50px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  padding: 3px;
+  background:
+    radial-gradient(farthest-side, var(--purple) 95%, #0000) 50% 0/12px 12px no-repeat,
+    radial-gradient(farthest-side, #0000 calc(100% - 5px), var(--purple) calc(100% - 4px)) content-box;
+  animation: l6 2s infinite;
+}
+
+@keyframes l6 {
+  to {
+    transform: rotate(1turn)
+  }
+}
+
+/* Form popup */
+.form-popup {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* position: fixed; */
+  bottom: 250px;
+  /* right: 15px; */
+  border: 3px solid #f1f1f1;
+  z-index: 9;
+}
+
+.form-popupDel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  left: 430px;
+  top: 23px;
+  border: 2px solid #cfcfcf;
+  z-index: 10;
+  width: 330px;
+  height: 50px;
+  padding: 5px 0px 5px 0px;
+  box-sizing: content-box;
+  border-radius: 3px;
+}
+
+.form-container {
+  max-width: 300px;
+  padding: 10px;
+  background-color: white;
+}
+
+.form-container input[type=text],
+.form-container input[type=password] {
+  width: 100%;
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  border: none;
+  background: #f1f1f1;
+}
+
+/* When the inputs get focus, do something */
+.form-container input[type=text]:focus,
+.form-container input[type=password]:focus {
+  background-color: #ddd;
+  outline: none;
+}
+
+/* Set a style for the submit/login button */
+.form-container .btn {
+  background-color: var(--purple);
+  color: white;
+  padding: 16px 20px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+/* Add a red background color to the cancel button */
+.form-container .cancel {
+  background-color: var(--red);
+}
+
+/* Add some hover effects to buttons */
+.form-container .btn:hover,
+.open-button:hover {
+  opacity: 1;
+}
+
+.colorPurple {
+  color: var(--purple);
+}
+
+.colorWhite {
+  color: var(--white);
+}
+
+.summaryTable {
+  width: 80%;
+}
+
+.checkPopUp {
+  position: fixed;
+  z-index: 9;
+  margin: 0 auto;
+  background: rgba(49, 48, 48, 0.548);
+  top: 0;
+  /* left: 50%; */
+  text-align: center;
+  width: 100%;
+  height: 100vh;
+  backdrop-filter: blur(5px);
+}
+
+.table {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.table input {
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: 240px
+}
+
+.table select {
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: 240px
 }

@@ -1,7 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import App from './App.jsx'
 import Home from './components/Pages/Home.jsx'
 import Login from "./components/Pages/Login.jsx";
 import Perfil from "./components/Pages/Perfil.jsx";
@@ -9,7 +8,12 @@ import Tienda from "./components/Pages/Tienda.jsx";
 import DetalleProd from "./components/Pages/DetalleProd.jsx";
 import ErrorBoundary from './components/ErrorBoundry.jsx';
 import SignUpMeth from './components/Pages/SignUp.jsx';
+import Inventario from './components/Pages/Inventario.jsx';
+import Cart from './components/Pages/Cart.jsx';
+import Pedidos from './components/Pages/Pedidos.jsx';
+import DetPedidos from './components/Pages/DetPedidos.jsx';
 import './css/styles.css'
+// import './css/inventario.css'
 
 const router = createBrowserRouter([
   { path: '/', element: <Home />, errorElement: <ErrorBoundary /> },
@@ -18,8 +22,14 @@ const router = createBrowserRouter([
   { path: '/DetProd/:id_prod', element: <DetalleProd /> },
   { path: '/login', element: <Login /> },
   { path: '/perfil', element: <Perfil /> },
-  {path: '/signup', element: <SignUpMeth />},
+  { path: '/signup', element: <SignUpMeth />},
+  { path: '/cart', element: <Cart/>},
+  { path: '/Inventario', element: <Inventario/>},
+  { path: '/Pedidos', element: <Pedidos/>},
+  { path: '/DetPedidos/:id_pedido', element: <DetPedidos/>},
+  { path: '/passrecovery', element: <ErrorBoundary />},
 ])
+
 
 createRoot(document.getElementById('root')).render(
   // <StrictMode>

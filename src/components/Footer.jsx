@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom"
+
 const Footer = () => {
     return (
         <>
@@ -5,16 +7,16 @@ const Footer = () => {
                 <div className="row">
                     <div className="col">
                         <h2>SOPORTE DE CLIENTE</h2>
-                        <p>Amamos atender a nuestros clientes con el mejor servicio por eso si 
+                        <p>Amamos atender a nuestros clientes con el mejor servicio por eso si
                             tienes alguna duda no dudes en contactarnos
                         </p>
-                        <a href="" className="btn btn-1">Contacto</a>
+                        <button className="btn btn-1">Contacto</button>
                     </div>
                     <div className="col">
                         <form action="">
                             <div>
                                 <input type="email" placeholder="Email Address" name="email"/>
-                                    <a href="">enviar</a>
+                                    <a href="/">enviar</a>
                             </div>
                         </form>
                     </div>
@@ -25,9 +27,9 @@ const Footer = () => {
                 <div className="row">
                     <div className="col d-flex">
                         <h4>INFORMACION</h4>
-                        <a href="">Acerca de nosotros</a>
-                        <a href="">Contactanos</a>
-                        <a href="">Terminos</a>
+                        <Link to="/">Acerca de nosotros</Link>
+                        <Link to="/">Contactanos</Link>
+                        <Link to="/">Terminos</Link>
                     </div>
                     <div className="col d-flex">
                         <span><i className='bx bxl-facebook-square'></i></span>
