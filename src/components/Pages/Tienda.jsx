@@ -3,7 +3,7 @@ import Header from '../Header'
 import Footer from '../Footer'
 import ProductsCatalog from '../ProductsCatalog'
 import { useEffect, useState } from 'react'
-import { getTable, supabase } from '../../js/supabase'
+import { getTable, getTableFiltered, getTotalRows, getTotalRowsFiltered } from '../../js/supabase'
 import { useParams } from 'react-router-dom'
 
 const Tienda = () => {
@@ -21,21 +21,17 @@ const Tienda = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            setLoading(true)
             try {
                 // Get categories
                 const cats = await getTable('categorias')
                 setCategories(cats)
-                // If category in URL
                 if (categoria) {
-                    const { data } = await supabase.schema('mrstore2')
-                        .from('categorias')
-                        .select('id_categoria')
-                        .eq('nombre_categoria', capitalizar(categoria))
-                    if (data?.length > 0) {
-                        setFiltro([data[0].id_categoria.toString()])
+                    const cat = cats.find(cat => cat.nombre_categoria.toLowerCase() === categoria.toLowerCase())
+                    // console.log("Found category:", cat)
+                    if (cat !== undefined) {
+                        setFiltro([cat.id_categoria])
                         setTimeout(() => {
-                            const el = document.getElementById(data[0].id_categoria)
+                            const el = document.getElementById(cat.id_categoria)
                             if (el) el.checked = true
                         }, 100)
                         setPage(1)
@@ -43,8 +39,6 @@ const Tienda = () => {
                 }
             } catch (error) {
                 console.error("Error fetching data:", error)
-            } finally {
-                setLoading(false)
             }
         }
         fetchData()
@@ -53,24 +47,10 @@ const Tienda = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             setLoading(true)
-            
             try {
-                let query = supabase.schema('mrstore2').from('productos').select()
-                
-                if (filtro.length > 0) {
-                    query = query.in('id_categoria', filtro)
-                }
-                
-                // Apply sorting
-                if (sortOption === '2') {
-                    query = query.order('precio_producto', { ascending: true })
-                } else if (sortOption === '3') {
-                    query = query.order('precio_producto', { ascending: false })
-                }
-                
-                const { data } = await query
-                setProducts(data || [])
-                setTotalPages(Math.ceil((data?.length || 0) / 12))
+                let query = await getTableFiltered('productos', filtro, parseInt(sortOption), page)
+                // console.log("Fetched products:", query)
+                setProducts(query || [])
             } catch (error) {
                 console.error("Error fetching products:", error)
             } finally {
@@ -79,7 +59,20 @@ const Tienda = () => {
         }
 
         fetchProducts()
-    }, [filtro, sortOption])
+    }, [filtro, sortOption, page])
+
+    useEffect(() => {
+        const fetchTotalRows = async () => {
+            try {
+                let totalRows = await getTotalRowsFiltered('productos', filtro)
+                setTotalPages(Math.ceil((totalRows || 0) / 12))
+            }
+            catch (error) {
+                console.error("Error fetching total rows:", error)
+            }
+        }
+        fetchTotalRows()
+    }, [filtro])
 
     const handleCategoryChange = (e) => {
         const { value, checked } = e.target
@@ -107,7 +100,7 @@ const Tienda = () => {
     return (
         <>
             <Header />
-            
+
             <div className="tienda">
                 {/* Hero Section */}
                 <section className="tienda-hero">
@@ -116,7 +109,7 @@ const Tienda = () => {
                 </section>
 
                 {/* Mobile Filters Toggle */}
-                <button 
+                <button
                     className="filters-toggle"
                     onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
                 >
@@ -174,17 +167,17 @@ const Tienda = () => {
                             </div>
                         ) : (
                             <>
-                                <ProductsCatalog productos={products.slice((page - 1) * 12, page * 12)} />
-                                
+                                <ProductsCatalog productos={products} />
+
                                 {totalPages > 1 && (
                                     <div className="pagination">
-                                        <button 
+                                        <button
                                             onClick={() => changePage(page - 1)}
                                             disabled={page === 1}
                                         >
                                             &lt;
                                         </button>
-                                        
+
                                         {Array.from({ length: Math.min(5, totalPages) }).map((_, i) => {
                                             let pageNum
                                             if (totalPages <= 5) {
@@ -196,7 +189,7 @@ const Tienda = () => {
                                             } else {
                                                 pageNum = page - 2 + i
                                             }
-                                            
+
                                             return (
                                                 <button
                                                     key={pageNum}
@@ -207,8 +200,8 @@ const Tienda = () => {
                                                 </button>
                                             )
                                         })}
-                                        
-                                        <button 
+
+                                        <button
                                             onClick={() => changePage(page + 1)}
                                             disabled={page === totalPages}
                                         >
@@ -221,7 +214,7 @@ const Tienda = () => {
                     </main>
                 </div>
             </div>
-            
+
             <Footer />
 
             <style jsx>{`

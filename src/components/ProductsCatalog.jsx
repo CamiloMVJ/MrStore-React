@@ -1,5 +1,5 @@
 // ProductsCatalog.js
-import { addProductToCart } from "../js/supabase"
+import { addOneProductToCart } from "../js/services/Cart_Service"
 import { useState } from 'react'
 
 const ProductsCatalog = ({ productos }) => {
@@ -20,8 +20,7 @@ const ProductsCatalog = ({ productos }) => {
                 window.location.href = '/login'
                 return
             }
-            await addProductToCart(session.id_carrito, productId, 1)
-            // Aquí puedes añadir una notificación de éxito si lo deseas
+            await addOneProductToCart(session.id_carrito, productId)
         } catch (error) {
             console.error("Error adding to cart:", error)
         } finally {

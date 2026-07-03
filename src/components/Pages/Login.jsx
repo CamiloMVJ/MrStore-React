@@ -1,7 +1,7 @@
 import Header from "../Header"
 import Footer from "../Footer"
 import { useState } from "react"
-import { signInWithEmail } from "../../js/supabase"
+import { signInWithEmail } from "../../js/services/Auth"
 import { Link } from "react-router-dom"
 
 const Login = () => {

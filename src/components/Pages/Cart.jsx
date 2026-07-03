@@ -1,19 +1,27 @@
-import React, { act, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Header from '../Header'
 import Footer from '../Footer'
-import { supabase } from '../../js/supabase'
 import Product from '../Product'
 import Notification from '../Notification'
+import {
+    actualizarDireccionPrincipal,
+    fetchCarrito,
+    fetchDirecciones,
+    fetchPrecioxKG,
+    fetchTotal,
+    generarEnvio,
+    generarPago,
+    generarPedido,
+} from '../../js/services/Cart_Service'
 
 const Cart = () => {
     const [cartItems, setCartItems] = useState([])
     const [totalPrice, setTotalPrice] = useState(0)
     const [loading, setLoading] = useState(true)
-    const [ActTotal, setActTotal] = useState(false)
     const [direcciones, setDirecciones] = useState([])
     const [DirActiva, setDirActiva] = useState(null)
-    const [session, setSession] = useState(JSON.parse(sessionStorage.getItem('session')))
+    const session = JSON.parse(sessionStorage.getItem('session'))
     const [Descuento, setDescuento] = useState(0)
     const [Envio, setEnvio] = useState(0)
     const [ActCarrito, setActCarrito] = useState(false)
@@ -21,7 +29,6 @@ const Cart = () => {
     const [banco, setBanco] = useState('')
     const [message, setMessage] = useState('')
     const [type, setType] = useState('')
-    const [precioxKG, setPrecioxKG] = useState(1)
 
     useEffect(() => {
         if (message === null) return
@@ -33,91 +40,73 @@ const Cart = () => {
     }, [message])
 
     useEffect(() => {
-        fetchDirecciones()
-        setActCarrito(!ActCarrito)
-    }, [])
-
-    useEffect(() => {
-        const fetchCarrito = async () => {
-            supabase.schema('mrstore2').from('detcarritocompras').select(`id_carritocompras, cantidad, subtotal, 
-                detproductos(
-                            stock,
-                            proveedores(id_proveedor, nombre_proveedor),
-                            colores(id_color, color),
-                            tallas(id_talla, talla),
-                            productos(id_producto, nombre_producto, descripcion, imagen_url, precio_producto))`)
-                .order('id_producto', { ascending: false })
-                .then(data => {
-                    // console.log(data)
-                    if (data.data.length === 0) {
-                        setCartItems([])
-                        setLoading(false)
-                        return
-                    }
-                    // console.log(data.data)
-                    fetchTotal(data.data)
-                    setCartItems(data.data)
-                    setLoading(false)
-                })
-        }
-        const fetchTotal = async (cartItems) => {
-            const timer = setTimeout(() => {
-                supabase.schema('mrstore2').from('carritocompras').select(`total`).then(data => {
-                    if (data.data.length > 0) {
-                        setTotalPrice(data.data[0].total)
-                    }
-                })
-            }, 100)
-            if (cartItems.length > 0) {
-                setEnvio(cartItems.reduce((acc, item) => acc + (item.cantidad * 0.375), 0))
+        const loadDirecciones = async () => {
+            if (!session?.id_cliente) {
+                setDirActiva('')
+                return
             }
-        }
-        fetchCarrito()
-        fetchPrecioxKG(DirActiva)
-    }, [ActCarrito])
 
-    const fetchDirecciones = async () => {
-        supabase.schema('mrstore2').from('direcciones').select()
-            .eq('id_cliente', session.id_cliente)
-            .eq('estado', true)
-            .then(data => {
-                if (data.data.length > 0) {
-                    let id = data.data.filter(dir => dir.es_principal === true)
-                    setDirecciones(data.data)
-                    if (id.length == 1) {
-                        setDirActiva(id[0].id_direccion)
-                        fetchPrecioxKG(id[0].id_direccion)
+            try {
+                const direccionesData = await fetchDirecciones(session.id_cliente)
+                setDirecciones(direccionesData)
+
+                if (direccionesData.length > 0) {
+                    const principal = direccionesData.filter(dir => dir.es_principal === true)
+                    if (principal.length === 1) {
+                        setDirActiva(principal[0].id_direccion)
+                        const shippingData = await fetchPrecioxKG(principal[0].id_direccion, session.id_carrito)
+                        setEnvio(shippingData.envio)
                         return
                     }
                     return
                 }
-                setDirActiva('')
-            })
-    }
 
-    const fetchPrecioxKG = async (idDir) => {
-        try {
-            const { data, error } = await supabase.schema('mrstore2').from('direcciones').select(`
-                departamentos(id_departamento, precio_envio),
-                clientes(id_cliente, carritocompras(id_carritocompras, detcarritocompras(id_carritocompras,cantidad)))`)
-                .eq('clientes.carritocompras.id_carritocompras', session.id_carrito)
-                .eq('id_direccion', idDir)
-            // console.log(data)
-            const datos = data.map(item => {
-                return {
-                    precio: item.departamentos.precio_envio,
-                    cantidad: item.clientes.carritocompras[0].detcarritocompras.reduce((acc, item) => acc + item.cantidad, 0)
+                setDirActiva('')
+            } catch (error) {
+                console.error(error)
+                setDirActiva('')
+            }
+        }
+
+        loadDirecciones()
+        setActCarrito(prev => !prev)
+    }, [])
+
+    useEffect(() => {
+        const loadCart = async () => {
+            try {
+                const carrito = await fetchCarrito()
+                console.log('Carrito cargado:', carrito)
+                setCartItems(carrito)
+
+                const total = await fetchTotal()
+                setTotalPrice(total)
+
+                if (DirActiva && session?.id_carrito) {
+                    const shippingData = await fetchPrecioxKG(DirActiva, session.id_carrito)
+                    setEnvio(shippingData.envio)
                 }
-            })
-            setEnvio(datos[0].cantidad * 0.375 * datos[0].precio)
-            if (error) {
-                console.error("Error al obtener el precio por kg:", error)
+            } catch (error) {
+                console.error(error)
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        loadCart()
+    }, [ActCarrito])
+
+    const refreshShipping = async (idDir) => {
+        try {
+            if (!idDir || !session?.id_carrito) {
                 return
             }
-            setPrecioxKG(data)
+
+            const shippingData = await fetchPrecioxKG(idDir, session.id_carrito)
+            setEnvio(shippingData.envio)
         }
         catch (error) {
-
+            console.error(error)
         }
     }
 
@@ -149,9 +138,10 @@ const Cart = () => {
                 return
             }
             if (ValidarStock()) {
-                const { data, error } = await supabase.schema('mrstore2').rpc('generarpedido', { p_id_cliente: session.id_cliente })
-                if (data) { GenerarPago(e, data) }
-                else { console.log(error) }
+                const idPedido = await generarPedido(session.id_cliente)
+                if (idPedido) {
+                    GenerarPago(e, idPedido)
+                }
             }
         }
         catch (error) {
@@ -173,15 +163,16 @@ const Cart = () => {
             console.error("Sesión inválida. Por favor inicie sesión nuevamente.")
             return
         }
-        const { data, error } = await supabase.schema('mrstore2').from('pagos').insert({
-            id_pedido: id_pedido,
-            referencia_bancaria: transferencia,
-            banco: banco,
-            monto: (totalPrice + Envio - Descuento)
-        })
-        console.log(data)
-        if (error) {
-            console.error("Error al generar el pago:", data.error.message)
+        try {
+            await generarPago({
+                id_pedido,
+                transferencia,
+                banco,
+                monto: (totalPrice + Envio - Descuento),
+            })
+        }
+        catch (error) {
+            console.error("Error al generar el pago:", error.message)
             return
         }
         // window.location.reload()
@@ -196,17 +187,12 @@ const Cart = () => {
                 console.error("Por favor seleccione una direccion de envio")
                 return
             }
-            const { data, error } = await supabase.schema('mrstore2').from('envios').insert({
+            await generarEnvio({
                 descuento: Descuento,
                 costo_envio: Envio,
-                id_pedido: id_pedido,
-                id_direccion: DirActiva
+                id_pedido,
+                id_direccion: DirActiva,
             })
-            console.log(data)
-            if (error) {
-                console.error("Error al generar el envio:", error.message)
-                return
-            }
         }
         catch (error) {
             console.error("Error al generar el envio:", error)
@@ -233,15 +219,10 @@ const Cart = () => {
             console.error("Sesión inválida. Por favor inicie sesión nuevamente.")
             return
         }
-        updateTable('direcciones', session.id_cliente, 'id_cliente', { es_principal: false }).then((data) => {
+        actualizarDireccionPrincipal(session.id_cliente, selectedId).then((data) => {
             if (data) {
-                updateTable('direcciones', selectedId, 'id_direccion', { es_principal: true }).then(data => {
-                    if (!data) {
-                        console.error("Error al actualizar la direccion principal")
-                        return
-                    }
-                    ActualizarProductos()
-                })
+                refreshShipping(selectedId)
+                setActCarrito(prev => !prev)
             }
         })
     }

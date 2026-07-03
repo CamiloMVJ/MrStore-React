@@ -2,7 +2,8 @@ import Footer from "../Footer"
 import Header from "../Header"
 import { useState, useEffect, use } from "react"
 import { useParams } from "react-router-dom"
-import { getProductById, supabase, addProductToCart } from "../../js/supabase"
+import { getProductById, supabase} from "../../js/supabase"
+import { addProductToCart } from "../../js/services/Cart_Service"
 import Notification from "../Notification"
 
 const DetalleProd = () => {

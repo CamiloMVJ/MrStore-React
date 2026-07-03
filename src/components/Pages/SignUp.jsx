@@ -1,7 +1,7 @@
 import Header from "../Header"
 import Footer from "../Footer"
 import { Link } from "react-router-dom"
-import { SignUpProc, signUpNewUser } from "../../js/supabase"
+import { signUpNewUser } from "../../js/services/Auth"
 import { useState, useEffect } from "react"
 import Notification from "../Notification"
 
