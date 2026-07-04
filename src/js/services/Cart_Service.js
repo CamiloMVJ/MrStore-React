@@ -202,8 +202,8 @@ export const addOneProductToCart = async (id_carrito, idProducto) => {
             .select()
             .eq('id_producto', idProducto)
             .single()
-        if (existingItemError) {
-            const { data, error } = await supabase.schema('mrstore2').from('detproductos').select().eq('id_producto', idProducto).single()
+        const { data, error } = await supabase.schema('mrstore2').from('detproductos').select().eq('id_producto', idProducto).single()
+        if (existingItemError && existingItem.cantidad + 1 <= data.stock) {
             const { data: cartData, error: cartError } = await supabase.schema('mrstore2').from('detcarritocompras').insert({
                 id_carritocompras: id_carrito,
                 id_producto: idProducto,
@@ -215,16 +215,19 @@ export const addOneProductToCart = async (id_carrito, idProducto) => {
             // console.log("item agregado:", cartData, cartError)
         }
         else {
-            const { data, error } = await supabase.schema('mrstore2')
-                .from('detcarritocompras')
-                .update({ cantidad: existingItem.cantidad + 1 })
-                .eq('id_producto', idProducto)
-                .eq('color', existingItem.color)
-                .eq('talla', existingItem.talla)
-                .eq('id_proveedor', existingItem.id_proveedor)
+            if (existingItem.cantidad + 1 <= data.stock) {
+                const { data: updatedItem, error: updatedItemError } = await supabase.schema('mrstore2')
+                    .from('detcarritocompras')
+                    .update({ cantidad: existingItem.cantidad + 1 })
+                    .eq('id_producto', idProducto)
+                    .eq('color', existingItem.color)
+                    .eq('talla', existingItem.talla)
+                    .eq('id_proveedor', existingItem.id_proveedor)
+            }
+            throw new Error("No se puede agregar más productos al carrito, se ha alcanzado el límite de stock.")
         }
     }
     catch (error) {
-        console.error("Error al agregar producto al carrito:", error)
+        console.error(error)
     }
 }

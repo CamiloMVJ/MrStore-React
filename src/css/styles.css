@@ -249,6 +249,7 @@ Navigation
   border-radius: 50%;
   border-top-color: white;
   animation: spin 1s ease-in-out infinite;
+  margin-bottom: 0 !important;
 }
 
 @keyframes spin {

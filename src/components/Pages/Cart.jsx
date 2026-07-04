@@ -27,6 +27,7 @@ const Cart = () => {
     const [ActCarrito, setActCarrito] = useState(false)
     const [PopUpPago, setPopUpPago] = useState(false)
     const [banco, setBanco] = useState('')
+    const [numTransferencia, setNumTransferencia] = useState('')
     const [message, setMessage] = useState('')
     const [type, setType] = useState('')
 
@@ -143,6 +144,9 @@ const Cart = () => {
                     GenerarPago(e, idPedido)
                 }
             }
+            else{
+                setPopUpPago(!PopUpPago)
+            }
         }
         catch (error) {
             console.error("Error al generar el pedido:", error)
@@ -152,8 +156,8 @@ const Cart = () => {
     const GenerarPago = async (e, id_pedido) => {
         e.preventDefault()
         const formData = new FormData(e.target)
-        const transferencia = formData.get('transferencia')
-        const banco = formData.get('banco')
+        const transferencia =  numTransferencia
+        const banco = banco
         if (!transferencia || !banco) {
             console.error("Por favor complete todos los campos")
             return
@@ -329,18 +333,19 @@ const Cart = () => {
                     <form className='table' onSubmit={GenerarPedido}>
                         <h2 htmlFor="confirmacion" style={{ color: "white" }}>¿Desea confirmar su pedido?</h2>
                         <p className='colorWhite'>Total a pagar: {totalPrice + Envio - Descuento} $</p>
-                        <input type="text" name="transferencia" placeholder="Ingrese el numero de transferencia" required />
-                        <select name="banco" required value={banco} onChange={(e) => setBanco(e.target.value)}>
+                        <input type="text" value={numTransferencia} name="transferencia" placeholder="Ingrese el numero de transferencia" onChange={(e) => setNumTransferencia(e.target.value)} required />
+                        <select name="banco" value={banco} onChange={(e) => setBanco(e.target.value)} required>
                             <option value="">Selecione el banco</option>
                             <option value="BAC 1234567-8901234">BAC 1234567-8901234</option>
                             <option value="LAFISE 5432109-87654">LAFISE 5432109-87654</option>
                         </select>
                         <div style={{ display: "flex", gap: "10px", width: "240px", justifyContent: "space-between", marginTop: "5px" }}>
-                            <button type="submit" className="btn-1">Confirmar</button>
                             <button type="button" className="btn-1" onClick={() => {
                                 setBanco('')
+                                setNumTransferencia('')
                                 setPopUpPago(!PopUpPago)
                             }}>Cancelar</button>
+                            <button type="submit" className="btn-1">Confirmar</button>
                         </div>
                     </form>
                 </div>

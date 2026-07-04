@@ -24,7 +24,9 @@ const ProductsCatalog = ({ productos }) => {
         } catch (error) {
             console.error("Error adding to cart:", error)
         } finally {
-            setAddingToCart(null)
+            setTimeout(() => {
+                setAddingToCart(null)
+            },700)
         }
     }
 
