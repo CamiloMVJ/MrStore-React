@@ -1,31 +1,45 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from './components/Pages/Home'
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import Home from './Pages/Home.jsx'
+import Login from "./Pages/Login.jsx";
+import Perfil from "./Pages/Perfil.jsx";
+import Tienda from "./Pages/Tienda.jsx";
+import DetalleProd from "./Pages/DetalleProd.jsx";
+import ErrorBoundary from './components/ErrorBoundry.jsx';
+import SignUpMeth from './Pages/SignUp.jsx';
+import Inventario from './Pages/Inventario.jsx';
+import Cart from './Pages/Cart.jsx';
+import Pedidos from './Pages/Pedidos.jsx';
+import DetPedidos from './Pages/DetPedidos.jsx';
 import './css/styles.css'
-import Login from "./components/Pages/Login";
-import Perfil from "./components/Pages/Perfil";
-import Tienda from "./components/Pages/Tienda";
-import DetalleProd from "./components/Pages/DetalleProd";
-import Cart from "./components/Pages/Cart";
 
-function App() {
+import { CartProvider } from './context/CartContext';
 
-  return (
-    <>
-      <Router>
-        <Routes>
-          <Route path='/' element={<Home />} />
-          <Route path='/tienda' element={<Tienda />}/>
-          <Route path='/tienda/:categoria' element={<Tienda />}/>
-          <Route path='/DetProd/:id_prod' element={<DetalleProd />}/>
-          <Route path='/pedidos' />
-          <Route path='/inventario' />
-          <Route path='/cart' element={<Cart/>} />
-          <Route path="/login" element={<Login />}/>
-          <Route path="/perfil" element ={<Perfil/>} />
-        </Routes>
-      </Router>
-    </>
-  )
-}
+const router = createBrowserRouter([
+  { path: '/', element: <Home />, errorElement: <ErrorBoundary /> },
+  { path: '/tienda', element: <Tienda />, errorElement: <ErrorBoundary /> },
+  { path: '/tienda/:categoria', element: <Tienda /> },
+  { path: '/DetProd/:id_prod', element: <DetalleProd /> },
+  { path: '/login', element: <Login /> },
+  { path: '/perfil', element: <Perfil /> },
+  { path: '/signup', element: <SignUpMeth /> },
+  { path: '/cart', element: <Cart /> },
+  { path: '/Inventario', element: <Inventario /> },
+  { path: '/Pedidos', element: <Pedidos /> },
+  { path: '/DetPedidos/:id_pedido', element: <DetPedidos /> },
+  { path: '/passrecovery', element: <ErrorBoundary /> },
+])
 
-export default App
+
+createRoot(document.getElementById('root')).render(
+  // <StrictMode>
+  //     <App />
+  // </StrictMode>,
+
+  <StrictMode>
+    <CartProvider>
+      <RouterProvider router={router} />
+    </CartProvider>
+  </StrictMode>
+)

@@ -1,4 +1,4 @@
-import { supabase, updateTable } from '../supabase'
+import { supabase, updateTable } from './supabase'
 
 const CART_ITEMS_SELECT = `id_carritocompras, cantidad, subtotal,
     detproductos(
@@ -203,7 +203,8 @@ export const addOneProductToCart = async (id_carrito, idProducto) => {
             .eq('id_producto', idProducto)
             .single()
         const { data, error } = await supabase.schema('mrstore2').from('detproductos').select().eq('id_producto', idProducto).single()
-        if (existingItemError && existingItem.cantidad + 1 <= data.stock) {
+        if (existingItemError) {
+            console.log("El producto no existe en el carrito, agregando uno nuevo")
             const { data: cartData, error: cartError } = await supabase.schema('mrstore2').from('detcarritocompras').insert({
                 id_carritocompras: id_carrito,
                 id_producto: idProducto,
@@ -216,6 +217,7 @@ export const addOneProductToCart = async (id_carrito, idProducto) => {
         }
         else {
             if (existingItem.cantidad + 1 <= data.stock) {
+                console.log("El producto ya existe en el carrito, aumentando la cantidad en 1", existingItem)
                 const { data: updatedItem, error: updatedItemError } = await supabase.schema('mrstore2')
                     .from('detcarritocompras')
                     .update({ cantidad: existingItem.cantidad + 1 })
@@ -224,7 +226,9 @@ export const addOneProductToCart = async (id_carrito, idProducto) => {
                     .eq('talla', existingItem.talla)
                     .eq('id_proveedor', existingItem.id_proveedor)
             }
-            throw new Error("No se puede agregar más productos al carrito, se ha alcanzado el límite de stock.")
+            else {
+                throw new Error("No se puede agregar más productos al carrito, se ha alcanzado el límite de stock.")
+            }
         }
     }
     catch (error) {

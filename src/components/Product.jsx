@@ -1,5 +1,5 @@
 import { useState, useEffect, act } from 'react'
-import { supabase, updateTable } from '../js/supabase'
+import { supabase, updateTable } from '../services/supabase'
 import Notification from './Notification'
 
 const Product = ({ producto, ActualizarProductos }) => {

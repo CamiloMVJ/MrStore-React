@@ -1,5 +1,5 @@
 // ProductsCatalog.js
-import { addOneProductToCart } from "../js/services/Cart_Service"
+import { addOneProductToCart } from "../services/cartService"
 import { useState } from 'react'
 
 const ProductsCatalog = ({ productos }) => {

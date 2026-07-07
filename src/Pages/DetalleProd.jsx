@@ -1,10 +1,10 @@
-import Footer from "../Footer"
-import Header from "../Header"
+import Footer from "../components/Footer"
+import Header from "../components/Header"
 import { useState, useEffect, use } from "react"
 import { useParams } from "react-router-dom"
-import { getProductById, supabase} from "../../js/supabase"
-import { addProductToCart } from "../../js/services/Cart_Service"
-import Notification from "../Notification"
+import { getProductById, supabase} from "../services/supabase"
+import { addProductToCart } from "../services/cartService"
+import Notification from "../components/Notification"
 
 const DetalleProd = () => {
     const [productId, setProductId] = useState(useParams().id_prod)

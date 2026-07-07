@@ -1,9 +1,9 @@
-import Header from "../Header"
-import Footer from "../Footer"
+import Header from "../components/Header"
+import Footer from "../components/Footer"
 import { Link } from "react-router-dom"
-import { signUpNewUser } from "../../js/services/Auth"
+import { signUpNewUser } from "../services/auth"
 import { useState, useEffect } from "react"
-import Notification from "../Notification"
+import Notification from "../components/Notification"
 
 const SignUp = () => {
     const [error, setError] = useState(null)

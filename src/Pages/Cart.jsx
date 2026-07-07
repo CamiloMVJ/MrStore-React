@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import Header from '../Header'
-import Footer from '../Footer'
-import Product from '../Product'
-import Notification from '../Notification'
+import Header from '../components/Header'
+import Footer from '../components/Footer'
+import Product from '../components/Product'
+import Notification from '../components/Notification'
 import {
     actualizarDireccionPrincipal,
     fetchCarrito,
@@ -13,7 +13,7 @@ import {
     generarEnvio,
     generarPago,
     generarPedido,
-} from '../../js/services/Cart_Service'
+} from '../services/cartService'
 
 const Cart = () => {
     const [cartItems, setCartItems] = useState([])

@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import Header from "../Header";
-import Footer from "../Footer";
-import { confirmOrderPayment, getOrderDetailsById } from "../../js/supabase";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import { confirmOrderPayment, getOrderDetailsById } from "../services/supabase";
 
 const OrderDetails = () => {
   const { id_pedido } = useParams();

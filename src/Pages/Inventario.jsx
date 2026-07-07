@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { supabase } from '../../js/supabase'
-import Header from '../Header'
+import { supabase } from '../services/supabase'
+import Header from '../components/Header'
 
 //guardar datos
 const Inventario = () => {

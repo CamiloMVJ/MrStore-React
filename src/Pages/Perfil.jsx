@@ -1,8 +1,8 @@
-import Header from "../Header"
-import Footer from "../Footer"
+import Header from "../components/Header"
+import Footer from "../components/Footer"
 import { use, useEffect, useState } from 'react'
-import { supabase, updateTable } from '../../js/supabase'
-import FormAgregarDireccion from "../FormAgregarDireccion"
+import { supabase, updateTable } from '../services/supabase'
+import FormAgregarDireccion from "../components/FormAgregarDireccion"
 
 const Perfil = () => {
     const [AddDirvisible, setDirVisible] = useState(false)

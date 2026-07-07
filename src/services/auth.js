@@ -1,5 +1,5 @@
-import { supabase } from '../supabase.js'
-import { timeStamp, timeStampz } from '../dateFormat.js'
+import { supabase } from './supabase'
+import { timeStamp, timeStampz } from './dateFormat'
 
 export const signInWithEmail = async (email, pass) => {
 	try {

@@ -1,9 +1,9 @@
-import Header from "../Header"
-import Glider from "../Glider"
+import Header from "../components/Header"
+import Glider from "../components/Glider"
 import { useState, useEffect } from "react";
-import {  getProducts } from "../../js/supabase"
-import Footer from "../Footer"; 
-import ProductsCatalog from "../ProductsCatalog";
+import {  getProducts } from "../services/supabase"
+import Footer from "../components/Footer"; 
+import ProductsCatalog from "../components/ProductsCatalog";
 
 const Home = () => {
     const [navSections, setNavSections] = useState([{ title: "Inicio" }, { title: "Tienda" }])
