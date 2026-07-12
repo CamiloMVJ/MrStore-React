@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import { supabase, getTable } from '../services/supabase';
+import { useEffect, useState } from 'react'
+import Header from '../components/Header'
+import Footer from '../components/Footer'
+import { supabase, getTable } from '../services/supabase'
 
 const OrderHistory = () => {
     const [detpedidos, setdetpedidos] = useState([])
-    const [orders, setOrders] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [orders, setOrders] = useState([])
+    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -20,17 +20,17 @@ const OrderHistory = () => {
                         estadopedido,
                         fecha_pedido
                     `)
-                    .order('fecha_pedido', { ascending: false });
+                    .order('fecha_pedido', { ascending: false })
 
-                if (error) throw error;
-                console.log(data)
+                if (error) throw error
+                // console.log(data)
                 setOrders(data)
                 setLoading(false)
             } catch (error) {
-                console.error('Error fetching orders:', error);
-                setLoading(false);
+                console.error('Error fetching orders:', error)
+                setLoading(false)
             }
-        };
+        }
 
         const fetchDetOrders = async () => {
             try {
@@ -38,14 +38,14 @@ const OrderHistory = () => {
                     .from('detpedidos')
                     .select(`id_producto,color,talla,id_proveedor,id_pedido,cantidad,subtotal,precioventa, detproductos(
                             productos(id_producto, nombre_producto, descripcion, imagen_url, precio_producto))`)
-                    .order('subtotal', { ascending: false });
-                if (error) throw error;
+                    .order('subtotal', { ascending: false })
+                if (error) throw error
                 setdetpedidos(data)
-                console.log(data)
+                // console.log(data)
 
             }
             catch (error) {
-                console.error('Error fetching orders:', error);
+                console.error('Error fetching orders:', error)
 
 
             }
@@ -53,8 +53,8 @@ const OrderHistory = () => {
 
         
         fetchDetOrders()
-        fetchOrders();
-    }, []);
+        fetchOrders()
+    }, [])
 
     // useEffect(() => {
     //     fetchDetOrders(id_pedido)
@@ -63,25 +63,25 @@ const OrderHistory = () => {
 
 
     const formatDate = (dateString) => {
-        const options = { year: 'numeric', month: 'long', day: 'numeric' };
-        return new Date(dateString).toLocaleDateString('es-ES', options);
-    };
+        const options = { year: 'numeric', month: 'long', day: 'numeric' }
+        return new Date(dateString).toLocaleDateString('es-ES', options)
+    }
 
     
 
     const getStatusClass = (status) => {
-        const lowerStatus = status.toLowerCase();
+        const lowerStatus = status.toLowerCase()
         if (lowerStatus === 'completado') {
-            return 'order-status order-status--completado';
+            return 'order-status order-status--completado'
         } else if (lowerStatus === 'procesando') {
-            return 'order-status order-status--procesando';
+            return 'order-status order-status--procesando'
         } else if (lowerStatus === 'cancelado') {
-            return 'order-status order-status--cancelado';
+            return 'order-status order-status--cancelado'
         } else if (lowerStatus === 'enviado') {
-            return 'order-status order-status--enviado';
+            return 'order-status order-status--enviado'
         }
-        return 'order-status';
-    };
+        return 'order-status'
+    }
 
     if (loading) {
         return (
@@ -93,7 +93,7 @@ const OrderHistory = () => {
                 </div>
                 <Footer />
             </>
-        );
+        )
     }
 
     return (
@@ -137,7 +137,7 @@ const OrderHistory = () => {
                                                             />
                                                             <div>
                                                                 <h4 className="order-card-item-title">{item.detproductos.productos.nombre_producto}</h4>
-                                                                <p className="order-card-item-text">{item.cantidad} x ${item.detproductos.productos.precio_producto.toFixed(2)}</p>
+                                                                <p className="order-card-item-text">{item.cantidad} x ${item.detproductos.productos.precio_producto == null ? '0.00' : item.detproductos.productos.precio_producto.toFixed(2)}</p>
                                                             </div>
                                                         </div>
                                                     )
@@ -147,7 +147,7 @@ const OrderHistory = () => {
                                             <div className="order-card-footer">
                                                 <div className="order-card-total">
                                                     <span>Total:</span>
-                                                    <span className="order-card-total-value">${order.total.toFixed(2)}</span>
+                                                    <span className="order-card-total-value">${order.total == null ? '0.00' : order.total.toFixed(2)}</span>
                                                 </div>
                                                 <button onClick={() => { window.location.href = `/DetPedidos/${order.id_pedido}` }} className="order-card-button">
                                                     Ver detalles
@@ -163,8 +163,8 @@ const OrderHistory = () => {
             </section>
             <Footer />
         </>
-    );
-};
+    )
+}
 
-export default OrderHistory;
+export default OrderHistory
 // 

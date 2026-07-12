@@ -201,10 +201,12 @@ export const addOneProductToCart = async (id_carrito, idProducto) => {
         const { data: existingItem, error: existingItemError } = await supabase.schema('mrstore2').from('detcarritocompras')
             .select()
             .eq('id_producto', idProducto)
-            .single()
+            .limit(1)
+        // console.log("existingItem:", existingItem, "existingItemError:", existingItemError)
         const { data, error } = await supabase.schema('mrstore2').from('detproductos').select().eq('id_producto', idProducto).single()
-        if (existingItemError) {
-            console.log("El producto no existe en el carrito, agregando uno nuevo")
+        // console.log("data:", data, "error:", error)
+        if (existingItem.length == 0) {
+            // console.log("El producto no existe en el carrito, agregando uno nuevo")
             const { data: cartData, error: cartError } = await supabase.schema('mrstore2').from('detcarritocompras').insert({
                 id_carritocompras: id_carrito,
                 id_producto: idProducto,
@@ -213,18 +215,18 @@ export const addOneProductToCart = async (id_carrito, idProducto) => {
                 id_proveedor: data.id_proveedor,
                 cantidad: 1
             }).select()
-            // console.log("item agregado:", cartData, cartError)
+            // console.log("item agregado:", cartData)
         }
         else {
-            if (existingItem.cantidad + 1 <= data.stock) {
-                console.log("El producto ya existe en el carrito, aumentando la cantidad en 1", existingItem)
+            if (existingItem[0].cantidad + 1 <= data.stock) {
+                // console.log("El producto ya existe en el carrito, aumentando la cantidad en 1", existingItem)
                 const { data: updatedItem, error: updatedItemError } = await supabase.schema('mrstore2')
                     .from('detcarritocompras')
-                    .update({ cantidad: existingItem.cantidad + 1 })
+                    .update({ cantidad: existingItem[0].cantidad + 1 })
                     .eq('id_producto', idProducto)
-                    .eq('color', existingItem.color)
-                    .eq('talla', existingItem.talla)
-                    .eq('id_proveedor', existingItem.id_proveedor)
+                    .eq('color', existingItem[0].color)
+                    .eq('talla', existingItem[0].talla)
+                    .eq('id_proveedor', existingItem[0].id_proveedor)
             }
             else {
                 throw new Error("No se puede agregar más productos al carrito, se ha alcanzado el límite de stock.")

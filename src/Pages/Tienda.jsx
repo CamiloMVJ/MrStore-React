@@ -3,90 +3,29 @@ import Header from '../components/Header'
 import Footer from '../components/Footer'
 import ProductsCatalog from '../components/ProductsCatalog'
 import { useEffect, useState } from 'react'
-import { getTable, getTableFiltered, getTotalRows, getTotalRowsFiltered } from '../services/supabase'
 import { useParams } from 'react-router-dom'
 import { useCartContext } from '../context/CartContext'
+import { useProducts } from '../hooks/useProducts'
+import { useCategories } from '../hooks/useCategories'
+import { useNavigate } from 'react-router-dom'
 
 const Tienda = () => {
-    const [products, setProducts] = useState([])
-    const [page, setPage] = useState(1)
-    const [totalPages, setTotalPages] = useState(0)
-    const [categories, setCategories] = useState([])
-    const [filtro, setFiltro] = useState([])
-    const [sortOption, setSortOption] = useState('1')
-    const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
-    const [loading, setLoading] = useState(true)
-    const { categoria } = useParams()
+    // const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
+    const { categories, upFiltro, upPage, categoria } = useCategories()
+    const { reloadCats, setReloadCats } = useCartContext()
+    const { products, loading, filtro, page, totalPages, sortOption, mobileFiltersOpen,
+        setPage, setFiltro, setSortOption, setMobileFiltersOpen, handleCategoryChange } = useProducts(upFiltro, categoria)
 
+    const navigate = useNavigate()
     const capitalizar = (str) => str?.charAt(0)?.toUpperCase() + str?.slice(1) || ''
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                // Get categories
-                const cats = await getTable('categorias')
-                setCategories(cats)
-                if (categoria) {
-                    const cat = cats.find(cat => cat.nombre_categoria.toLowerCase() === categoria.toLowerCase())
-                    // console.log("Found category:", cat)
-                    if (cat !== undefined) {
-                        setFiltro([cat.id_categoria])
-                        setTimeout(() => {
-                            const el = document.getElementById(cat.id_categoria)
-                            if (el) el.checked = true
-                        }, 100)
-                        setPage(1)
-                    }
-                }
-            } catch (error) {
-                console.error("Error fetching data:", error)
-            }
-        }
-        fetchData()
-    }, [categoria])
-
-    useEffect(() => {
-        const fetchProducts = async () => {
-            setLoading(true)
-            try {
-                let query = await getTableFiltered('productos', filtro, parseInt(sortOption), page)
-                // console.log("Fetched products:", query)
-                setProducts(query || [])
-            } catch (error) {
-                console.error("Error fetching products:", error)
-            } finally {
-                setLoading(false)
-            }
-        }
-
-        fetchProducts()
-    }, [filtro, sortOption, page])
-
-    useEffect(() => {
-        const fetchTotalRows = async () => {
-            try {
-                let totalRows = await getTotalRowsFiltered('productos', filtro)
-                setTotalPages(Math.ceil((totalRows || 0) / 12))
-            }
-            catch (error) {
-                console.error("Error fetching total rows:", error)
-            }
-        }
-        fetchTotalRows()
-    }, [filtro])
-
-    const handleCategoryChange = (e) => {
-        const { value, checked } = e.target
-        setFiltro(prev => {
-            const nuevo = checked ? Array.from(new Set([...prev, value])) : prev.filter(f => f !== value)
-            return nuevo
-        })
+        setFiltro(upFiltro)
         setPage(1)
-        // Cierra el sidebar móvil al seleccionar/desmarcar
-        if (window.innerWidth <= 768) setMobileFiltersOpen(false)
-    }
+    }, [upFiltro])
 
     const handleSortChange = (e) => {
+        // console.log("Cambiando opción de ordenamiento a:", e.target.value)
         setSortOption(e.target.value)
         setPage(1)
     }
@@ -121,24 +60,29 @@ const Tienda = () => {
                     {/* Filters Sidebar */}
                     <aside className={`filters-sidebar ${mobileFiltersOpen ? 'open' : ''}`}>
                         <h2>Filtrar por categoría</h2>
-                        <div className="categories-list">
-                            {categories.map((cat) => (
-                                <div key={cat.id_categoria} className="category-item">
-                                    <input
-                                        type="checkbox"
-                                        id={cat.id_categoria}
-                                        value={cat.id_categoria}
-                                        onChange={handleCategoryChange}
-                                        className="category-checkbox"
-                                    />
-                                    <label htmlFor={cat.id_categoria}>
-                                        {cat.nombre_categoria}
-                                    </label>
+                        {loading ? (<></>) : (
+                            <>
+                                <div className="categories-list">
+                                    {categories.map((cat) => (
+                                        <div key={cat.id_categoria} className="category-item">
+                                            <input
+                                                type="checkbox"
+                                                id={cat.id_categoria}
+                                                value={cat.nombre_categoria}
+                                                onChange={handleCategoryChange}
+                                                className="category-checkbox"
+                                                checked={filtro.includes(cat.id_categoria)}
+                                            />
+                                            <label htmlFor={cat.id_categoria}>
+                                                {cat.nombre_categoria}
+                                            </label>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
-                        </div>
-                    </aside>
+                            </>
+                        )}
 
+                    </aside>
                     {/* Main Content */}
                     <main className="products-main">
                         <div className="products-header">
@@ -162,14 +106,13 @@ const Tienda = () => {
                                 <div className="spinner"></div>
                                 <p>Cargando productos...</p>
                             </div>
-                        ) : products.length === 0 ? (
+                        ) : products.length === 0 && !loading ? (
                             <div className="no-products">
                                 <p>No se encontraron productos</p>
                             </div>
                         ) : (
                             <>
                                 <ProductsCatalog productos={products} />
-
                                 {totalPages > 1 && (
                                     <div className="pagination">
                                         <button

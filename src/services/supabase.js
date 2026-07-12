@@ -158,7 +158,7 @@ export const confirmOrderPayment = async (id_pedido) => {
 export const getTableFiltered = async (table, filtro = [], orderedBy = 1, page = 1) => {
   let query = supabase.schema('mrstore2').from('productos').select().range((page - 1) * 12, (page * 12) - 1)
   // console.log("productos", query)
-
+  // console.log("Filtro", filtro)
   if (filtro.length > 0) {
     query = query.in('id_categoria', filtro)
   }
@@ -168,19 +168,22 @@ export const getTableFiltered = async (table, filtro = [], orderedBy = 1, page =
     query = query.order('precio_producto', { ascending: orderedBy === 2 })
   }
   const { data } = await query
+  // console.log("Data fetched from getTableFiltered:", data)
   return data
 }
 
 export const getTotalRowsFiltered = async (table, filtro = []) => {
   try {
     let query = supabase.schema('mrstore2').from(table).select('*', { count: 'exact', head: true })
+    // console.log("Filtered rows query: ", filtro)
     if (filtro.length > 0) {
       query = query.in('id_categoria', filtro)
     }
     const { count, error } = await query
+    // console.log("response: ", count, error)
     if (error) throw error
     return count
-  } 
+  }
   catch (error) {
     throw new Error(`Error al obtener el total de filas filtradas de la tabla ${table}: ${error.message}`)
   }

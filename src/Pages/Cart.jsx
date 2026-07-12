@@ -155,7 +155,6 @@ const Cart = () => {
 
     const GenerarPago = async (e, id_pedido) => {
         e.preventDefault()
-        const formData = new FormData(e.target)
         const transferencia =  numTransferencia
         const banco = banco
         if (!transferencia || !banco) {

@@ -8,7 +8,7 @@ import { useCartContext } from '../context/CartContext'
 const Header = () => {
     const [navSections, setNavSections] = useState([{ title: "Inicio" }, { title: "Tienda" }])
     const [navIcons, setNavIcons] = useState([{ link: '/login', class: 'bx-user' }, { link: '#', class: 'bx-search' }])
-    const context = useCartContext()
+    const { cartItems, totalPrice, envio, loading, cargarCarrito, setCartItems } = useCartContext()
 
     useEffect(() => {
         const fetchNavs = async () => {
@@ -18,12 +18,12 @@ const Header = () => {
             }
         }
         fetchNavs()
-        context.cargarCarrito()
+        cargarCarrito()
         // console.log(context.cartItems)
     }, [])
     return (
         <>
-        {/* {console.log(context.cartItems)} */}
+            {/* {console.log(context.cartItems)} */}
             <div className='top-nav hei'></div>
             <div className="navigation">
                 <div className="nav-center container d-flex">

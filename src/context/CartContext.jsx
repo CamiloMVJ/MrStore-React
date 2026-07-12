@@ -8,9 +8,9 @@ export const CartProvider = ({ children }) => {
     const [totalPrice, setTotalPrice] = useState(0)
     const [envio, setEnvio] = useState(0)
     const [loading, setLoading] = useState(true)
-
+    const [reloadCats, setReloadCats] = useState(false)
     const cargarCarrito = async () => {
-        setLoading(true)
+        // setLoading(true)
         try {
             const data = await fetchCarrito().then((items) => {
                 setCartItems(items)
@@ -19,7 +19,7 @@ export const CartProvider = ({ children }) => {
         } catch (error) {
             console.error("Error al cargar carrito global:", error)
         } finally {
-            setLoading(false)
+            // setLoading(false)
         }
     }
 
@@ -45,7 +45,9 @@ export const CartProvider = ({ children }) => {
             envio,
             loading: loading,
             cargarCarrito,
-            setCartItems
+            setCartItems,
+            reloadCats,
+            setReloadCats
         }}>
             {children}
         </CartContext.Provider>
