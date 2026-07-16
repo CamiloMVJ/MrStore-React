@@ -28,8 +28,8 @@ const Cart = () => {
     const [PopUpPago, setPopUpPago] = useState(false)
     const [banco, setBanco] = useState('')
     const [numTransferencia, setNumTransferencia] = useState('')
-    const [message, setMessage] = useState('')
-    const [type, setType] = useState('')
+    const [message, setMessage] = useState(null)
+    const [type, setType] = useState(null)
 
     useEffect(() => {
         if (message === null) return
@@ -37,6 +37,7 @@ const Cart = () => {
             setMessage(null)
             setType(null)
         }, 3000)
+
         return () => clearTimeout(timer)
     }, [message])
 
@@ -77,7 +78,7 @@ const Cart = () => {
         const loadCart = async () => {
             try {
                 const carrito = await fetchCarrito()
-                console.log('Carrito cargado:', carrito)
+                // console.log('Carrito cargado:', carrito)
                 setCartItems(carrito)
 
                 const total = await fetchTotal()
@@ -122,6 +123,7 @@ const Cart = () => {
             }
             return false
         })
+        console.log("1.Stock suficiente: ", !hayStockInsuficiente)
         if (hayStockInsuficiente) return false
         return true
     }
@@ -139,12 +141,27 @@ const Cart = () => {
                 return
             }
             if (ValidarStock()) {
-                const idPedido = await generarPedido(session.id_cliente)
-                if (idPedido) {
-                    GenerarPago(e, idPedido)
+                if (!numTransferencia || !banco) {
+                    console.error("Por favor complete todos los campos")
+                    return
                 }
+                else {
+                    const idPedido = await generarPedido(session.id_cliente, numTransferencia, banco, Descuento)
+                    if (idPedido) {
+                        console.log("Pedido generado con ID:", idPedido)
+                        setPopUpPago(!PopUpPago)
+                        setMessage("Pedido generado con éxito. Por favor complete el pago.")
+                        setType("success")
+                    }
+                    else {
+                        setMessage("Error al generar el pedido. Por favor intente nuevamente.")
+                        setType("error")
+                        setPopUpPago(!PopUpPago)
+                    }
+                }
+
             }
-            else{
+            else {
                 setPopUpPago(!PopUpPago)
             }
         }
@@ -152,56 +169,6 @@ const Cart = () => {
             console.error("Error al generar el pedido:", error)
         }
     }
-
-    const GenerarPago = async (e, id_pedido) => {
-        e.preventDefault()
-        const transferencia =  numTransferencia
-        const banco = banco
-        if (!transferencia || !banco) {
-            console.error("Por favor complete todos los campos")
-            return
-        }
-        // Validar que session y session.id_cliente existan
-        if (!session || !session.id_cliente) {
-            console.error("Sesión inválida. Por favor inicie sesión nuevamente.")
-            return
-        }
-        try {
-            await generarPago({
-                id_pedido,
-                transferencia,
-                banco,
-                monto: (totalPrice + Envio - Descuento),
-            })
-        }
-        catch (error) {
-            console.error("Error al generar el pago:", error.message)
-            return
-        }
-        // window.location.reload()
-        GenerarEnvio(id_pedido)
-        setPopUpPago(false)
-        setCartItems([])
-    }
-
-    const GenerarEnvio = async (id_pedido) => {
-        try {
-            if (DirActiva === 0) {
-                console.error("Por favor seleccione una direccion de envio")
-                return
-            }
-            await generarEnvio({
-                descuento: Descuento,
-                costo_envio: Envio,
-                id_pedido,
-                id_direccion: DirActiva,
-            })
-        }
-        catch (error) {
-            console.error("Error al generar el envio:", error)
-        }
-    }
-
 
     const handleDirChange = (e) => {
         e.preventDefault()

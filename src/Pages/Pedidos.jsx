@@ -38,7 +38,7 @@ const OrderHistory = () => {
                     .from('detpedidos')
                     .select(`id_producto,color,talla,id_proveedor,id_pedido,cantidad,subtotal,precioventa, detproductos(
                             productos(id_producto, nombre_producto, descripcion, imagen_url, precio_producto))`)
-                    .order('subtotal', { ascending: false })
+                    .order('subtotal', { ascending: true })
                 if (error) throw error
                 setdetpedidos(data)
                 // console.log(data)

@@ -68,7 +68,9 @@ export const fetchPrecioxKG = async (idDir, idCarrito) => {
             .from('direcciones')
             .select(`
                 departamentos(id_departamento, precio_envio),
-                clientes(id_cliente, carritocompras(id_carritocompras, detcarritocompras(id_carritocompras, cantidad)))
+                clientes(id_cliente, 
+                    carritocompras(id_carritocompras, 
+                        detcarritocompras(id_carritocompras, cantidad)))
             `)
             .eq('clientes.carritocompras.id_carritocompras', idCarrito)
             .eq('id_direccion', idDir)
@@ -89,7 +91,7 @@ export const fetchPrecioxKG = async (idDir, idCarrito) => {
         return {
             precio,
             cantidad,
-            envio: cantidad * 0.375 * precio,
+            envio: Number(((cantidad * precio) / 36.62).toFixed(2)),
         }
     } catch (error) {
         console.error('Error al obtener el precio por kg:', error)
@@ -97,17 +99,21 @@ export const fetchPrecioxKG = async (idDir, idCarrito) => {
     }
 }
 
-export const generarPedido = async (idCliente) => {
+export const generarPedido = async (idCliente, referenciaBancaria, banco, descuento) => {
     try {
         const { data, error } = await supabase
             .schema('mrstore2')
-            .rpc('generarpedido', { p_id_cliente: idCliente })
-
+            .rpc('generarpedido', {
+                p_id_cliente: idCliente,
+                p_referencia_bancaria: referenciaBancaria,
+                p_banco: banco,
+                p_descuento: descuento,
+            })
         if (error) throw error
         return data
     } catch (error) {
         console.error('Error al generar el pedido:', error)
-        throw error
+        return 
     }
 }
 
