@@ -24,7 +24,7 @@ export const useProducts = (categoriaInicial, categoriaURL) => {
                 }
                 else {
                     let query = await getTableFiltered('productos', filtro, parseInt(sortOption), page)
-                    console.log("Fetched products:", query)
+                    // console.log("Fetched products:", query)
                     setProducts(query || [])
                 }
             } catch (error) {

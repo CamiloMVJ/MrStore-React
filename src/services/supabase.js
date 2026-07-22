@@ -70,14 +70,7 @@ export const getProductById = async (id) => {
     console.error("Error al obtener producto:", error.message)
     throw error
   }
-  // try {
-  //   const { data, error } = await supabase.schema('mrstore2').from('productos').select().eq('id_producto', id)
-  //   if (error) throw error
-  //   return data[0]
-  // } catch (error) {
-  //   console.error("Error al obtener producto:", error.message)
-  //   throw error
-  // }
+
 }
 
 export const updateTable = async (table, id, idName, updatedData) => {

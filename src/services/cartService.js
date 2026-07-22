@@ -117,46 +117,6 @@ export const generarPedido = async (idCliente, referenciaBancaria, banco, descue
     }
 }
 
-export const generarPago = async ({ id_pedido, transferencia, banco, monto }) => {
-    try {
-        const { data, error } = await supabase
-            .schema('mrstore2')
-            .from('pagos')
-            .insert({
-                id_pedido,
-                referencia_bancaria: transferencia,
-                banco,
-                monto,
-            })
-
-        if (error) throw error
-        return data
-    } catch (error) {
-        console.error('Error al generar el pago:', error)
-        throw error
-    }
-}
-
-export const generarEnvio = async ({ descuento, costo_envio, id_pedido, id_direccion }) => {
-    try {
-        const { data, error } = await supabase
-            .schema('mrstore2')
-            .from('envios')
-            .insert({
-                descuento,
-                costo_envio,
-                id_pedido,
-                id_direccion,
-            })
-
-        if (error) throw error
-        return data
-    } catch (error) {
-        console.error('Error al generar el envio:', error)
-        throw error
-    }
-}
-
 export const actualizarDireccionPrincipal = async (idCliente, idDireccion) => {
     try {
         if (!idCliente || !idDireccion) return false

@@ -10,6 +10,7 @@
   --grey2: #e9d7d3;
   --red: #e16554;
   --green: #5ebe27;
+
 }
 
 /* Basic Reset */
@@ -715,6 +716,7 @@ Navigation
 }
 
 @media (max-width: 768px) {
+
   .order-card-header,
   .order-card-footer {
     flex-direction: column;

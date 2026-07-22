@@ -3,65 +3,39 @@ import Footer from "../components/Footer"
 import { use, useEffect, useState } from 'react'
 import { supabase, updateTable } from '../services/supabase'
 import FormAgregarDireccion from "../components/FormAgregarDireccion"
+import { useCartContext } from '../context/CartContext'
+import { usePerfil } from "../hooks/usePerfil"
 
 const Perfil = () => {
     const [AddDirvisible, setDirVisible] = useState(false)
     const [DelDirVisible, setDelVisible] = useState(false)
-    const [perfil, setPerfil] = useState(null)
-    const [session, setSession] = useState(() => {
-        return JSON.parse(sessionStorage.getItem('session'))
-    })
-    const [direcciones, setDirecciones] = useState([])
-    const [DirActiva, setDirActiva] = useState(null)
-    const [direccion, setDireccion] = useState()
-    const [linkMaps, setLinkMaps] = useState()
-    const [departamento, setDepartamento] = useState()
-    const [departamentos, setDepartamentos] = useState([])
-    
+    // const [direcciones, setDirecciones] = useState([])
+    // const [DirActiva, setDirActiva] = useState(null)
+    // const [direccion, setDireccion] = useState()
+    // const [linkMaps, setLinkMaps] = useState()
+    // const [departamento, setDepartamento] = useState()
+    // const [departamentos, setDepartamentos] = useState([])
 
-    const fetchDirecciones = async () => {
-        supabase.schema('mrstore2').from('direcciones').select()
-            .eq('id_cliente', session.id_cliente)
-            .eq('estado', true)
-            .then(data => {
-                if (data.data.length > 0) {
-                    let id = data.data.filter(dir => dir.es_principal === true)
-                    setDirecciones(data.data)
-                    if (id.length == 1) {
-                        setDirActiva(id[0].id_direccion)
-                        return
-                    }
-                    return
-                }
-                console.log('Si se ejecuta')
-                setDirActiva('')
-                setDepartamento('default')
-            })
-    }
-    useEffect(() => {
-        const fetchPerfil = async () => {
-            supabase.schema('mrstore2').from('usuarios').select().eq('id_usuario', session.id_usuario).then(data => {
-                // console.log(session.id_usuario)
-                setPerfil(data.data[0])
-            })
-        }
-        const fetchDepartamentos = async () => {
-            const { data, error } = await supabase.schema('mrstore2').from('departamentos').select()
-
-            if (data.length > 0) {
-                setDepartamentos(data)
-            }
-        }
-        fetchDepartamentos()
-        fetchDirecciones()
-        fetchPerfil()
-    }, [])
+    const { perfil, setPerfil, session } = useCartContext()
+    const {
+        direcciones,
+        DirActiva,
+        departamentos,
+        direccion,
+        departamento,
+        linkMaps,
+        setDirecciones,
+        setDirActiva,
+        setDireccion,
+        setLinkMaps,
+        setDepartamento,
+        handleDirChange } = usePerfil()
 
     useEffect(() => {
         if (DirActiva !== null && DirActiva !== '') {
             direcciones.map(dir => {
                 if (dir.id_direccion === DirActiva) {
-                    console.log(dir)
+                    // console.log(dir)
                     setDireccion(dir.direccion)
                     setLinkMaps(dir.maps_link)
                     setDepartamento(dir.id_departamento)
@@ -83,23 +57,16 @@ const Perfil = () => {
         // await updateTable('usuarios', objData.id_usuario, objData)
         window.location.href = '/perfil'
     }
+    const handleDireccionChange = (e) => {
+        setDireccion(e.target.value)
+    }
+
+    const handleLinkMapsChange = (e) => {
+        setLinkMaps(e.target.value)
+    }
 
     const handleDepChange = (e) => {
         setDepartamento(e.target.value)
-    }
-    const handleDirChange = (e) => {
-        e.preventDefault()
-        let id = direcciones.filter(dir => dir.id_direccion === Number(e.target.value))[0].id_direccion
-        setDirActiva(id)
-        updateTable('direcciones', session.id_cliente, 'id_cliente', { es_principal: false }).then((data) => {
-            if (data) {
-                updateTable('direcciones', id, 'id_direccion', { es_principal: true }).then(data => {
-                    if (!data) {
-                        console.error("Error al actualizar la direccion principal")
-                    }
-                })
-            }
-        })
     }
 
     const openDelPoppUp = () => {
@@ -146,12 +113,13 @@ const Perfil = () => {
         supabase.schema('mrstore2').from('direcciones').insert(objData).select().then((data, error) => {
             if (!error) {
                 window.location.reload()
-                // console.log(data)
-                // fetchDirecciones()
-                // setDirActiva(data.data[0].id_direccion)
-                // setDirVisible(!AddDirvisible)
             }
         })
+
+    }
+
+    const UpdateDireccion = (e) => {
+        e.preventDefault()
 
     }
 
@@ -206,49 +174,50 @@ const Perfil = () => {
                                     departamentos={departamentos}
                                     handleDepChange={handleDepChange}
                                     departamento={departamento}
-                                    openPopUp={openPopUp} />) : <form method="POST" onSubmit={() => { }}>
-                                    <label htmlFor="direccion"><strong>Selecione la direccion principal</strong></label>
-                                    <div className="flex">
-                                        <select className="selector" name="direccion" value={DirActiva} onChange={handleDirChange}>
-                                            {DirActiva === '' ? (<option value="" disabled>Seleccione una direccion</option>) : null}
-                                            {direcciones.map((dir, index) => {
+                                    openPopUp={openPopUp} />) :
+                                    <form method="POST" onSubmit={UpdateDireccion}>
+                                        <label htmlFor="direccion"><strong>Selecione la direccion principal</strong></label>
+                                        <div className="flex">
+                                            <select className="selector" name="direccion" value={DirActiva} onChange={handleDirChange}>
+                                                {DirActiva === '' ? (<option value="" disabled>Seleccione una direccion</option>) : null}
+                                                {direcciones.map((dir, index) => {
+                                                    return (
+                                                        <option key={index} value={dir.id_direccion} >
+                                                            {dir.nombre_dir}
+                                                        </option>
+                                                    )
+                                                })}
+                                            </select>
+                                            <button type="button" onClick={openDelPoppUp} className="btn-1Trash" style={{ background: "var(--red)" }}><i className='bx bx-trash'></i></button>
+
+                                        </div>
+                                        <div className="form-popupDel" style={{ display: DelDirVisible ? 'flex' : 'none' }}>
+                                            <div>
+                                                <p style={{ marginBottom: '1px' }}>Esta seguro que desea eleminar la direccion?</p>
+                                                <div className="flex">
+                                                    <button className="btn-2 bg-red" onClick={DelDir}>Si</button>
+                                                    <button className="btn-2 bg-green" onClick={openDelPoppUp}>No</button>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <label htmlFor="direccion"><strong>Direccion</strong></label>
+                                        <input type="text" placeholder="Ingrese su direccion" name="direccion" value={direccion} onChange={handleDireccionChange} />
+                                        <label htmlFor="linkmaps"><strong>Link de google maps</strong></label>
+                                        <input type="text" placeholder="Ingrese su link de google maps" name="linkmaps" value={linkMaps} onChange={handleLinkMapsChange} />
+                                        <label htmlFor="departamento"><strong>Departamento</strong></label>
+                                        <select className="selector" name="departamento" value={departamento} onChange={handleDepChange} required>
+                                            {DirActiva === '' ? <option value="default" disabled>Seleccione un departamento</option> : null}
+                                            {departamentos.map(dep => {
                                                 return (
-                                                    <option key={index} value={dir.id_direccion} >
-                                                        {dir.nombre_dir}
+                                                    <option key={dep.id_departamento} value={dep.id_departamento}>
+                                                        {dep.nombre_dpto}
                                                     </option>
                                                 )
                                             })}
                                         </select>
-                                        <button type="button" onClick={openDelPoppUp} className="btn-1Trash" style={{ background: "var(--red)" }}><i className='bx bx-trash'></i></button>
-
-                                    </div>
-                                    <div className="form-popupDel" style={{ display: DelDirVisible ? 'flex' : 'none' }}>
-                                        <div>
-                                            <p style={{ marginBottom: '1px' }}>Esta seguro que desea eleminar la direccion?</p>
-                                            <div className="flex">
-                                                <button className="btn-2 bg-red" onClick={DelDir}>Si</button>
-                                                <button className="btn-2 bg-green" onClick={openDelPoppUp}>No</button>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                    <label htmlFor="direccion"><strong>Direccion</strong></label>
-                                    <input type="text" placeholder="Ingrese su direccion" name="direccion" defaultValue={direccion} />
-                                    <label htmlFor="linkmaps"><strong>Link de google maps</strong></label>
-                                    <input type="text" placeholder="Ingrese su link de google maps" name="linkmaps" defaultValue={linkMaps} />
-                                    <label htmlFor="departamento"><strong>Departamento</strong></label>
-                                    <select className="selector" name="departamento" value={departamento} onChange={handleDepChange} required>
-                                        {DirActiva === '' ? <option value="default" disabled>Seleccione un departamento</option> : null}
-                                        {departamentos.map(dep => {
-                                            return (
-                                                <option key={dep.id_departamento} value={dep.id_departamento}>
-                                                    {dep.nombre_dpto}
-                                                </option>
-                                            )
-                                        })}
-                                    </select>
-                                    <button className="btn-1">Actualizar direccion</button>
-                                </form>}
+                                        <button className="btn-1" type="submit">Actualizar direccion</button>
+                                    </form>}
 
 
                             </>) :

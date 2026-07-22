@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { fetchCarrito } from '../services/cartService'
+import { fetchPerfil } from '../services/perfilService'
 
 const CartContext = createContext()
 
@@ -9,6 +10,12 @@ export const CartProvider = ({ children }) => {
     const [envio, setEnvio] = useState(0)
     const [loading, setLoading] = useState(true)
     const [reloadCats, setReloadCats] = useState(false)
+
+    const [perfil, setPerfil] = useState(null)
+    const [session, setSession] = useState(() => {
+        return JSON.parse(sessionStorage.getItem('session'))
+    })
+
     const cargarCarrito = async () => {
         // setLoading(true)
         try {
@@ -25,6 +32,9 @@ export const CartProvider = ({ children }) => {
 
     useEffect(() => {
         cargarCarrito()
+        fetchPerfil(session).then((data) => {
+            setPerfil(data)
+        })
     }, [])
 
     useEffect(() => {
@@ -44,10 +54,13 @@ export const CartProvider = ({ children }) => {
             totalPrice,
             envio,
             loading: loading,
+            reloadCats,
+            perfil,
+            session,
             cargarCarrito,
             setCartItems,
-            reloadCats,
-            setReloadCats
+            setReloadCats,
+            setPerfil
         }}>
             {children}
         </CartContext.Provider>

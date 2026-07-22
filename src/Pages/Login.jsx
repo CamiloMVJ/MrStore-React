@@ -3,10 +3,13 @@ import Footer from "../components/Footer"
 import { useState } from "react"
 import { signInWithEmail } from "../services/auth"
 import { Link } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 
 const Login = () => {
+    const navigate = useNavigate()
     if (sessionStorage.getItem('session')) {
         window.location.href = '/perfil'
+        // navigate('/perfil')
     }
     else {
         const [navSections, setNavSections] = useState([{ title: "Inicio" }, { title: "Tienda" }])

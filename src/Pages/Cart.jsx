@@ -4,32 +4,17 @@ import Header from '../components/Header'
 import Footer from '../components/Footer'
 import Product from '../components/Product'
 import Notification from '../components/Notification'
-import {
-    actualizarDireccionPrincipal,
-    fetchCarrito,
-    fetchDirecciones,
-    fetchPrecioxKG,
-    fetchTotal,
-    generarEnvio,
-    generarPago,
-    generarPedido,
-} from '../services/cartService'
-
+import { useCart } from '../hooks/useCart'
+import { generarPedido } from '../services/cartService'
 const Cart = () => {
-    const [cartItems, setCartItems] = useState([])
-    const [totalPrice, setTotalPrice] = useState(0)
-    const [loading, setLoading] = useState(true)
-    const [direcciones, setDirecciones] = useState([])
-    const [DirActiva, setDirActiva] = useState(null)
-    const session = JSON.parse(sessionStorage.getItem('session'))
     const [Descuento, setDescuento] = useState(0)
-    const [Envio, setEnvio] = useState(0)
-    const [ActCarrito, setActCarrito] = useState(false)
     const [PopUpPago, setPopUpPago] = useState(false)
     const [banco, setBanco] = useState('')
     const [numTransferencia, setNumTransferencia] = useState('')
     const [message, setMessage] = useState(null)
     const [type, setType] = useState(null)
+    const { cartItems, totalPrice, ActCarrito, session, DirActiva, Envio, direcciones, loading,
+        setActCarrito, refreshShipping, handleDirChange } = useCart()
 
     useEffect(() => {
         if (message === null) return
@@ -40,79 +25,6 @@ const Cart = () => {
 
         return () => clearTimeout(timer)
     }, [message])
-
-    useEffect(() => {
-        const loadDirecciones = async () => {
-            if (!session?.id_cliente) {
-                setDirActiva('')
-                return
-            }
-
-            try {
-                const direccionesData = await fetchDirecciones(session.id_cliente)
-                setDirecciones(direccionesData)
-
-                if (direccionesData.length > 0) {
-                    const principal = direccionesData.filter(dir => dir.es_principal === true)
-                    if (principal.length === 1) {
-                        setDirActiva(principal[0].id_direccion)
-                        const shippingData = await fetchPrecioxKG(principal[0].id_direccion, session.id_carrito)
-                        setEnvio(shippingData.envio)
-                        return
-                    }
-                    return
-                }
-
-                setDirActiva('')
-            } catch (error) {
-                console.error(error)
-                setDirActiva('')
-            }
-        }
-
-        loadDirecciones()
-        setActCarrito(prev => !prev)
-    }, [])
-
-    useEffect(() => {
-        const loadCart = async () => {
-            try {
-                const carrito = await fetchCarrito()
-                // console.log('Carrito cargado:', carrito)
-                setCartItems(carrito)
-
-                const total = await fetchTotal()
-                setTotalPrice(total)
-
-                if (DirActiva && session?.id_carrito) {
-                    const shippingData = await fetchPrecioxKG(DirActiva, session.id_carrito)
-                    setEnvio(shippingData.envio)
-                }
-            } catch (error) {
-                console.error(error)
-            } finally {
-                setLoading(false)
-            }
-        }
-
-        loadCart()
-    }, [ActCarrito])
-
-    const refreshShipping = async (idDir) => {
-        try {
-            if (!idDir || !session?.id_carrito) {
-                return
-            }
-
-            const shippingData = await fetchPrecioxKG(idDir, session.id_carrito)
-            setEnvio(shippingData.envio)
-        }
-        catch (error) {
-            console.error(error)
-        }
-    }
-
-
 
     const ValidarStock = () => {
         const hayStockInsuficiente = cartItems.some(item => {
@@ -127,6 +39,7 @@ const Cart = () => {
         if (hayStockInsuficiente) return false
         return true
     }
+
 
     const GenerarPedido = async (e) => {
         e.preventDefault()
@@ -150,8 +63,11 @@ const Cart = () => {
                     if (idPedido) {
                         console.log("Pedido generado con ID:", idPedido)
                         setPopUpPago(!PopUpPago)
-                        setMessage("Pedido generado con éxito. Por favor complete el pago.")
+                        setMessage("Pedido generado con éxito.")
                         setType("success")
+                        setTimeout(() => {
+                            setActCarrito(prev => !prev)
+                        }, 1000)
                     }
                     else {
                         setMessage("Error al generar el pedido. Por favor intente nuevamente.")
@@ -168,33 +84,6 @@ const Cart = () => {
         catch (error) {
             console.error("Error al generar el pedido:", error)
         }
-    }
-
-    const handleDirChange = (e) => {
-        e.preventDefault()
-        const selectedId = Number(e.target.value)
-        // Validar que haya direcciones y que el id exista
-        if (!direcciones || direcciones.length === 0) {
-            console.error("No hay direcciones disponibles.")
-            return
-        }
-        const selectedDir = direcciones.find(dir => dir.id_direccion === selectedId)
-        if (!selectedDir) {
-            console.error("Dirección seleccionada no válida.")
-            return
-        }
-        setDirActiva(selectedId)
-        // Validar que session y session.id_cliente existan
-        if (!session || !session.id_cliente) {
-            console.error("Sesión inválida. Por favor inicie sesión nuevamente.")
-            return
-        }
-        actualizarDireccionPrincipal(session.id_cliente, selectedId).then((data) => {
-            if (data) {
-                refreshShipping(selectedId)
-                setActCarrito(prev => !prev)
-            }
-        })
     }
 
     if (loading) {
@@ -233,7 +122,7 @@ const Cart = () => {
                                     <tbody>
                                         {cartItems.map((item, index) => {
                                             return (
-                                                <Product ActualizarProductos={() => setActCarrito(!ActCarrito)} key={(item.detproductos.productos.id_producto + item.detproductos.tallas.id_talla)} producto={item} />
+                                                <Product ActualizarProductos={() => setActCarrito(!ActCarrito)} key={(item.detproductos.productos.id_producto)} producto={item} />
                                             )
                                         })}
                                     </tbody>
@@ -270,7 +159,7 @@ const Cart = () => {
                                                 </tr>
                                                 <tr>
                                                     <td style={{ textAlign: "right" }}><strong>Total</strong></td>
-                                                    <td><strong>{totalPrice + Envio - Descuento} $</strong></td>
+                                                    <td><strong>{(totalPrice + Envio - Descuento).toFixed(2)} $</strong></td>
                                                 </tr>
                                             </tbody>
                                         </table>

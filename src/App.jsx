@@ -6,7 +6,7 @@ import Login from "./Pages/Login.jsx";
 import Perfil from "./Pages/Perfil.jsx";
 import Tienda from "./Pages/Tienda.jsx";
 import DetalleProd from "./Pages/DetalleProd.jsx";
-import ErrorBoundary from './components/ErrorBoundry.jsx';
+import ErrorBoundary from './components/ErrorBoundary.jsx';
 import SignUpMeth from './Pages/SignUp.jsx';
 import Inventario from './Pages/Inventario.jsx';
 import Cart from './Pages/Cart.jsx';

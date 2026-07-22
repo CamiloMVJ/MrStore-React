@@ -21,7 +21,7 @@ export const signInWithEmail = async (email, pass) => {
 
 			let userdata = { id_usuario: user.data[0].id_usuario, id_cliente: user.data[0].clientes[0].id_cliente, id_carrito: carrito.data[0].id_carritocompras }
 			sessionStorage.setItem('session', JSON.stringify(userdata))
-			sessionStorage.setItem('NavIcons', JSON.stringify([{ link: '/login', class: 'bx-user' }, { link: '#', class: 'bx-search' }, { link: '/cart', class: 'bx-cart' }]))
+			sessionStorage.setItem('NavIcons', JSON.stringify([{ link: '/perfil', class: 'bx-user' }, { link: '#', class: 'bx-search' }, { link: '/cart', class: 'bx-cart' }]))
 
 			const operador = await supabase.schema('mrstore2').from('operadores').select().eq('id_usuario', user.data[0].id_usuario).limit(1)
 			if (operador.data.length) {
